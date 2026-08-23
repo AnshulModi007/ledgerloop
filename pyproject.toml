@@ -15,10 +15,6 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.4",
 ]
-llm = [
-    "google-generativeai>=0.5",
-    "groq>=0.5",
-]
 ui = [
     "streamlit>=1.32",
 ]

@@ -18,6 +18,12 @@ BASE_AMOUNT_DATE_FALLBACK = 0.78
 # surface as a candidate for tier3 (Phase 3) or the exception queue (Phase 4).
 BASE_GENERIC_SUBSET_SUM = 0.55
 
+# tier3 (adjudicate/adjudicator.py): an LLM-extracted UTR that then survives the same
+# exact-join criteria tier1/tier2 apply. Scored a notch below TRANSPOSED_UTR -- the
+# join itself is just as exact, but the UTR came from a model's read of free text
+# rather than a bounded, deterministic transformation of a regex-found one.
+BASE_LLM_EXTRACTED_UTR = 0.85
+
 
 def score(*, base: float, diff: int, tolerance: int, lag: int, window: int) -> float:
     amount_penalty = min(1.0, diff / max(tolerance, 1)) * 0.2

@@ -26,6 +26,10 @@ jobs:
       - name: Generate dev + holdout data
         run: python -m ledgerloop.generate.generator --profile all
 
-      # Phases 2-5 add: --no-llm end-to-end run, eval harness threshold gates
-      # (false-match rate <= 1%, auto-match rate >= 80%), determinism re-run
-      # diff, and the injection test suite. Wired in as each phase lands.
+      - name: --no-llm end-to-end run (zero-key demo path)
+        run: python -m ledgerloop.reconcile --profile dev --no-llm
+
+      # Phase 5 adds: eval harness threshold gates (false-match rate <= 1%,
+      # auto-match rate >= 80%) run against this same --no-llm path. Wired in as
+      # that phase lands. Determinism (test_determinism.py) and injection defence
+      # (test_injection.py) are already exercised above via `pytest`.

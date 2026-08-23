@@ -21,8 +21,12 @@ eval:
 	@echo "eval harness lands in Phase 5 (src/ledgerloop/eval/) -- not implemented yet."
 
 demo:
-	@echo "demo pipeline lands in Phase 4-6 -- not implemented yet."
-	@echo "Phase 1 is ready: run 'make generate' to produce data/dev and data/holdout."
+	$(PYTHON) -m ledgerloop.generate.generator --profile dev
+	$(PYTHON) -m ledgerloop.reconcile --profile dev --no-llm
+	@echo ""
+	@echo "Exceptions, journal entries, and the dashboard land in Phase 4-6."
+	@echo "Set GEMINI_API_KEY/GROQ_API_KEY/OPENROUTER_API_KEY, or run a local Ollama,"
+	@echo "and drop --no-llm above to let tier3 adjudicate the remainder."
 
 ui:
 	@echo "Streamlit dashboard lands in Phase 6 (src/ledgerloop/ui/app.py) -- not implemented yet."

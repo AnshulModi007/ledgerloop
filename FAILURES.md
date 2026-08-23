@@ -206,3 +206,153 @@ expected (see per-defect breakdown in test_tiers.py::test_defect_class_routing).
 lines after tiers 1+2: 24, split across `LOW_CONFIDENCE` (4), `TIER2_TIMEOUT` (14), and
 `NO_CANDIDATE` (6) -- these become Tier 3's job in Phase 3, and OUT_OF_SCOPE (20 lines) is
 correctly never matched by either tier.
+
+---
+
+## 2026-08-23 — live Groq calls came back `HTTPError 403 error code: 1010`
+
+**Symptom:** `GroqProvider.complete()` (real key, present in this session's own shell
+environment) returned `None` on every call. Direct `urllib` debugging showed a bare
+403 with Cloudflare's "error code: 1010" -- a bot-fingerprint block, not an auth or
+payload problem.
+
+**Diagnosis:** Groq's API sits behind Cloudflare, which appears to reject `urllib`'s
+default `User-Agent` (`Python-urllib/3.11`) outright before the request reaches
+Groq's own logic. A browser-shaped `User-Agent` cleared it immediately.
+
+**Fix:** Added a default headers dict (`Content-Type` + a browser-style `User-Agent`)
+in `provider.py::_post_json`, applied to every REST provider. Re-verified live: Groq
+now returns real responses.
+
+**Would do differently:** Nothing -- this is exactly the kind of thing that's
+invisible until you make a real network call. Worth remembering for *any* stdlib-HTTP
+integration, not just this project: a 403 with no clear auth problem is worth
+checking against a plain browser UA before assuming the API key or request shape is
+wrong.
+
+---
+
+## 2026-08-23 — all three REST providers' hardcoded model names were stale
+
+**Symptom:** Once the Cloudflare block above was cleared, Groq returned a real API
+error: `model llama-3.1-8b-instant does not exist or you do not have access to it`.
+
+**Diagnosis:** Groq's free-tier model catalog had moved on since my knowledge cutoff
+(January 2026) -- confirmed by querying `GET /openai/v1/models` with the live key.
+Gemini and OpenRouter almost certainly have the same problem (`gemini-1.5-flash` is a
+retired generation; OpenRouter's free-model lineup is explicitly high-churn per its
+own docs), but neither key is available in this environment to verify directly.
+
+**Fix:** Groq: live-verified and switched to `openai/gpt-oss-20b`. Gemini: switched to
+`gemini-2.5-flash` based on web research (still documented free-tier as of
+2026-08-23), *not* live-verified. OpenRouter: switched to
+`meta-llama/llama-3.3-70b-instruct:free`, also not live-verified. Left a comment on
+each provider class naming exactly how to re-check it (the models endpoint for Groq,
+the pricing docs / `?max_price=0` model list for the other two) -- this is precisely
+what section 10's "verify current free-tier quotas before relying on specific
+numbers, they change" is warning about, and it bit me within the same build.
+
+**Would do differently:** Nothing available to do differently without keys for the
+other two -- this class of staleness is structural to relying on any specific free
+model name. The real mitigation is already in place: transport failures (including a
+`model_not_found` 404) fall through the provider chain and ultimately degrade to
+`NullProvider` rather than crashing the run, so a stale model name degrades gracefully
+rather than breaking `make demo`.
+
+---
+
+## 2026-08-23 — live model output at "confidence 0.85" wasn't stable run-to-run
+
+**Symptom:** Running the same adjudication prompt against Groq twice (once inside
+`adjudicator.run()`, once as a manual re-check moments later) produced different
+confidence values for the same bank lines -- one run resolved 0 of 4 borderline
+`LOW_CONFIDENCE` cases, a manual re-run of the identical prompt returned confidences
+of 0.85/0.85/0.75/0.75 (two of which would have cleared the 0.85 threshold).
+
+**Diagnosis:** Not a bug -- `temperature=0` reduces but doesn't eliminate variance for
+Groq's `gpt-oss-20b`, a reasoning model with its own internal sampling. This is a
+genuine property of LLM-based systems, not something achievable to fully pin down.
+
+**Fix:** None needed -- confirmed this is exactly why `tests/test_determinism.py`
+scopes the determinism guarantee to the `--no-llm` (`NullProvider`) path only, and
+explicitly does not claim it for a real LLM provider. Documented in that test's
+docstring so a future reader doesn't mistake the scoping for an oversight.
+
+**Would do differently:** Nothing -- but this is a good concrete data point for the
+eventual calibration report (Phase 5, `eval/calibration.py`): confidence values near a
+threshold boundary are inherently noisy, which argues for keeping
+`tier3_confidence_threshold` conservative rather than tuned to a razor's edge.
+
+---
+
+## 2026-08-23 — a fabricated `candidate_id` was accepted on the *first* bad response instead of retrying
+
+**Symptom:** My own test (`test_invalid_candidate_id_is_discarded_not_trusted`)
+expected up to `max_retries + 1` attempts before giving up on an out-of-list
+`candidate_id`, matching the "do not retry more than twice" language in section 4.
+The first implementation instead recorded `TIER3_INVALID_SELECTION` and gave up after
+the very first bad response, never spending the retry budget at all.
+
+**Diagnosis:** `adjudicate_cases`'s per-item handling treated an invalid selection as
+an immediate terminal failure (`del remaining[bid]` on the spot) instead of leaving
+the case in `remaining` for another attempt, unlike every other failure path (missing
+response, malformed JSON), which already retried correctly.
+
+**Fix:** Invalid selections are now tracked in a `seen_invalid_selection` set and left
+in `remaining` to be retried; `TIER3_INVALID_SELECTION` is only recorded for cases
+still unresolved after all attempts are exhausted. A later attempt that returns a
+*valid* selection still resolves normally.
+
+**Would do differently:** Nothing -- this is exactly why the retry-bounding tests were
+worth writing before wiring this into the full pipeline, not after.
+
+---
+
+## 2026-08-23 — `complete_with_fallback`'s "none" sentinel didn't actually require `NullProvider`
+
+**Symptom:** A test chain of `[FakeProvider(always fails)]` (no `NullProvider` at the
+end) caused `adjudicate_cases` to immediately treat the LLM as "unavailable" and stop
+retrying after one attempt, even though the real intent was "retry a failing real
+provider up to the configured budget."
+
+**Diagnosis:** `complete_with_fallback` returned the literal string `"none"` whenever
+the loop over the chain was exhausted *for any reason* -- including a chain that never
+contained a `NullProvider` at all. In production this is unreachable
+(`resolve_chain()` always appends `NullProvider()`), but the function's contract was
+wrong regardless, and it broke retry semantics for exactly the kind of chain a test
+(or a future caller) might reasonably construct by hand.
+
+**Fix:** The exhausted-chain fallback now returns the *last attempted real provider's*
+name instead of `"none"`. `"none"` is reserved for the case where a `NullProvider` was
+actually reached in the chain. `adjudicate_cases` and `extract_narration_utrs` already
+only short-circuit on the literal `"none"`, so this fix alone restored correct
+per-round retry behaviour without touching their logic.
+
+**Would do differently:** Write the chain-construction tests before wiring the
+"production always appends NullProvider" assumption into the transport layer's return
+contract -- the assumption was true but the function shouldn't have silently depended
+on it.
+
+---
+
+## 2026-08-23 — narration-extracted UTRs came back without the "UTR" prefix
+
+**Symptom:** Live-testing narration extraction against Groq with a narration reading
+`...UTR55512345678901...`, the model returned `"utr": "55512345678901"` -- correctly
+reading "UTR" as a label rather than part of the reference value. My synthetic
+dataset's join key is the *full* string including that prefix (`generate/generator.py
+::_new_utr`), so a naive lookup would have silently failed to find the real batch.
+
+**Diagnosis:** This is a reasonable, even correct, reading of the text by the model --
+the mismatch is entirely a consequence of my own synthetic-data convention (a literal
+"UTR" text prefix is not how real bank UTRs are formatted; I chose it purely to make
+regex extraction easy in Tier 0). The join logic needs to be robust to it rather than
+assuming the model will echo my internal convention back exactly.
+
+**Fix:** `_resolve_extracted_utr` now tries the extracted value both as given and with
+a `"UTR"` prefix prepended (when it doesn't already have one) before giving up.
+Covered by `test_narration_extraction_tolerates_missing_utr_prefix`.
+
+**Would do differently:** When a synthetic-data convention leaks into what's supposed
+to be a realistic extraction task, expect the model to normalize it away rather than
+preserve it, and design the downstream join to be tolerant from the start.
