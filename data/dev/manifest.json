@@ -1,0 +1,22 @@
+{
+  "config_hash": "de3d2160a5b5828e826d32401d7ee35a13c04d5828653f4bc811e38c7ec459d2",
+  "defect_counts": {
+    "BATCH_N1": 109,
+    "CHARGEBACK": 20,
+    "CLEAN": 40,
+    "DUPLICATE": 20,
+    "FEE_DRIFT": 20,
+    "INJECTION": 20,
+    "MONTH_CROSS": 20,
+    "NO_UTR": 20,
+    "OUT_OF_SCOPE": 20,
+    "REFUND_NET": 20,
+    "SPLIT_1N": 40,
+    "TRANSPOSE": 20
+  },
+  "n_bank_lines": 289,
+  "n_erp_invoices": 5020,
+  "n_gateway_transactions": 5020,
+  "n_settlement_lines": 5000,
+  "seed": 42
+}

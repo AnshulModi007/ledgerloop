@@ -1,0 +1,8466 @@
+[
+  {
+    "bank_line_id": "BANK00001",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000001"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00001"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00002",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000002"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00002"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00003",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000003"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00003"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00004",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000004"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00004"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00005",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000005"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00005"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00006",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000006"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00006"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00007",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000007"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00007"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00008",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000008"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00008"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00009",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000009"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00009"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00010",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000010"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00010"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00011",
+    "defect_classes": [
+      "CLEAN",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000011"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00011"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00012",
+    "defect_classes": [
+      "CLEAN",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000012"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00012"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00013",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000013"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00013"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00014",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000014"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00014"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00015",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000015"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00015"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00016",
+    "defect_classes": [
+      "CLEAN",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000016"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00016"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00017",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000017"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00017"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00018",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000018"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00018"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00019",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000019"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00019"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00020",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000020"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00020"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00021",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000021"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00021"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00022",
+    "defect_classes": [
+      "CLEAN",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000022"
+    ],
+    "notes": "decoy_txn_id=TXN005001",
+    "settlement_batch_ids": [
+      "STL00022"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00023",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000023"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00023"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00024",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000024"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00024"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00025",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000025"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00025"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00026",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000026"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00026"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00027",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000027"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00027"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00028",
+    "defect_classes": [
+      "CLEAN",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000028"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00028"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00029",
+    "defect_classes": [
+      "CLEAN",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000029"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00029"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00030",
+    "defect_classes": [
+      "CLEAN",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000030"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00030"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00031",
+    "defect_classes": [
+      "CLEAN",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000031"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00031"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00032",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000032"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00032"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00033",
+    "defect_classes": [
+      "CLEAN",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000033"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00033"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00034",
+    "defect_classes": [
+      "CLEAN",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000034"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00034"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00035",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000035"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00035"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00036",
+    "defect_classes": [
+      "CLEAN",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000036"
+    ],
+    "notes": "decoy_txn_id=TXN005002",
+    "settlement_batch_ids": [
+      "STL00036"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00037",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000037"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00037"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00038",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000038"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00038"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00039",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000039"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00039"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00040",
+    "defect_classes": [
+      "CLEAN"
+    ],
+    "matched_txn_ids": [
+      "TXN000040"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00040"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00041",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000041"
+    ],
+    "notes": "drift_paise=-4",
+    "settlement_batch_ids": [
+      "STL00041"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00042",
+    "defect_classes": [
+      "FEE_DRIFT",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000042"
+    ],
+    "notes": "drift_paise=-2",
+    "settlement_batch_ids": [
+      "STL00042"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00043",
+    "defect_classes": [
+      "FEE_DRIFT",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000043"
+    ],
+    "notes": "drift_paise=-2",
+    "settlement_batch_ids": [
+      "STL00043"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00044",
+    "defect_classes": [
+      "FEE_DRIFT",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000044"
+    ],
+    "notes": "drift_paise=3 decoy_txn_id=TXN005003",
+    "settlement_batch_ids": [
+      "STL00044"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00045",
+    "defect_classes": [
+      "FEE_DRIFT",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000045"
+    ],
+    "notes": "drift_paise=-1",
+    "settlement_batch_ids": [
+      "STL00045"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00046",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000046"
+    ],
+    "notes": "drift_paise=-5",
+    "settlement_batch_ids": [
+      "STL00046"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00047",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000047"
+    ],
+    "notes": "drift_paise=5",
+    "settlement_batch_ids": [
+      "STL00047"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00048",
+    "defect_classes": [
+      "FEE_DRIFT",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000048"
+    ],
+    "notes": "drift_paise=-3",
+    "settlement_batch_ids": [
+      "STL00048"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00049",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000049"
+    ],
+    "notes": "drift_paise=-1",
+    "settlement_batch_ids": [
+      "STL00049"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00050",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000050"
+    ],
+    "notes": "drift_paise=-1",
+    "settlement_batch_ids": [
+      "STL00050"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00051",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000051"
+    ],
+    "notes": "drift_paise=-1",
+    "settlement_batch_ids": [
+      "STL00051"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00052",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000052"
+    ],
+    "notes": "drift_paise=-1",
+    "settlement_batch_ids": [
+      "STL00052"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00053",
+    "defect_classes": [
+      "FEE_DRIFT",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000053"
+    ],
+    "notes": "drift_paise=-4",
+    "settlement_batch_ids": [
+      "STL00053"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00054",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000054"
+    ],
+    "notes": "drift_paise=-3",
+    "settlement_batch_ids": [
+      "STL00054"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00055",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000055"
+    ],
+    "notes": "drift_paise=-1",
+    "settlement_batch_ids": [
+      "STL00055"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00056",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000056"
+    ],
+    "notes": "drift_paise=-5",
+    "settlement_batch_ids": [
+      "STL00056"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00057",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000057"
+    ],
+    "notes": "drift_paise=-4",
+    "settlement_batch_ids": [
+      "STL00057"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00058",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000058"
+    ],
+    "notes": "drift_paise=1",
+    "settlement_batch_ids": [
+      "STL00058"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00059",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000059"
+    ],
+    "notes": "drift_paise=1",
+    "settlement_batch_ids": [
+      "STL00059"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00060",
+    "defect_classes": [
+      "FEE_DRIFT"
+    ],
+    "matched_txn_ids": [
+      "TXN000060"
+    ],
+    "notes": "drift_paise=-4",
+    "settlement_batch_ids": [
+      "STL00060"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00061",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000061",
+      "TXN000062",
+      "TXN000063"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00061"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00062",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000064",
+      "TXN000065",
+      "TXN000066"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00062"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00063",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000067",
+      "TXN000068",
+      "TXN000069"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00063"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00064",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000070",
+      "TXN000071",
+      "TXN000072",
+      "TXN000073",
+      "TXN000074",
+      "TXN000075",
+      "TXN000076"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00064"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00065",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000077",
+      "TXN000078",
+      "TXN000079",
+      "TXN000080"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00065"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00066",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000081",
+      "TXN000082",
+      "TXN000083",
+      "TXN000084",
+      "TXN000085",
+      "TXN000086",
+      "TXN000087",
+      "TXN000088"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00066"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00067",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000089",
+      "TXN000090",
+      "TXN000091",
+      "TXN000092",
+      "TXN000093",
+      "TXN000094"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00067"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00068",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000095",
+      "TXN000096",
+      "TXN000097",
+      "TXN000098",
+      "TXN000099",
+      "TXN000100"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00068"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00069",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000101",
+      "TXN000102",
+      "TXN000103",
+      "TXN000104",
+      "TXN000105",
+      "TXN000106",
+      "TXN000107",
+      "TXN000108"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00069"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00070",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000109",
+      "TXN000110",
+      "TXN000111"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00070"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00071",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000112",
+      "TXN000113",
+      "TXN000114"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00071"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00072",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000115",
+      "TXN000116",
+      "TXN000117",
+      "TXN000118",
+      "TXN000119",
+      "TXN000120"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00072"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00073",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000121",
+      "TXN000122",
+      "TXN000123",
+      "TXN000124",
+      "TXN000125",
+      "TXN000126"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00073"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00074",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000127",
+      "TXN000128",
+      "TXN000129",
+      "TXN000130",
+      "TXN000131"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00074"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00075",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000132",
+      "TXN000133",
+      "TXN000134",
+      "TXN000135",
+      "TXN000136"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00075"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00076",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000137",
+      "TXN000138",
+      "TXN000139",
+      "TXN000140",
+      "TXN000141"
+    ],
+    "notes": "decoy_txn_id=TXN005004",
+    "settlement_batch_ids": [
+      "STL00076"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00077",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000142",
+      "TXN000143",
+      "TXN000144",
+      "TXN000145"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00077"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00078",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000146",
+      "TXN000147",
+      "TXN000148"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00078"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00079",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000149",
+      "TXN000150",
+      "TXN000151",
+      "TXN000152",
+      "TXN000153"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00079"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00080",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000154",
+      "TXN000155",
+      "TXN000156",
+      "TXN000157"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00080"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00081",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000158",
+      "TXN000159",
+      "TXN000160"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00081"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00082",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000161"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00081"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00083",
+    "defect_classes": [
+      "SPLIT_1N",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000162",
+      "TXN000163",
+      "TXN000164",
+      "TXN000165"
+    ],
+    "notes": "decoy_txn_id=TXN005005",
+    "settlement_batch_ids": [
+      "STL00082"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00084",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000166",
+      "TXN000167"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00082"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00085",
+    "defect_classes": [
+      "SPLIT_1N",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000168",
+      "TXN000169"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00083"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00086",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000170",
+      "TXN000171"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00083"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00087",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000172",
+      "TXN000173"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00084"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00088",
+    "defect_classes": [
+      "SPLIT_1N",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000174",
+      "TXN000175"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00084"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00089",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000176"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00085"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00090",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000177",
+      "TXN000178",
+      "TXN000179"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00085"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00091",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000180"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00086"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00092",
+    "defect_classes": [
+      "SPLIT_1N",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000181",
+      "TXN000182"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00086"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00093",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000183"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00087"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00094",
+    "defect_classes": [
+      "SPLIT_1N",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000184",
+      "TXN000185",
+      "TXN000186",
+      "TXN000187",
+      "TXN000188"
+    ],
+    "notes": "decoy_txn_id=TXN005006",
+    "settlement_batch_ids": [
+      "STL00087"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00095",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000189",
+      "TXN000190",
+      "TXN000191",
+      "TXN000192",
+      "TXN000193"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00088"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00096",
+    "defect_classes": [
+      "SPLIT_1N",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000194"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00088"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00097",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000195",
+      "TXN000196",
+      "TXN000197",
+      "TXN000198"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00089"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00098",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000199"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00089"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00099",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000200",
+      "TXN000201"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00090"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00100",
+    "defect_classes": [
+      "SPLIT_1N",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000202",
+      "TXN000203",
+      "TXN000204"
+    ],
+    "notes": "decoy_txn_id=TXN005007",
+    "settlement_batch_ids": [
+      "STL00090"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00101",
+    "defect_classes": [
+      "SPLIT_1N",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000205"
+    ],
+    "notes": "decoy_txn_id=TXN005008",
+    "settlement_batch_ids": [
+      "STL00091"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00102",
+    "defect_classes": [
+      "SPLIT_1N",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000206"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00091"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00103",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000207",
+      "TXN000208"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00092"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00104",
+    "defect_classes": [
+      "SPLIT_1N",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000209",
+      "TXN000210"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00092"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00105",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000211",
+      "TXN000212"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00093"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00106",
+    "defect_classes": [
+      "SPLIT_1N",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000213"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00093"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00107",
+    "defect_classes": [
+      "SPLIT_1N",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000214"
+    ],
+    "notes": "decoy_txn_id=TXN005009",
+    "settlement_batch_ids": [
+      "STL00094"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00108",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000215"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00094"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00109",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000216",
+      "TXN000217"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00095"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00110",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000218",
+      "TXN000219",
+      "TXN000220"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00095"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00111",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000221",
+      "TXN000222"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00096"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00112",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000223"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00096"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00113",
+    "defect_classes": [
+      "SPLIT_1N",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000224"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00097"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00114",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000225"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00097"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00115",
+    "defect_classes": [
+      "SPLIT_1N",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000226"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00098"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00116",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000227",
+      "TXN000228"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00098"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00117",
+    "defect_classes": [
+      "SPLIT_1N",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000229",
+      "TXN000230"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00099"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00118",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000231",
+      "TXN000232",
+      "TXN000233"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00099"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00119",
+    "defect_classes": [
+      "SPLIT_1N",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000234",
+      "TXN000235"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00100"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00120",
+    "defect_classes": [
+      "SPLIT_1N"
+    ],
+    "matched_txn_ids": [
+      "TXN000236"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00100"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00121",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000237",
+      "TXN000238",
+      "TXN000239",
+      "TXN000240",
+      "TXN000241",
+      "TXN000242"
+    ],
+    "notes": "refund_on=TXN000241",
+    "settlement_batch_ids": [
+      "STL00101"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00122",
+    "defect_classes": [
+      "REFUND_NET",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000243",
+      "TXN000244",
+      "TXN000245",
+      "TXN000246",
+      "TXN000247"
+    ],
+    "notes": "refund_on=TXN000247",
+    "settlement_batch_ids": [
+      "STL00102"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00123",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000248",
+      "TXN000249",
+      "TXN000250",
+      "TXN000251",
+      "TXN000252"
+    ],
+    "notes": "refund_on=TXN000252",
+    "settlement_batch_ids": [
+      "STL00103"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00124",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000253",
+      "TXN000254",
+      "TXN000255"
+    ],
+    "notes": "refund_on=TXN000254",
+    "settlement_batch_ids": [
+      "STL00104"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00125",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000256",
+      "TXN000257",
+      "TXN000258",
+      "TXN000259",
+      "TXN000260",
+      "TXN000261"
+    ],
+    "notes": "refund_on=TXN000258",
+    "settlement_batch_ids": [
+      "STL00105"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00126",
+    "defect_classes": [
+      "REFUND_NET",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000262",
+      "TXN000263",
+      "TXN000264",
+      "TXN000265"
+    ],
+    "notes": "refund_on=TXN000265",
+    "settlement_batch_ids": [
+      "STL00106"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00127",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000266",
+      "TXN000267",
+      "TXN000268",
+      "TXN000269"
+    ],
+    "notes": "refund_on=TXN000267",
+    "settlement_batch_ids": [
+      "STL00107"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00128",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000270",
+      "TXN000271",
+      "TXN000272",
+      "TXN000273",
+      "TXN000274"
+    ],
+    "notes": "refund_on=TXN000273",
+    "settlement_batch_ids": [
+      "STL00108"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00129",
+    "defect_classes": [
+      "REFUND_NET",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000275",
+      "TXN000276",
+      "TXN000277"
+    ],
+    "notes": "refund_on=TXN000277",
+    "settlement_batch_ids": [
+      "STL00109"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00130",
+    "defect_classes": [
+      "REFUND_NET",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000278",
+      "TXN000279",
+      "TXN000280",
+      "TXN000281",
+      "TXN000282",
+      "TXN000283"
+    ],
+    "notes": "refund_on=TXN000278",
+    "settlement_batch_ids": [
+      "STL00110"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00131",
+    "defect_classes": [
+      "REFUND_NET",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000284",
+      "TXN000285",
+      "TXN000286",
+      "TXN000287",
+      "TXN000288",
+      "TXN000289"
+    ],
+    "notes": "refund_on=TXN000287",
+    "settlement_batch_ids": [
+      "STL00111"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00132",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000290",
+      "TXN000291",
+      "TXN000292",
+      "TXN000293",
+      "TXN000294",
+      "TXN000295"
+    ],
+    "notes": "refund_on=TXN000295",
+    "settlement_batch_ids": [
+      "STL00112"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00133",
+    "defect_classes": [
+      "REFUND_NET",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000296",
+      "TXN000297",
+      "TXN000298"
+    ],
+    "notes": "refund_on=TXN000298",
+    "settlement_batch_ids": [
+      "STL00113"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00134",
+    "defect_classes": [
+      "REFUND_NET",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000299",
+      "TXN000300",
+      "TXN000301",
+      "TXN000302",
+      "TXN000303"
+    ],
+    "notes": "refund_on=TXN000300",
+    "settlement_batch_ids": [
+      "STL00114"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00135",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000304",
+      "TXN000305",
+      "TXN000306",
+      "TXN000307",
+      "TXN000308"
+    ],
+    "notes": "refund_on=TXN000306",
+    "settlement_batch_ids": [
+      "STL00115"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00136",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000309",
+      "TXN000310"
+    ],
+    "notes": "refund_on=TXN000309",
+    "settlement_batch_ids": [
+      "STL00116"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00137",
+    "defect_classes": [
+      "REFUND_NET",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000311",
+      "TXN000312",
+      "TXN000313",
+      "TXN000314",
+      "TXN000315",
+      "TXN000316"
+    ],
+    "notes": "refund_on=TXN000311",
+    "settlement_batch_ids": [
+      "STL00117"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00138",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000317",
+      "TXN000318",
+      "TXN000319",
+      "TXN000320",
+      "TXN000321"
+    ],
+    "notes": "refund_on=TXN000320",
+    "settlement_batch_ids": [
+      "STL00118"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00139",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000322",
+      "TXN000323",
+      "TXN000324",
+      "TXN000325",
+      "TXN000326",
+      "TXN000327"
+    ],
+    "notes": "refund_on=TXN000324",
+    "settlement_batch_ids": [
+      "STL00119"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00140",
+    "defect_classes": [
+      "REFUND_NET"
+    ],
+    "matched_txn_ids": [
+      "TXN000328",
+      "TXN000329",
+      "TXN000330",
+      "TXN000331"
+    ],
+    "notes": "refund_on=TXN000328",
+    "settlement_batch_ids": [
+      "STL00120"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00141",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000332",
+      "TXN000333",
+      "TXN000334"
+    ],
+    "notes": "chargeback_on=TXN000333",
+    "settlement_batch_ids": [
+      "STL00121"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00142",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000335",
+      "TXN000336"
+    ],
+    "notes": "chargeback_on=TXN000336",
+    "settlement_batch_ids": [
+      "STL00122"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00143",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000337",
+      "TXN000338"
+    ],
+    "notes": "chargeback_on=TXN000338",
+    "settlement_batch_ids": [
+      "STL00123"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00144",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000339",
+      "TXN000340",
+      "TXN000341",
+      "TXN000342",
+      "TXN000343"
+    ],
+    "notes": "chargeback_on=TXN000341",
+    "settlement_batch_ids": [
+      "STL00124"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00145",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000344",
+      "TXN000345",
+      "TXN000346",
+      "TXN000347"
+    ],
+    "notes": "chargeback_on=TXN000347",
+    "settlement_batch_ids": [
+      "STL00125"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00146",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000348",
+      "TXN000349"
+    ],
+    "notes": "chargeback_on=TXN000349",
+    "settlement_batch_ids": [
+      "STL00126"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00147",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000350",
+      "TXN000351",
+      "TXN000352",
+      "TXN000353",
+      "TXN000354",
+      "TXN000355"
+    ],
+    "notes": "chargeback_on=TXN000351",
+    "settlement_batch_ids": [
+      "STL00127"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00148",
+    "defect_classes": [
+      "CHARGEBACK",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000356",
+      "TXN000357",
+      "TXN000358",
+      "TXN000359"
+    ],
+    "notes": "chargeback_on=TXN000357",
+    "settlement_batch_ids": [
+      "STL00128"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00149",
+    "defect_classes": [
+      "CHARGEBACK",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000360",
+      "TXN000361"
+    ],
+    "notes": "chargeback_on=TXN000361 decoy_txn_id=TXN005010",
+    "settlement_batch_ids": [
+      "STL00129"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00150",
+    "defect_classes": [
+      "CHARGEBACK",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000362",
+      "TXN000363"
+    ],
+    "notes": "chargeback_on=TXN000363 decoy_txn_id=TXN005011",
+    "settlement_batch_ids": [
+      "STL00130"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00151",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000364",
+      "TXN000365",
+      "TXN000366"
+    ],
+    "notes": "chargeback_on=TXN000365",
+    "settlement_batch_ids": [
+      "STL00131"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00152",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000367",
+      "TXN000368",
+      "TXN000369",
+      "TXN000370",
+      "TXN000371"
+    ],
+    "notes": "chargeback_on=TXN000371",
+    "settlement_batch_ids": [
+      "STL00132"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00153",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000372",
+      "TXN000373",
+      "TXN000374"
+    ],
+    "notes": "chargeback_on=TXN000374",
+    "settlement_batch_ids": [
+      "STL00133"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00154",
+    "defect_classes": [
+      "CHARGEBACK",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000375",
+      "TXN000376"
+    ],
+    "notes": "chargeback_on=TXN000375",
+    "settlement_batch_ids": [
+      "STL00134"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00155",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000377",
+      "TXN000378"
+    ],
+    "notes": "chargeback_on=TXN000378",
+    "settlement_batch_ids": [
+      "STL00135"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00156",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000379",
+      "TXN000380",
+      "TXN000381",
+      "TXN000382"
+    ],
+    "notes": "chargeback_on=TXN000380",
+    "settlement_batch_ids": [
+      "STL00136"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00157",
+    "defect_classes": [
+      "CHARGEBACK",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000383",
+      "TXN000384",
+      "TXN000385"
+    ],
+    "notes": "chargeback_on=TXN000384",
+    "settlement_batch_ids": [
+      "STL00137"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00158",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000386",
+      "TXN000387",
+      "TXN000388"
+    ],
+    "notes": "chargeback_on=TXN000386",
+    "settlement_batch_ids": [
+      "STL00138"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00159",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000389",
+      "TXN000390",
+      "TXN000391",
+      "TXN000392",
+      "TXN000393"
+    ],
+    "notes": "chargeback_on=TXN000389",
+    "settlement_batch_ids": [
+      "STL00139"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00160",
+    "defect_classes": [
+      "CHARGEBACK"
+    ],
+    "matched_txn_ids": [
+      "TXN000394",
+      "TXN000395",
+      "TXN000396"
+    ],
+    "notes": "chargeback_on=TXN000394",
+    "settlement_batch_ids": [
+      "STL00140"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00161",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000397",
+      "TXN000398",
+      "TXN000399",
+      "TXN000400",
+      "TXN000401"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00141"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00162",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000402",
+      "TXN000403",
+      "TXN000404",
+      "TXN000405"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00142"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00163",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000406",
+      "TXN000407"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00143"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00164",
+    "defect_classes": [
+      "MONTH_CROSS",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000408",
+      "TXN000409",
+      "TXN000410",
+      "TXN000411",
+      "TXN000412",
+      "TXN000413"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00144"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00165",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000414",
+      "TXN000415"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00145"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00166",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000416",
+      "TXN000417",
+      "TXN000418"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00146"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00167",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000419",
+      "TXN000420",
+      "TXN000421",
+      "TXN000422",
+      "TXN000423",
+      "TXN000424"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00147"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00168",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000425",
+      "TXN000426",
+      "TXN000427"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00148"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00169",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000428",
+      "TXN000429",
+      "TXN000430",
+      "TXN000431",
+      "TXN000432"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00149"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00170",
+    "defect_classes": [
+      "MONTH_CROSS",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN000433",
+      "TXN000434",
+      "TXN000435",
+      "TXN000436"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00150"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00171",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000437",
+      "TXN000438",
+      "TXN000439",
+      "TXN000440"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00151"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00172",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000441",
+      "TXN000442"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00152"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00173",
+    "defect_classes": [
+      "MONTH_CROSS",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000443",
+      "TXN000444",
+      "TXN000445",
+      "TXN000446",
+      "TXN000447"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00153"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00174",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000448",
+      "TXN000449",
+      "TXN000450",
+      "TXN000451",
+      "TXN000452",
+      "TXN000453"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00154"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00175",
+    "defect_classes": [
+      "MONTH_CROSS",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN000454",
+      "TXN000455",
+      "TXN000456",
+      "TXN000457"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00155"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00176",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000458",
+      "TXN000459",
+      "TXN000460",
+      "TXN000461",
+      "TXN000462",
+      "TXN000463"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00156"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00177",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000464",
+      "TXN000465",
+      "TXN000466"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00157"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00178",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000467",
+      "TXN000468",
+      "TXN000469",
+      "TXN000470",
+      "TXN000471",
+      "TXN000472"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00158"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00179",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000473",
+      "TXN000474",
+      "TXN000475",
+      "TXN000476"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00159"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00180",
+    "defect_classes": [
+      "MONTH_CROSS"
+    ],
+    "matched_txn_ids": [
+      "TXN000477",
+      "TXN000478",
+      "TXN000479",
+      "TXN000480",
+      "TXN000481"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00160"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00181",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00182",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00183",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00184",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00185",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00186",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00187",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00188",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00189",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00190",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00191",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00192",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00193",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00194",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00195",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00196",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00197",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00198",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00199",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00200",
+    "defect_classes": [
+      "OUT_OF_SCOPE"
+    ],
+    "matched_txn_ids": [],
+    "notes": "",
+    "settlement_batch_ids": []
+  },
+  {
+    "bank_line_id": "BANK00201",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000482",
+      "TXN000483",
+      "TXN000484",
+      "TXN000485",
+      "TXN000486",
+      "TXN000487",
+      "TXN000488",
+      "TXN000489",
+      "TXN000490",
+      "TXN000491",
+      "TXN000492",
+      "TXN000493",
+      "TXN000494",
+      "TXN000495",
+      "TXN000496",
+      "TXN000497",
+      "TXN000498",
+      "TXN000499",
+      "TXN000500",
+      "TXN000501",
+      "TXN000502",
+      "TXN000503",
+      "TXN000504",
+      "TXN000505",
+      "TXN000506",
+      "TXN000507",
+      "TXN000508",
+      "TXN000509",
+      "TXN000510",
+      "TXN000511",
+      "TXN000512",
+      "TXN000513",
+      "TXN000514",
+      "TXN000515",
+      "TXN000516",
+      "TXN000517",
+      "TXN000518",
+      "TXN000519",
+      "TXN000520",
+      "TXN000521",
+      "TXN000522",
+      "TXN000523",
+      "TXN000524",
+      "TXN000525",
+      "TXN000526",
+      "TXN000527",
+      "TXN000528",
+      "TXN000529",
+      "TXN000530",
+      "TXN000531",
+      "TXN000532",
+      "TXN000533",
+      "TXN000534",
+      "TXN000535",
+      "TXN000536",
+      "TXN000537",
+      "TXN000538",
+      "TXN000539",
+      "TXN000540",
+      "TXN000541",
+      "TXN000542",
+      "TXN000543",
+      "TXN000544",
+      "TXN000545",
+      "TXN000546",
+      "TXN000547",
+      "TXN000548",
+      "TXN000549",
+      "TXN000550"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00161"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00202",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000551",
+      "TXN000552",
+      "TXN000553",
+      "TXN000554",
+      "TXN000555",
+      "TXN000556",
+      "TXN000557",
+      "TXN000558",
+      "TXN000559",
+      "TXN000560",
+      "TXN000561",
+      "TXN000562",
+      "TXN000563",
+      "TXN000564",
+      "TXN000565",
+      "TXN000566",
+      "TXN000567",
+      "TXN000568",
+      "TXN000569",
+      "TXN000570",
+      "TXN000571",
+      "TXN000572",
+      "TXN000573",
+      "TXN000574",
+      "TXN000575",
+      "TXN000576",
+      "TXN000577",
+      "TXN000578",
+      "TXN000579",
+      "TXN000580",
+      "TXN000581"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00162"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00203",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000582",
+      "TXN000583",
+      "TXN000584",
+      "TXN000585",
+      "TXN000586",
+      "TXN000587",
+      "TXN000588",
+      "TXN000589",
+      "TXN000590",
+      "TXN000591",
+      "TXN000592",
+      "TXN000593",
+      "TXN000594",
+      "TXN000595",
+      "TXN000596",
+      "TXN000597",
+      "TXN000598",
+      "TXN000599",
+      "TXN000600",
+      "TXN000601",
+      "TXN000602",
+      "TXN000603",
+      "TXN000604",
+      "TXN000605",
+      "TXN000606",
+      "TXN000607",
+      "TXN000608",
+      "TXN000609",
+      "TXN000610",
+      "TXN000611",
+      "TXN000612",
+      "TXN000613",
+      "TXN000614",
+      "TXN000615",
+      "TXN000616",
+      "TXN000617",
+      "TXN000618",
+      "TXN000619",
+      "TXN000620",
+      "TXN000621",
+      "TXN000622",
+      "TXN000623",
+      "TXN000624",
+      "TXN000625",
+      "TXN000626",
+      "TXN000627",
+      "TXN000628",
+      "TXN000629",
+      "TXN000630",
+      "TXN000631",
+      "TXN000632",
+      "TXN000633",
+      "TXN000634",
+      "TXN000635"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00163"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00204",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000636",
+      "TXN000637",
+      "TXN000638",
+      "TXN000639",
+      "TXN000640",
+      "TXN000641",
+      "TXN000642",
+      "TXN000643",
+      "TXN000644",
+      "TXN000645",
+      "TXN000646",
+      "TXN000647",
+      "TXN000648",
+      "TXN000649",
+      "TXN000650",
+      "TXN000651",
+      "TXN000652",
+      "TXN000653",
+      "TXN000654",
+      "TXN000655",
+      "TXN000656",
+      "TXN000657",
+      "TXN000658",
+      "TXN000659",
+      "TXN000660",
+      "TXN000661",
+      "TXN000662",
+      "TXN000663",
+      "TXN000664",
+      "TXN000665",
+      "TXN000666"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00164"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00205",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN000667",
+      "TXN000668",
+      "TXN000669",
+      "TXN000670",
+      "TXN000671",
+      "TXN000672",
+      "TXN000673",
+      "TXN000674",
+      "TXN000675",
+      "TXN000676",
+      "TXN000677",
+      "TXN000678",
+      "TXN000679",
+      "TXN000680",
+      "TXN000681",
+      "TXN000682",
+      "TXN000683",
+      "TXN000684",
+      "TXN000685",
+      "TXN000686",
+      "TXN000687",
+      "TXN000688",
+      "TXN000689",
+      "TXN000690",
+      "TXN000691",
+      "TXN000692",
+      "TXN000693",
+      "TXN000694",
+      "TXN000695",
+      "TXN000696",
+      "TXN000697",
+      "TXN000698",
+      "TXN000699",
+      "TXN000700",
+      "TXN000701",
+      "TXN000702",
+      "TXN000703",
+      "TXN000704",
+      "TXN000705",
+      "TXN000706",
+      "TXN000707",
+      "TXN000708",
+      "TXN000709",
+      "TXN000710",
+      "TXN000711",
+      "TXN000712",
+      "TXN000713",
+      "TXN000714",
+      "TXN000715",
+      "TXN000716",
+      "TXN000717",
+      "TXN000718"
+    ],
+    "notes": "decoy_txn_id=TXN005012",
+    "settlement_batch_ids": [
+      "STL00165"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00206",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000719",
+      "TXN000720",
+      "TXN000721",
+      "TXN000722",
+      "TXN000723",
+      "TXN000724",
+      "TXN000725",
+      "TXN000726",
+      "TXN000727",
+      "TXN000728",
+      "TXN000729",
+      "TXN000730",
+      "TXN000731",
+      "TXN000732",
+      "TXN000733",
+      "TXN000734",
+      "TXN000735",
+      "TXN000736",
+      "TXN000737",
+      "TXN000738",
+      "TXN000739",
+      "TXN000740",
+      "TXN000741",
+      "TXN000742",
+      "TXN000743",
+      "TXN000744",
+      "TXN000745",
+      "TXN000746",
+      "TXN000747",
+      "TXN000748",
+      "TXN000749",
+      "TXN000750",
+      "TXN000751",
+      "TXN000752",
+      "TXN000753",
+      "TXN000754",
+      "TXN000755",
+      "TXN000756",
+      "TXN000757",
+      "TXN000758",
+      "TXN000759",
+      "TXN000760",
+      "TXN000761",
+      "TXN000762",
+      "TXN000763",
+      "TXN000764",
+      "TXN000765",
+      "TXN000766",
+      "TXN000767",
+      "TXN000768",
+      "TXN000769",
+      "TXN000770",
+      "TXN000771",
+      "TXN000772",
+      "TXN000773",
+      "TXN000774",
+      "TXN000775",
+      "TXN000776",
+      "TXN000777",
+      "TXN000778",
+      "TXN000779",
+      "TXN000780",
+      "TXN000781",
+      "TXN000782",
+      "TXN000783",
+      "TXN000784",
+      "TXN000785",
+      "TXN000786",
+      "TXN000787",
+      "TXN000788",
+      "TXN000789"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00166"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00207",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000790",
+      "TXN000791",
+      "TXN000792",
+      "TXN000793",
+      "TXN000794",
+      "TXN000795",
+      "TXN000796",
+      "TXN000797",
+      "TXN000798",
+      "TXN000799",
+      "TXN000800",
+      "TXN000801",
+      "TXN000802",
+      "TXN000803",
+      "TXN000804",
+      "TXN000805",
+      "TXN000806",
+      "TXN000807",
+      "TXN000808",
+      "TXN000809",
+      "TXN000810",
+      "TXN000811",
+      "TXN000812",
+      "TXN000813",
+      "TXN000814",
+      "TXN000815",
+      "TXN000816",
+      "TXN000817",
+      "TXN000818",
+      "TXN000819",
+      "TXN000820",
+      "TXN000821",
+      "TXN000822",
+      "TXN000823",
+      "TXN000824",
+      "TXN000825",
+      "TXN000826",
+      "TXN000827",
+      "TXN000828",
+      "TXN000829",
+      "TXN000830",
+      "TXN000831",
+      "TXN000832",
+      "TXN000833",
+      "TXN000834",
+      "TXN000835",
+      "TXN000836",
+      "TXN000837",
+      "TXN000838",
+      "TXN000839",
+      "TXN000840",
+      "TXN000841",
+      "TXN000842",
+      "TXN000843",
+      "TXN000844",
+      "TXN000845",
+      "TXN000846",
+      "TXN000847",
+      "TXN000848",
+      "TXN000849",
+      "TXN000850",
+      "TXN000851",
+      "TXN000852",
+      "TXN000853",
+      "TXN000854",
+      "TXN000855",
+      "TXN000856",
+      "TXN000857",
+      "TXN000858"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00167"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00208",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN000859",
+      "TXN000860",
+      "TXN000861",
+      "TXN000862",
+      "TXN000863",
+      "TXN000864",
+      "TXN000865",
+      "TXN000866",
+      "TXN000867",
+      "TXN000868",
+      "TXN000869",
+      "TXN000870",
+      "TXN000871",
+      "TXN000872",
+      "TXN000873",
+      "TXN000874",
+      "TXN000875",
+      "TXN000876",
+      "TXN000877",
+      "TXN000878",
+      "TXN000879",
+      "TXN000880",
+      "TXN000881",
+      "TXN000882",
+      "TXN000883",
+      "TXN000884",
+      "TXN000885",
+      "TXN000886",
+      "TXN000887",
+      "TXN000888",
+      "TXN000889",
+      "TXN000890",
+      "TXN000891",
+      "TXN000892",
+      "TXN000893",
+      "TXN000894",
+      "TXN000895",
+      "TXN000896",
+      "TXN000897",
+      "TXN000898",
+      "TXN000899",
+      "TXN000900",
+      "TXN000901",
+      "TXN000902",
+      "TXN000903",
+      "TXN000904",
+      "TXN000905",
+      "TXN000906",
+      "TXN000907",
+      "TXN000908",
+      "TXN000909",
+      "TXN000910",
+      "TXN000911",
+      "TXN000912",
+      "TXN000913",
+      "TXN000914",
+      "TXN000915",
+      "TXN000916",
+      "TXN000917",
+      "TXN000918",
+      "TXN000919",
+      "TXN000920",
+      "TXN000921",
+      "TXN000922",
+      "TXN000923",
+      "TXN000924",
+      "TXN000925"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00168"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00209",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000926",
+      "TXN000927",
+      "TXN000928",
+      "TXN000929",
+      "TXN000930",
+      "TXN000931",
+      "TXN000932",
+      "TXN000933",
+      "TXN000934",
+      "TXN000935",
+      "TXN000936",
+      "TXN000937",
+      "TXN000938",
+      "TXN000939",
+      "TXN000940",
+      "TXN000941",
+      "TXN000942",
+      "TXN000943",
+      "TXN000944",
+      "TXN000945",
+      "TXN000946",
+      "TXN000947",
+      "TXN000948",
+      "TXN000949",
+      "TXN000950",
+      "TXN000951",
+      "TXN000952",
+      "TXN000953",
+      "TXN000954",
+      "TXN000955",
+      "TXN000956",
+      "TXN000957",
+      "TXN000958",
+      "TXN000959",
+      "TXN000960",
+      "TXN000961",
+      "TXN000962",
+      "TXN000963",
+      "TXN000964",
+      "TXN000965",
+      "TXN000966",
+      "TXN000967",
+      "TXN000968",
+      "TXN000969",
+      "TXN000970",
+      "TXN000971",
+      "TXN000972",
+      "TXN000973"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00169"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00210",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN000974",
+      "TXN000975",
+      "TXN000976",
+      "TXN000977",
+      "TXN000978",
+      "TXN000979",
+      "TXN000980",
+      "TXN000981",
+      "TXN000982",
+      "TXN000983",
+      "TXN000984",
+      "TXN000985",
+      "TXN000986",
+      "TXN000987",
+      "TXN000988",
+      "TXN000989",
+      "TXN000990",
+      "TXN000991",
+      "TXN000992",
+      "TXN000993",
+      "TXN000994",
+      "TXN000995",
+      "TXN000996",
+      "TXN000997",
+      "TXN000998",
+      "TXN000999",
+      "TXN001000"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00170"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00211",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001001",
+      "TXN001002",
+      "TXN001003",
+      "TXN001004",
+      "TXN001005",
+      "TXN001006",
+      "TXN001007",
+      "TXN001008",
+      "TXN001009",
+      "TXN001010",
+      "TXN001011",
+      "TXN001012",
+      "TXN001013",
+      "TXN001014",
+      "TXN001015",
+      "TXN001016",
+      "TXN001017",
+      "TXN001018",
+      "TXN001019",
+      "TXN001020",
+      "TXN001021",
+      "TXN001022",
+      "TXN001023",
+      "TXN001024",
+      "TXN001025",
+      "TXN001026",
+      "TXN001027",
+      "TXN001028",
+      "TXN001029",
+      "TXN001030",
+      "TXN001031",
+      "TXN001032",
+      "TXN001033",
+      "TXN001034",
+      "TXN001035",
+      "TXN001036",
+      "TXN001037",
+      "TXN001038",
+      "TXN001039",
+      "TXN001040",
+      "TXN001041",
+      "TXN001042",
+      "TXN001043",
+      "TXN001044",
+      "TXN001045",
+      "TXN001046",
+      "TXN001047",
+      "TXN001048",
+      "TXN001049",
+      "TXN001050",
+      "TXN001051",
+      "TXN001052",
+      "TXN001053",
+      "TXN001054",
+      "TXN001055",
+      "TXN001056",
+      "TXN001057",
+      "TXN001058",
+      "TXN001059",
+      "TXN001060",
+      "TXN001061",
+      "TXN001062",
+      "TXN001063",
+      "TXN001064",
+      "TXN001065",
+      "TXN001066",
+      "TXN001067",
+      "TXN001068",
+      "TXN001069",
+      "TXN001070",
+      "TXN001071",
+      "TXN001072",
+      "TXN001073",
+      "TXN001074"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00171"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00212",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN001075",
+      "TXN001076",
+      "TXN001077",
+      "TXN001078",
+      "TXN001079",
+      "TXN001080",
+      "TXN001081",
+      "TXN001082",
+      "TXN001083",
+      "TXN001084",
+      "TXN001085",
+      "TXN001086",
+      "TXN001087",
+      "TXN001088",
+      "TXN001089",
+      "TXN001090",
+      "TXN001091",
+      "TXN001092",
+      "TXN001093",
+      "TXN001094",
+      "TXN001095",
+      "TXN001096",
+      "TXN001097",
+      "TXN001098",
+      "TXN001099",
+      "TXN001100",
+      "TXN001101",
+      "TXN001102",
+      "TXN001103",
+      "TXN001104",
+      "TXN001105",
+      "TXN001106",
+      "TXN001107",
+      "TXN001108",
+      "TXN001109",
+      "TXN001110",
+      "TXN001111",
+      "TXN001112",
+      "TXN001113",
+      "TXN001114",
+      "TXN001115",
+      "TXN001116",
+      "TXN001117",
+      "TXN001118",
+      "TXN001119",
+      "TXN001120",
+      "TXN001121",
+      "TXN001122",
+      "TXN001123",
+      "TXN001124",
+      "TXN001125",
+      "TXN001126",
+      "TXN001127",
+      "TXN001128",
+      "TXN001129",
+      "TXN001130",
+      "TXN001131",
+      "TXN001132",
+      "TXN001133",
+      "TXN001134",
+      "TXN001135",
+      "TXN001136",
+      "TXN001137",
+      "TXN001138",
+      "TXN001139",
+      "TXN001140",
+      "TXN001141",
+      "TXN001142",
+      "TXN001143",
+      "TXN001144",
+      "TXN001145",
+      "TXN001146",
+      "TXN001147",
+      "TXN001148",
+      "TXN001149",
+      "TXN001150",
+      "TXN001151",
+      "TXN001152",
+      "TXN001153",
+      "TXN001154"
+    ],
+    "notes": "decoy_txn_id=TXN005013",
+    "settlement_batch_ids": [
+      "STL00172"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00213",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001155",
+      "TXN001156",
+      "TXN001157",
+      "TXN001158",
+      "TXN001159",
+      "TXN001160",
+      "TXN001161",
+      "TXN001162",
+      "TXN001163",
+      "TXN001164",
+      "TXN001165",
+      "TXN001166",
+      "TXN001167",
+      "TXN001168",
+      "TXN001169",
+      "TXN001170",
+      "TXN001171",
+      "TXN001172",
+      "TXN001173",
+      "TXN001174",
+      "TXN001175",
+      "TXN001176",
+      "TXN001177",
+      "TXN001178",
+      "TXN001179",
+      "TXN001180",
+      "TXN001181",
+      "TXN001182",
+      "TXN001183",
+      "TXN001184",
+      "TXN001185",
+      "TXN001186",
+      "TXN001187",
+      "TXN001188",
+      "TXN001189",
+      "TXN001190",
+      "TXN001191",
+      "TXN001192",
+      "TXN001193",
+      "TXN001194",
+      "TXN001195",
+      "TXN001196",
+      "TXN001197",
+      "TXN001198",
+      "TXN001199"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00173"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00214",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001200",
+      "TXN001201",
+      "TXN001202",
+      "TXN001203",
+      "TXN001204",
+      "TXN001205",
+      "TXN001206",
+      "TXN001207",
+      "TXN001208",
+      "TXN001209",
+      "TXN001210",
+      "TXN001211",
+      "TXN001212",
+      "TXN001213",
+      "TXN001214",
+      "TXN001215",
+      "TXN001216",
+      "TXN001217",
+      "TXN001218",
+      "TXN001219",
+      "TXN001220",
+      "TXN001221",
+      "TXN001222",
+      "TXN001223",
+      "TXN001224",
+      "TXN001225",
+      "TXN001226",
+      "TXN001227",
+      "TXN001228",
+      "TXN001229",
+      "TXN001230",
+      "TXN001231",
+      "TXN001232",
+      "TXN001233",
+      "TXN001234",
+      "TXN001235",
+      "TXN001236",
+      "TXN001237",
+      "TXN001238",
+      "TXN001239",
+      "TXN001240",
+      "TXN001241",
+      "TXN001242",
+      "TXN001243",
+      "TXN001244",
+      "TXN001245",
+      "TXN001246",
+      "TXN001247",
+      "TXN001248",
+      "TXN001249",
+      "TXN001250",
+      "TXN001251",
+      "TXN001252",
+      "TXN001253",
+      "TXN001254",
+      "TXN001255",
+      "TXN001256",
+      "TXN001257",
+      "TXN001258",
+      "TXN001259",
+      "TXN001260",
+      "TXN001261",
+      "TXN001262",
+      "TXN001263",
+      "TXN001264",
+      "TXN001265",
+      "TXN001266",
+      "TXN001267",
+      "TXN001268",
+      "TXN001269",
+      "TXN001270",
+      "TXN001271",
+      "TXN001272",
+      "TXN001273",
+      "TXN001274",
+      "TXN001275",
+      "TXN001276",
+      "TXN001277",
+      "TXN001278"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00174"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00215",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN001279",
+      "TXN001280",
+      "TXN001281",
+      "TXN001282",
+      "TXN001283",
+      "TXN001284",
+      "TXN001285",
+      "TXN001286",
+      "TXN001287",
+      "TXN001288",
+      "TXN001289",
+      "TXN001290",
+      "TXN001291",
+      "TXN001292",
+      "TXN001293",
+      "TXN001294",
+      "TXN001295",
+      "TXN001296",
+      "TXN001297",
+      "TXN001298",
+      "TXN001299",
+      "TXN001300",
+      "TXN001301",
+      "TXN001302",
+      "TXN001303",
+      "TXN001304",
+      "TXN001305",
+      "TXN001306"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00175"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00216",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001307",
+      "TXN001308",
+      "TXN001309",
+      "TXN001310",
+      "TXN001311",
+      "TXN001312",
+      "TXN001313",
+      "TXN001314",
+      "TXN001315",
+      "TXN001316",
+      "TXN001317",
+      "TXN001318",
+      "TXN001319",
+      "TXN001320",
+      "TXN001321",
+      "TXN001322",
+      "TXN001323",
+      "TXN001324",
+      "TXN001325",
+      "TXN001326",
+      "TXN001327",
+      "TXN001328",
+      "TXN001329",
+      "TXN001330",
+      "TXN001331",
+      "TXN001332",
+      "TXN001333",
+      "TXN001334",
+      "TXN001335",
+      "TXN001336",
+      "TXN001337",
+      "TXN001338",
+      "TXN001339",
+      "TXN001340",
+      "TXN001341",
+      "TXN001342",
+      "TXN001343",
+      "TXN001344",
+      "TXN001345",
+      "TXN001346",
+      "TXN001347",
+      "TXN001348",
+      "TXN001349",
+      "TXN001350",
+      "TXN001351",
+      "TXN001352",
+      "TXN001353",
+      "TXN001354",
+      "TXN001355",
+      "TXN001356",
+      "TXN001357",
+      "TXN001358",
+      "TXN001359",
+      "TXN001360",
+      "TXN001361",
+      "TXN001362",
+      "TXN001363",
+      "TXN001364"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00176"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00217",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001365",
+      "TXN001366",
+      "TXN001367",
+      "TXN001368",
+      "TXN001369",
+      "TXN001370",
+      "TXN001371",
+      "TXN001372",
+      "TXN001373",
+      "TXN001374",
+      "TXN001375",
+      "TXN001376",
+      "TXN001377",
+      "TXN001378",
+      "TXN001379",
+      "TXN001380",
+      "TXN001381",
+      "TXN001382",
+      "TXN001383",
+      "TXN001384",
+      "TXN001385",
+      "TXN001386",
+      "TXN001387",
+      "TXN001388",
+      "TXN001389",
+      "TXN001390",
+      "TXN001391",
+      "TXN001392",
+      "TXN001393",
+      "TXN001394",
+      "TXN001395",
+      "TXN001396",
+      "TXN001397",
+      "TXN001398",
+      "TXN001399",
+      "TXN001400",
+      "TXN001401",
+      "TXN001402",
+      "TXN001403"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00177"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00218",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001404",
+      "TXN001405",
+      "TXN001406",
+      "TXN001407",
+      "TXN001408",
+      "TXN001409",
+      "TXN001410",
+      "TXN001411",
+      "TXN001412",
+      "TXN001413",
+      "TXN001414",
+      "TXN001415",
+      "TXN001416",
+      "TXN001417",
+      "TXN001418",
+      "TXN001419",
+      "TXN001420",
+      "TXN001421",
+      "TXN001422",
+      "TXN001423"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00178"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00219",
+    "defect_classes": [
+      "BATCH_N1",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN001424",
+      "TXN001425",
+      "TXN001426",
+      "TXN001427",
+      "TXN001428",
+      "TXN001429",
+      "TXN001430",
+      "TXN001431",
+      "TXN001432",
+      "TXN001433",
+      "TXN001434",
+      "TXN001435",
+      "TXN001436",
+      "TXN001437",
+      "TXN001438",
+      "TXN001439",
+      "TXN001440",
+      "TXN001441",
+      "TXN001442",
+      "TXN001443",
+      "TXN001444",
+      "TXN001445",
+      "TXN001446",
+      "TXN001447",
+      "TXN001448",
+      "TXN001449",
+      "TXN001450",
+      "TXN001451",
+      "TXN001452"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00179"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00220",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN001453",
+      "TXN001454",
+      "TXN001455",
+      "TXN001456",
+      "TXN001457",
+      "TXN001458",
+      "TXN001459",
+      "TXN001460",
+      "TXN001461",
+      "TXN001462",
+      "TXN001463",
+      "TXN001464",
+      "TXN001465",
+      "TXN001466",
+      "TXN001467",
+      "TXN001468",
+      "TXN001469",
+      "TXN001470",
+      "TXN001471",
+      "TXN001472",
+      "TXN001473",
+      "TXN001474",
+      "TXN001475",
+      "TXN001476",
+      "TXN001477",
+      "TXN001478",
+      "TXN001479",
+      "TXN001480",
+      "TXN001481",
+      "TXN001482",
+      "TXN001483",
+      "TXN001484",
+      "TXN001485",
+      "TXN001486",
+      "TXN001487",
+      "TXN001488",
+      "TXN001489",
+      "TXN001490",
+      "TXN001491",
+      "TXN001492",
+      "TXN001493",
+      "TXN001494",
+      "TXN001495",
+      "TXN001496",
+      "TXN001497",
+      "TXN001498",
+      "TXN001499",
+      "TXN001500",
+      "TXN001501",
+      "TXN001502",
+      "TXN001503",
+      "TXN001504",
+      "TXN001505",
+      "TXN001506",
+      "TXN001507",
+      "TXN001508",
+      "TXN001509",
+      "TXN001510",
+      "TXN001511",
+      "TXN001512",
+      "TXN001513",
+      "TXN001514",
+      "TXN001515",
+      "TXN001516",
+      "TXN001517",
+      "TXN001518"
+    ],
+    "notes": "decoy_txn_id=TXN005014",
+    "settlement_batch_ids": [
+      "STL00180"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00221",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001519",
+      "TXN001520",
+      "TXN001521",
+      "TXN001522",
+      "TXN001523",
+      "TXN001524",
+      "TXN001525",
+      "TXN001526",
+      "TXN001527",
+      "TXN001528",
+      "TXN001529",
+      "TXN001530",
+      "TXN001531",
+      "TXN001532",
+      "TXN001533",
+      "TXN001534",
+      "TXN001535",
+      "TXN001536",
+      "TXN001537",
+      "TXN001538"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00181"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00222",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001539",
+      "TXN001540",
+      "TXN001541",
+      "TXN001542",
+      "TXN001543",
+      "TXN001544",
+      "TXN001545",
+      "TXN001546",
+      "TXN001547",
+      "TXN001548",
+      "TXN001549",
+      "TXN001550",
+      "TXN001551",
+      "TXN001552",
+      "TXN001553",
+      "TXN001554",
+      "TXN001555",
+      "TXN001556",
+      "TXN001557",
+      "TXN001558",
+      "TXN001559"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00182"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00223",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001560",
+      "TXN001561",
+      "TXN001562",
+      "TXN001563",
+      "TXN001564",
+      "TXN001565",
+      "TXN001566",
+      "TXN001567",
+      "TXN001568",
+      "TXN001569",
+      "TXN001570",
+      "TXN001571",
+      "TXN001572",
+      "TXN001573",
+      "TXN001574",
+      "TXN001575",
+      "TXN001576",
+      "TXN001577",
+      "TXN001578",
+      "TXN001579",
+      "TXN001580",
+      "TXN001581",
+      "TXN001582",
+      "TXN001583",
+      "TXN001584",
+      "TXN001585",
+      "TXN001586",
+      "TXN001587",
+      "TXN001588",
+      "TXN001589",
+      "TXN001590",
+      "TXN001591",
+      "TXN001592",
+      "TXN001593",
+      "TXN001594",
+      "TXN001595",
+      "TXN001596",
+      "TXN001597",
+      "TXN001598",
+      "TXN001599",
+      "TXN001600",
+      "TXN001601",
+      "TXN001602",
+      "TXN001603",
+      "TXN001604",
+      "TXN001605",
+      "TXN001606",
+      "TXN001607",
+      "TXN001608",
+      "TXN001609",
+      "TXN001610",
+      "TXN001611",
+      "TXN001612",
+      "TXN001613",
+      "TXN001614"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00183"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00224",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001615",
+      "TXN001616",
+      "TXN001617",
+      "TXN001618",
+      "TXN001619",
+      "TXN001620",
+      "TXN001621",
+      "TXN001622",
+      "TXN001623",
+      "TXN001624",
+      "TXN001625",
+      "TXN001626",
+      "TXN001627",
+      "TXN001628",
+      "TXN001629",
+      "TXN001630",
+      "TXN001631",
+      "TXN001632",
+      "TXN001633",
+      "TXN001634",
+      "TXN001635",
+      "TXN001636"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00184"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00225",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001637",
+      "TXN001638",
+      "TXN001639",
+      "TXN001640",
+      "TXN001641",
+      "TXN001642",
+      "TXN001643",
+      "TXN001644",
+      "TXN001645",
+      "TXN001646",
+      "TXN001647",
+      "TXN001648",
+      "TXN001649",
+      "TXN001650",
+      "TXN001651",
+      "TXN001652",
+      "TXN001653",
+      "TXN001654",
+      "TXN001655",
+      "TXN001656",
+      "TXN001657",
+      "TXN001658",
+      "TXN001659",
+      "TXN001660",
+      "TXN001661",
+      "TXN001662",
+      "TXN001663",
+      "TXN001664",
+      "TXN001665",
+      "TXN001666",
+      "TXN001667",
+      "TXN001668",
+      "TXN001669",
+      "TXN001670",
+      "TXN001671",
+      "TXN001672",
+      "TXN001673",
+      "TXN001674",
+      "TXN001675",
+      "TXN001676",
+      "TXN001677",
+      "TXN001678",
+      "TXN001679",
+      "TXN001680",
+      "TXN001681",
+      "TXN001682",
+      "TXN001683",
+      "TXN001684",
+      "TXN001685",
+      "TXN001686",
+      "TXN001687",
+      "TXN001688",
+      "TXN001689",
+      "TXN001690",
+      "TXN001691",
+      "TXN001692",
+      "TXN001693",
+      "TXN001694",
+      "TXN001695",
+      "TXN001696",
+      "TXN001697",
+      "TXN001698",
+      "TXN001699",
+      "TXN001700",
+      "TXN001701",
+      "TXN001702",
+      "TXN001703",
+      "TXN001704",
+      "TXN001705",
+      "TXN001706",
+      "TXN001707",
+      "TXN001708",
+      "TXN001709",
+      "TXN001710",
+      "TXN001711",
+      "TXN001712",
+      "TXN001713",
+      "TXN001714",
+      "TXN001715",
+      "TXN001716",
+      "TXN001717"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00185"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00226",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001718",
+      "TXN001719",
+      "TXN001720",
+      "TXN001721",
+      "TXN001722",
+      "TXN001723",
+      "TXN001724",
+      "TXN001725",
+      "TXN001726",
+      "TXN001727",
+      "TXN001728",
+      "TXN001729",
+      "TXN001730",
+      "TXN001731",
+      "TXN001732",
+      "TXN001733",
+      "TXN001734",
+      "TXN001735",
+      "TXN001736",
+      "TXN001737",
+      "TXN001738"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00186"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00227",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001739",
+      "TXN001740",
+      "TXN001741",
+      "TXN001742",
+      "TXN001743",
+      "TXN001744",
+      "TXN001745",
+      "TXN001746",
+      "TXN001747",
+      "TXN001748",
+      "TXN001749",
+      "TXN001750",
+      "TXN001751",
+      "TXN001752",
+      "TXN001753",
+      "TXN001754",
+      "TXN001755",
+      "TXN001756",
+      "TXN001757",
+      "TXN001758",
+      "TXN001759",
+      "TXN001760",
+      "TXN001761",
+      "TXN001762",
+      "TXN001763",
+      "TXN001764",
+      "TXN001765",
+      "TXN001766",
+      "TXN001767",
+      "TXN001768",
+      "TXN001769",
+      "TXN001770",
+      "TXN001771",
+      "TXN001772",
+      "TXN001773",
+      "TXN001774",
+      "TXN001775",
+      "TXN001776",
+      "TXN001777",
+      "TXN001778",
+      "TXN001779",
+      "TXN001780",
+      "TXN001781",
+      "TXN001782",
+      "TXN001783",
+      "TXN001784",
+      "TXN001785",
+      "TXN001786",
+      "TXN001787",
+      "TXN001788",
+      "TXN001789",
+      "TXN001790",
+      "TXN001791",
+      "TXN001792",
+      "TXN001793",
+      "TXN001794",
+      "TXN001795",
+      "TXN001796",
+      "TXN001797",
+      "TXN001798",
+      "TXN001799",
+      "TXN001800",
+      "TXN001801",
+      "TXN001802",
+      "TXN001803",
+      "TXN001804",
+      "TXN001805",
+      "TXN001806",
+      "TXN001807",
+      "TXN001808",
+      "TXN001809",
+      "TXN001810",
+      "TXN001811",
+      "TXN001812",
+      "TXN001813",
+      "TXN001814",
+      "TXN001815"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00187"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00228",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN001816",
+      "TXN001817",
+      "TXN001818",
+      "TXN001819",
+      "TXN001820",
+      "TXN001821",
+      "TXN001822",
+      "TXN001823",
+      "TXN001824",
+      "TXN001825",
+      "TXN001826",
+      "TXN001827",
+      "TXN001828",
+      "TXN001829",
+      "TXN001830",
+      "TXN001831",
+      "TXN001832",
+      "TXN001833",
+      "TXN001834",
+      "TXN001835"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00188"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00229",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN001836",
+      "TXN001837",
+      "TXN001838",
+      "TXN001839",
+      "TXN001840",
+      "TXN001841",
+      "TXN001842",
+      "TXN001843",
+      "TXN001844",
+      "TXN001845",
+      "TXN001846",
+      "TXN001847",
+      "TXN001848",
+      "TXN001849",
+      "TXN001850",
+      "TXN001851",
+      "TXN001852",
+      "TXN001853",
+      "TXN001854",
+      "TXN001855",
+      "TXN001856",
+      "TXN001857",
+      "TXN001858",
+      "TXN001859",
+      "TXN001860",
+      "TXN001861",
+      "TXN001862",
+      "TXN001863",
+      "TXN001864",
+      "TXN001865",
+      "TXN001866",
+      "TXN001867",
+      "TXN001868",
+      "TXN001869",
+      "TXN001870",
+      "TXN001871",
+      "TXN001872",
+      "TXN001873",
+      "TXN001874",
+      "TXN001875",
+      "TXN001876",
+      "TXN001877",
+      "TXN001878",
+      "TXN001879",
+      "TXN001880",
+      "TXN001881",
+      "TXN001882",
+      "TXN001883",
+      "TXN001884",
+      "TXN001885",
+      "TXN001886",
+      "TXN001887",
+      "TXN001888",
+      "TXN001889",
+      "TXN001890",
+      "TXN001891",
+      "TXN001892",
+      "TXN001893",
+      "TXN001894",
+      "TXN001895",
+      "TXN001896",
+      "TXN001897",
+      "TXN001898",
+      "TXN001899",
+      "TXN001900",
+      "TXN001901",
+      "TXN001902",
+      "TXN001903",
+      "TXN001904",
+      "TXN001905",
+      "TXN001906",
+      "TXN001907",
+      "TXN001908",
+      "TXN001909",
+      "TXN001910",
+      "TXN001911",
+      "TXN001912",
+      "TXN001913",
+      "TXN001914"
+    ],
+    "notes": "decoy_txn_id=TXN005015",
+    "settlement_batch_ids": [
+      "STL00189"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00230",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN001915",
+      "TXN001916",
+      "TXN001917",
+      "TXN001918",
+      "TXN001919",
+      "TXN001920",
+      "TXN001921",
+      "TXN001922",
+      "TXN001923",
+      "TXN001924",
+      "TXN001925",
+      "TXN001926",
+      "TXN001927",
+      "TXN001928",
+      "TXN001929",
+      "TXN001930",
+      "TXN001931",
+      "TXN001932",
+      "TXN001933",
+      "TXN001934",
+      "TXN001935",
+      "TXN001936",
+      "TXN001937",
+      "TXN001938",
+      "TXN001939",
+      "TXN001940",
+      "TXN001941",
+      "TXN001942",
+      "TXN001943",
+      "TXN001944",
+      "TXN001945",
+      "TXN001946",
+      "TXN001947",
+      "TXN001948",
+      "TXN001949",
+      "TXN001950",
+      "TXN001951",
+      "TXN001952",
+      "TXN001953",
+      "TXN001954",
+      "TXN001955",
+      "TXN001956",
+      "TXN001957",
+      "TXN001958",
+      "TXN001959",
+      "TXN001960",
+      "TXN001961",
+      "TXN001962",
+      "TXN001963",
+      "TXN001964",
+      "TXN001965",
+      "TXN001966",
+      "TXN001967",
+      "TXN001968",
+      "TXN001969",
+      "TXN001970",
+      "TXN001971",
+      "TXN001972",
+      "TXN001973",
+      "TXN001974",
+      "TXN001975",
+      "TXN001976",
+      "TXN001977"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00190"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00231",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN001978",
+      "TXN001979",
+      "TXN001980",
+      "TXN001981",
+      "TXN001982",
+      "TXN001983",
+      "TXN001984",
+      "TXN001985",
+      "TXN001986",
+      "TXN001987",
+      "TXN001988",
+      "TXN001989",
+      "TXN001990",
+      "TXN001991",
+      "TXN001992",
+      "TXN001993",
+      "TXN001994",
+      "TXN001995",
+      "TXN001996",
+      "TXN001997",
+      "TXN001998",
+      "TXN001999",
+      "TXN002000",
+      "TXN002001",
+      "TXN002002",
+      "TXN002003",
+      "TXN002004",
+      "TXN002005",
+      "TXN002006",
+      "TXN002007",
+      "TXN002008",
+      "TXN002009",
+      "TXN002010",
+      "TXN002011",
+      "TXN002012",
+      "TXN002013",
+      "TXN002014",
+      "TXN002015",
+      "TXN002016",
+      "TXN002017",
+      "TXN002018",
+      "TXN002019",
+      "TXN002020",
+      "TXN002021",
+      "TXN002022"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00191"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00232",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002023",
+      "TXN002024",
+      "TXN002025",
+      "TXN002026",
+      "TXN002027",
+      "TXN002028",
+      "TXN002029",
+      "TXN002030",
+      "TXN002031",
+      "TXN002032",
+      "TXN002033",
+      "TXN002034",
+      "TXN002035",
+      "TXN002036",
+      "TXN002037",
+      "TXN002038",
+      "TXN002039",
+      "TXN002040",
+      "TXN002041",
+      "TXN002042",
+      "TXN002043",
+      "TXN002044",
+      "TXN002045",
+      "TXN002046",
+      "TXN002047",
+      "TXN002048",
+      "TXN002049",
+      "TXN002050",
+      "TXN002051",
+      "TXN002052",
+      "TXN002053",
+      "TXN002054",
+      "TXN002055",
+      "TXN002056",
+      "TXN002057",
+      "TXN002058",
+      "TXN002059",
+      "TXN002060",
+      "TXN002061",
+      "TXN002062",
+      "TXN002063",
+      "TXN002064",
+      "TXN002065",
+      "TXN002066",
+      "TXN002067",
+      "TXN002068",
+      "TXN002069",
+      "TXN002070",
+      "TXN002071",
+      "TXN002072",
+      "TXN002073",
+      "TXN002074",
+      "TXN002075",
+      "TXN002076",
+      "TXN002077",
+      "TXN002078",
+      "TXN002079",
+      "TXN002080",
+      "TXN002081",
+      "TXN002082",
+      "TXN002083",
+      "TXN002084",
+      "TXN002085"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00192"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00233",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002086",
+      "TXN002087",
+      "TXN002088",
+      "TXN002089",
+      "TXN002090",
+      "TXN002091",
+      "TXN002092",
+      "TXN002093",
+      "TXN002094",
+      "TXN002095",
+      "TXN002096",
+      "TXN002097",
+      "TXN002098",
+      "TXN002099",
+      "TXN002100",
+      "TXN002101",
+      "TXN002102",
+      "TXN002103",
+      "TXN002104",
+      "TXN002105",
+      "TXN002106",
+      "TXN002107",
+      "TXN002108"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00193"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00234",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002109",
+      "TXN002110",
+      "TXN002111",
+      "TXN002112",
+      "TXN002113",
+      "TXN002114",
+      "TXN002115",
+      "TXN002116",
+      "TXN002117",
+      "TXN002118",
+      "TXN002119",
+      "TXN002120",
+      "TXN002121",
+      "TXN002122",
+      "TXN002123",
+      "TXN002124",
+      "TXN002125",
+      "TXN002126",
+      "TXN002127",
+      "TXN002128",
+      "TXN002129",
+      "TXN002130",
+      "TXN002131",
+      "TXN002132",
+      "TXN002133",
+      "TXN002134",
+      "TXN002135",
+      "TXN002136",
+      "TXN002137",
+      "TXN002138"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00194"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00235",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002139",
+      "TXN002140",
+      "TXN002141",
+      "TXN002142",
+      "TXN002143",
+      "TXN002144",
+      "TXN002145",
+      "TXN002146",
+      "TXN002147",
+      "TXN002148",
+      "TXN002149",
+      "TXN002150",
+      "TXN002151",
+      "TXN002152",
+      "TXN002153",
+      "TXN002154",
+      "TXN002155",
+      "TXN002156",
+      "TXN002157",
+      "TXN002158",
+      "TXN002159",
+      "TXN002160",
+      "TXN002161",
+      "TXN002162",
+      "TXN002163",
+      "TXN002164",
+      "TXN002165",
+      "TXN002166",
+      "TXN002167",
+      "TXN002168",
+      "TXN002169",
+      "TXN002170",
+      "TXN002171",
+      "TXN002172",
+      "TXN002173",
+      "TXN002174",
+      "TXN002175",
+      "TXN002176",
+      "TXN002177",
+      "TXN002178",
+      "TXN002179",
+      "TXN002180",
+      "TXN002181",
+      "TXN002182",
+      "TXN002183",
+      "TXN002184",
+      "TXN002185",
+      "TXN002186",
+      "TXN002187",
+      "TXN002188",
+      "TXN002189",
+      "TXN002190",
+      "TXN002191",
+      "TXN002192"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00195"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00236",
+    "defect_classes": [
+      "BATCH_N1",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN002193",
+      "TXN002194",
+      "TXN002195",
+      "TXN002196",
+      "TXN002197",
+      "TXN002198",
+      "TXN002199",
+      "TXN002200",
+      "TXN002201",
+      "TXN002202",
+      "TXN002203",
+      "TXN002204",
+      "TXN002205",
+      "TXN002206",
+      "TXN002207",
+      "TXN002208",
+      "TXN002209",
+      "TXN002210",
+      "TXN002211",
+      "TXN002212",
+      "TXN002213",
+      "TXN002214",
+      "TXN002215",
+      "TXN002216",
+      "TXN002217",
+      "TXN002218",
+      "TXN002219",
+      "TXN002220",
+      "TXN002221",
+      "TXN002222",
+      "TXN002223",
+      "TXN002224",
+      "TXN002225",
+      "TXN002226",
+      "TXN002227",
+      "TXN002228",
+      "TXN002229",
+      "TXN002230",
+      "TXN002231",
+      "TXN002232",
+      "TXN002233",
+      "TXN002234",
+      "TXN002235",
+      "TXN002236",
+      "TXN002237",
+      "TXN002238",
+      "TXN002239",
+      "TXN002240",
+      "TXN002241",
+      "TXN002242",
+      "TXN002243",
+      "TXN002244",
+      "TXN002245",
+      "TXN002246",
+      "TXN002247",
+      "TXN002248",
+      "TXN002249",
+      "TXN002250",
+      "TXN002251",
+      "TXN002252",
+      "TXN002253"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00196"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00237",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN002254",
+      "TXN002255",
+      "TXN002256",
+      "TXN002257",
+      "TXN002258",
+      "TXN002259",
+      "TXN002260",
+      "TXN002261",
+      "TXN002262",
+      "TXN002263",
+      "TXN002264",
+      "TXN002265",
+      "TXN002266",
+      "TXN002267",
+      "TXN002268",
+      "TXN002269",
+      "TXN002270",
+      "TXN002271",
+      "TXN002272",
+      "TXN002273",
+      "TXN002274",
+      "TXN002275",
+      "TXN002276",
+      "TXN002277",
+      "TXN002278",
+      "TXN002279",
+      "TXN002280",
+      "TXN002281",
+      "TXN002282",
+      "TXN002283",
+      "TXN002284",
+      "TXN002285",
+      "TXN002286",
+      "TXN002287",
+      "TXN002288",
+      "TXN002289",
+      "TXN002290",
+      "TXN002291",
+      "TXN002292",
+      "TXN002293",
+      "TXN002294",
+      "TXN002295",
+      "TXN002296",
+      "TXN002297",
+      "TXN002298",
+      "TXN002299"
+    ],
+    "notes": "decoy_txn_id=TXN005016",
+    "settlement_batch_ids": [
+      "STL00197"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00238",
+    "defect_classes": [
+      "BATCH_N1",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN002300",
+      "TXN002301",
+      "TXN002302",
+      "TXN002303",
+      "TXN002304",
+      "TXN002305",
+      "TXN002306",
+      "TXN002307",
+      "TXN002308",
+      "TXN002309",
+      "TXN002310",
+      "TXN002311",
+      "TXN002312",
+      "TXN002313",
+      "TXN002314",
+      "TXN002315",
+      "TXN002316",
+      "TXN002317",
+      "TXN002318",
+      "TXN002319",
+      "TXN002320",
+      "TXN002321",
+      "TXN002322",
+      "TXN002323",
+      "TXN002324",
+      "TXN002325",
+      "TXN002326",
+      "TXN002327",
+      "TXN002328",
+      "TXN002329",
+      "TXN002330",
+      "TXN002331",
+      "TXN002332",
+      "TXN002333",
+      "TXN002334",
+      "TXN002335",
+      "TXN002336",
+      "TXN002337",
+      "TXN002338",
+      "TXN002339",
+      "TXN002340",
+      "TXN002341",
+      "TXN002342",
+      "TXN002343",
+      "TXN002344"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00198"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00239",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002345",
+      "TXN002346",
+      "TXN002347",
+      "TXN002348",
+      "TXN002349",
+      "TXN002350",
+      "TXN002351",
+      "TXN002352",
+      "TXN002353",
+      "TXN002354",
+      "TXN002355",
+      "TXN002356",
+      "TXN002357",
+      "TXN002358",
+      "TXN002359",
+      "TXN002360",
+      "TXN002361",
+      "TXN002362",
+      "TXN002363",
+      "TXN002364",
+      "TXN002365",
+      "TXN002366",
+      "TXN002367",
+      "TXN002368",
+      "TXN002369",
+      "TXN002370",
+      "TXN002371",
+      "TXN002372",
+      "TXN002373",
+      "TXN002374",
+      "TXN002375",
+      "TXN002376",
+      "TXN002377",
+      "TXN002378",
+      "TXN002379",
+      "TXN002380",
+      "TXN002381",
+      "TXN002382",
+      "TXN002383",
+      "TXN002384",
+      "TXN002385",
+      "TXN002386",
+      "TXN002387",
+      "TXN002388",
+      "TXN002389",
+      "TXN002390",
+      "TXN002391",
+      "TXN002392",
+      "TXN002393",
+      "TXN002394",
+      "TXN002395",
+      "TXN002396",
+      "TXN002397",
+      "TXN002398",
+      "TXN002399",
+      "TXN002400",
+      "TXN002401",
+      "TXN002402",
+      "TXN002403",
+      "TXN002404",
+      "TXN002405",
+      "TXN002406",
+      "TXN002407",
+      "TXN002408",
+      "TXN002409",
+      "TXN002410",
+      "TXN002411",
+      "TXN002412",
+      "TXN002413",
+      "TXN002414",
+      "TXN002415",
+      "TXN002416",
+      "TXN002417",
+      "TXN002418",
+      "TXN002419",
+      "TXN002420",
+      "TXN002421",
+      "TXN002422",
+      "TXN002423",
+      "TXN002424",
+      "TXN002425",
+      "TXN002426",
+      "TXN002427",
+      "TXN002428",
+      "TXN002429",
+      "TXN002430"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00199"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00240",
+    "defect_classes": [
+      "BATCH_N1",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN002431",
+      "TXN002432",
+      "TXN002433",
+      "TXN002434",
+      "TXN002435",
+      "TXN002436",
+      "TXN002437",
+      "TXN002438",
+      "TXN002439",
+      "TXN002440",
+      "TXN002441",
+      "TXN002442",
+      "TXN002443",
+      "TXN002444",
+      "TXN002445",
+      "TXN002446",
+      "TXN002447",
+      "TXN002448",
+      "TXN002449",
+      "TXN002450",
+      "TXN002451",
+      "TXN002452",
+      "TXN002453",
+      "TXN002454",
+      "TXN002455",
+      "TXN002456",
+      "TXN002457"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00200"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00241",
+    "defect_classes": [
+      "BATCH_N1",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN002458",
+      "TXN002459",
+      "TXN002460",
+      "TXN002461",
+      "TXN002462",
+      "TXN002463",
+      "TXN002464",
+      "TXN002465",
+      "TXN002466",
+      "TXN002467",
+      "TXN002468",
+      "TXN002469",
+      "TXN002470",
+      "TXN002471",
+      "TXN002472",
+      "TXN002473",
+      "TXN002474",
+      "TXN002475",
+      "TXN002476",
+      "TXN002477",
+      "TXN002478",
+      "TXN002479",
+      "TXN002480",
+      "TXN002481",
+      "TXN002482",
+      "TXN002483",
+      "TXN002484",
+      "TXN002485",
+      "TXN002486",
+      "TXN002487",
+      "TXN002488",
+      "TXN002489",
+      "TXN002490",
+      "TXN002491",
+      "TXN002492",
+      "TXN002493",
+      "TXN002494",
+      "TXN002495",
+      "TXN002496",
+      "TXN002497",
+      "TXN002498",
+      "TXN002499",
+      "TXN002500",
+      "TXN002501",
+      "TXN002502",
+      "TXN002503",
+      "TXN002504",
+      "TXN002505",
+      "TXN002506",
+      "TXN002507"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00201"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00242",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002508",
+      "TXN002509",
+      "TXN002510",
+      "TXN002511",
+      "TXN002512",
+      "TXN002513",
+      "TXN002514",
+      "TXN002515",
+      "TXN002516",
+      "TXN002517",
+      "TXN002518",
+      "TXN002519",
+      "TXN002520",
+      "TXN002521",
+      "TXN002522",
+      "TXN002523",
+      "TXN002524",
+      "TXN002525",
+      "TXN002526",
+      "TXN002527",
+      "TXN002528",
+      "TXN002529",
+      "TXN002530",
+      "TXN002531",
+      "TXN002532",
+      "TXN002533",
+      "TXN002534",
+      "TXN002535",
+      "TXN002536",
+      "TXN002537",
+      "TXN002538",
+      "TXN002539",
+      "TXN002540",
+      "TXN002541",
+      "TXN002542",
+      "TXN002543",
+      "TXN002544",
+      "TXN002545",
+      "TXN002546",
+      "TXN002547",
+      "TXN002548",
+      "TXN002549",
+      "TXN002550",
+      "TXN002551",
+      "TXN002552",
+      "TXN002553",
+      "TXN002554",
+      "TXN002555",
+      "TXN002556",
+      "TXN002557",
+      "TXN002558",
+      "TXN002559",
+      "TXN002560",
+      "TXN002561",
+      "TXN002562",
+      "TXN002563",
+      "TXN002564",
+      "TXN002565",
+      "TXN002566",
+      "TXN002567",
+      "TXN002568",
+      "TXN002569",
+      "TXN002570",
+      "TXN002571",
+      "TXN002572",
+      "TXN002573"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00202"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00243",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002574",
+      "TXN002575",
+      "TXN002576",
+      "TXN002577",
+      "TXN002578",
+      "TXN002579",
+      "TXN002580",
+      "TXN002581",
+      "TXN002582",
+      "TXN002583",
+      "TXN002584",
+      "TXN002585",
+      "TXN002586",
+      "TXN002587",
+      "TXN002588",
+      "TXN002589",
+      "TXN002590",
+      "TXN002591",
+      "TXN002592",
+      "TXN002593",
+      "TXN002594",
+      "TXN002595",
+      "TXN002596",
+      "TXN002597",
+      "TXN002598",
+      "TXN002599",
+      "TXN002600",
+      "TXN002601",
+      "TXN002602",
+      "TXN002603",
+      "TXN002604",
+      "TXN002605",
+      "TXN002606",
+      "TXN002607",
+      "TXN002608",
+      "TXN002609",
+      "TXN002610",
+      "TXN002611",
+      "TXN002612",
+      "TXN002613",
+      "TXN002614",
+      "TXN002615",
+      "TXN002616",
+      "TXN002617",
+      "TXN002618",
+      "TXN002619",
+      "TXN002620",
+      "TXN002621",
+      "TXN002622",
+      "TXN002623",
+      "TXN002624",
+      "TXN002625",
+      "TXN002626",
+      "TXN002627",
+      "TXN002628",
+      "TXN002629",
+      "TXN002630",
+      "TXN002631",
+      "TXN002632",
+      "TXN002633",
+      "TXN002634",
+      "TXN002635",
+      "TXN002636",
+      "TXN002637",
+      "TXN002638",
+      "TXN002639",
+      "TXN002640",
+      "TXN002641",
+      "TXN002642",
+      "TXN002643",
+      "TXN002644",
+      "TXN002645",
+      "TXN002646",
+      "TXN002647"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00203"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00244",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN002648",
+      "TXN002649",
+      "TXN002650",
+      "TXN002651",
+      "TXN002652",
+      "TXN002653",
+      "TXN002654",
+      "TXN002655",
+      "TXN002656",
+      "TXN002657",
+      "TXN002658",
+      "TXN002659",
+      "TXN002660",
+      "TXN002661",
+      "TXN002662",
+      "TXN002663",
+      "TXN002664",
+      "TXN002665",
+      "TXN002666",
+      "TXN002667",
+      "TXN002668",
+      "TXN002669",
+      "TXN002670",
+      "TXN002671",
+      "TXN002672",
+      "TXN002673",
+      "TXN002674",
+      "TXN002675",
+      "TXN002676",
+      "TXN002677",
+      "TXN002678",
+      "TXN002679",
+      "TXN002680",
+      "TXN002681",
+      "TXN002682",
+      "TXN002683",
+      "TXN002684"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00204"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00245",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN002685",
+      "TXN002686",
+      "TXN002687",
+      "TXN002688",
+      "TXN002689",
+      "TXN002690",
+      "TXN002691",
+      "TXN002692",
+      "TXN002693",
+      "TXN002694",
+      "TXN002695",
+      "TXN002696",
+      "TXN002697",
+      "TXN002698",
+      "TXN002699",
+      "TXN002700",
+      "TXN002701",
+      "TXN002702",
+      "TXN002703",
+      "TXN002704",
+      "TXN002705",
+      "TXN002706",
+      "TXN002707",
+      "TXN002708",
+      "TXN002709",
+      "TXN002710",
+      "TXN002711",
+      "TXN002712",
+      "TXN002713",
+      "TXN002714",
+      "TXN002715",
+      "TXN002716",
+      "TXN002717",
+      "TXN002718",
+      "TXN002719",
+      "TXN002720",
+      "TXN002721",
+      "TXN002722",
+      "TXN002723",
+      "TXN002724",
+      "TXN002725",
+      "TXN002726",
+      "TXN002727",
+      "TXN002728",
+      "TXN002729",
+      "TXN002730",
+      "TXN002731",
+      "TXN002732",
+      "TXN002733",
+      "TXN002734",
+      "TXN002735",
+      "TXN002736",
+      "TXN002737",
+      "TXN002738",
+      "TXN002739",
+      "TXN002740",
+      "TXN002741",
+      "TXN002742",
+      "TXN002743",
+      "TXN002744",
+      "TXN002745",
+      "TXN002746",
+      "TXN002747",
+      "TXN002748",
+      "TXN002749",
+      "TXN002750",
+      "TXN002751",
+      "TXN002752",
+      "TXN002753",
+      "TXN002754",
+      "TXN002755",
+      "TXN002756",
+      "TXN002757",
+      "TXN002758",
+      "TXN002759"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00205"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00246",
+    "defect_classes": [
+      "BATCH_N1",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN002760",
+      "TXN002761",
+      "TXN002762",
+      "TXN002763",
+      "TXN002764",
+      "TXN002765",
+      "TXN002766",
+      "TXN002767",
+      "TXN002768",
+      "TXN002769",
+      "TXN002770",
+      "TXN002771",
+      "TXN002772",
+      "TXN002773",
+      "TXN002774",
+      "TXN002775",
+      "TXN002776",
+      "TXN002777",
+      "TXN002778",
+      "TXN002779",
+      "TXN002780",
+      "TXN002781",
+      "TXN002782",
+      "TXN002783",
+      "TXN002784",
+      "TXN002785",
+      "TXN002786",
+      "TXN002787",
+      "TXN002788",
+      "TXN002789",
+      "TXN002790",
+      "TXN002791",
+      "TXN002792",
+      "TXN002793",
+      "TXN002794",
+      "TXN002795",
+      "TXN002796",
+      "TXN002797",
+      "TXN002798",
+      "TXN002799",
+      "TXN002800",
+      "TXN002801",
+      "TXN002802",
+      "TXN002803",
+      "TXN002804",
+      "TXN002805",
+      "TXN002806",
+      "TXN002807",
+      "TXN002808",
+      "TXN002809",
+      "TXN002810",
+      "TXN002811",
+      "TXN002812",
+      "TXN002813",
+      "TXN002814",
+      "TXN002815"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00206"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00247",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN002816",
+      "TXN002817",
+      "TXN002818",
+      "TXN002819",
+      "TXN002820",
+      "TXN002821",
+      "TXN002822",
+      "TXN002823",
+      "TXN002824",
+      "TXN002825",
+      "TXN002826",
+      "TXN002827",
+      "TXN002828",
+      "TXN002829",
+      "TXN002830",
+      "TXN002831",
+      "TXN002832",
+      "TXN002833",
+      "TXN002834",
+      "TXN002835",
+      "TXN002836",
+      "TXN002837",
+      "TXN002838",
+      "TXN002839",
+      "TXN002840",
+      "TXN002841",
+      "TXN002842",
+      "TXN002843",
+      "TXN002844",
+      "TXN002845",
+      "TXN002846",
+      "TXN002847",
+      "TXN002848",
+      "TXN002849",
+      "TXN002850",
+      "TXN002851",
+      "TXN002852",
+      "TXN002853",
+      "TXN002854",
+      "TXN002855",
+      "TXN002856",
+      "TXN002857",
+      "TXN002858",
+      "TXN002859",
+      "TXN002860",
+      "TXN002861",
+      "TXN002862",
+      "TXN002863",
+      "TXN002864",
+      "TXN002865",
+      "TXN002866",
+      "TXN002867",
+      "TXN002868",
+      "TXN002869",
+      "TXN002870",
+      "TXN002871",
+      "TXN002872",
+      "TXN002873",
+      "TXN002874",
+      "TXN002875",
+      "TXN002876",
+      "TXN002877",
+      "TXN002878",
+      "TXN002879",
+      "TXN002880",
+      "TXN002881",
+      "TXN002882",
+      "TXN002883",
+      "TXN002884",
+      "TXN002885",
+      "TXN002886",
+      "TXN002887",
+      "TXN002888",
+      "TXN002889",
+      "TXN002890",
+      "TXN002891",
+      "TXN002892",
+      "TXN002893",
+      "TXN002894",
+      "TXN002895",
+      "TXN002896",
+      "TXN002897",
+      "TXN002898",
+      "TXN002899",
+      "TXN002900",
+      "TXN002901",
+      "TXN002902"
+    ],
+    "notes": "decoy_txn_id=TXN005017",
+    "settlement_batch_ids": [
+      "STL00207"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00248",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN002903",
+      "TXN002904",
+      "TXN002905",
+      "TXN002906",
+      "TXN002907",
+      "TXN002908",
+      "TXN002909",
+      "TXN002910",
+      "TXN002911",
+      "TXN002912",
+      "TXN002913",
+      "TXN002914",
+      "TXN002915",
+      "TXN002916",
+      "TXN002917",
+      "TXN002918",
+      "TXN002919",
+      "TXN002920",
+      "TXN002921",
+      "TXN002922",
+      "TXN002923",
+      "TXN002924",
+      "TXN002925",
+      "TXN002926",
+      "TXN002927",
+      "TXN002928",
+      "TXN002929",
+      "TXN002930",
+      "TXN002931",
+      "TXN002932",
+      "TXN002933",
+      "TXN002934",
+      "TXN002935",
+      "TXN002936",
+      "TXN002937",
+      "TXN002938",
+      "TXN002939",
+      "TXN002940",
+      "TXN002941",
+      "TXN002942",
+      "TXN002943",
+      "TXN002944",
+      "TXN002945",
+      "TXN002946",
+      "TXN002947",
+      "TXN002948",
+      "TXN002949",
+      "TXN002950",
+      "TXN002951",
+      "TXN002952",
+      "TXN002953",
+      "TXN002954",
+      "TXN002955",
+      "TXN002956",
+      "TXN002957",
+      "TXN002958",
+      "TXN002959",
+      "TXN002960",
+      "TXN002961",
+      "TXN002962",
+      "TXN002963",
+      "TXN002964",
+      "TXN002965",
+      "TXN002966",
+      "TXN002967"
+    ],
+    "notes": "decoy_txn_id=TXN005018",
+    "settlement_batch_ids": [
+      "STL00208"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00249",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002968",
+      "TXN002969",
+      "TXN002970",
+      "TXN002971",
+      "TXN002972",
+      "TXN002973",
+      "TXN002974",
+      "TXN002975",
+      "TXN002976",
+      "TXN002977",
+      "TXN002978",
+      "TXN002979",
+      "TXN002980",
+      "TXN002981",
+      "TXN002982",
+      "TXN002983",
+      "TXN002984",
+      "TXN002985",
+      "TXN002986",
+      "TXN002987",
+      "TXN002988",
+      "TXN002989",
+      "TXN002990",
+      "TXN002991",
+      "TXN002992",
+      "TXN002993"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00209"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00250",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN002994",
+      "TXN002995",
+      "TXN002996",
+      "TXN002997",
+      "TXN002998",
+      "TXN002999",
+      "TXN003000",
+      "TXN003001",
+      "TXN003002",
+      "TXN003003",
+      "TXN003004",
+      "TXN003005",
+      "TXN003006",
+      "TXN003007",
+      "TXN003008",
+      "TXN003009",
+      "TXN003010",
+      "TXN003011",
+      "TXN003012",
+      "TXN003013",
+      "TXN003014",
+      "TXN003015",
+      "TXN003016",
+      "TXN003017",
+      "TXN003018",
+      "TXN003019",
+      "TXN003020",
+      "TXN003021",
+      "TXN003022",
+      "TXN003023",
+      "TXN003024",
+      "TXN003025",
+      "TXN003026",
+      "TXN003027",
+      "TXN003028",
+      "TXN003029",
+      "TXN003030",
+      "TXN003031",
+      "TXN003032",
+      "TXN003033",
+      "TXN003034",
+      "TXN003035",
+      "TXN003036",
+      "TXN003037",
+      "TXN003038",
+      "TXN003039",
+      "TXN003040",
+      "TXN003041",
+      "TXN003042",
+      "TXN003043",
+      "TXN003044",
+      "TXN003045",
+      "TXN003046",
+      "TXN003047",
+      "TXN003048",
+      "TXN003049",
+      "TXN003050",
+      "TXN003051",
+      "TXN003052",
+      "TXN003053",
+      "TXN003054",
+      "TXN003055",
+      "TXN003056",
+      "TXN003057"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00210"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00251",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003058",
+      "TXN003059",
+      "TXN003060",
+      "TXN003061",
+      "TXN003062",
+      "TXN003063",
+      "TXN003064",
+      "TXN003065",
+      "TXN003066",
+      "TXN003067",
+      "TXN003068",
+      "TXN003069",
+      "TXN003070",
+      "TXN003071",
+      "TXN003072",
+      "TXN003073",
+      "TXN003074",
+      "TXN003075",
+      "TXN003076",
+      "TXN003077",
+      "TXN003078",
+      "TXN003079",
+      "TXN003080",
+      "TXN003081",
+      "TXN003082",
+      "TXN003083",
+      "TXN003084",
+      "TXN003085",
+      "TXN003086",
+      "TXN003087",
+      "TXN003088",
+      "TXN003089",
+      "TXN003090",
+      "TXN003091",
+      "TXN003092",
+      "TXN003093",
+      "TXN003094",
+      "TXN003095",
+      "TXN003096",
+      "TXN003097",
+      "TXN003098",
+      "TXN003099",
+      "TXN003100",
+      "TXN003101",
+      "TXN003102",
+      "TXN003103",
+      "TXN003104",
+      "TXN003105",
+      "TXN003106",
+      "TXN003107",
+      "TXN003108",
+      "TXN003109",
+      "TXN003110",
+      "TXN003111",
+      "TXN003112",
+      "TXN003113",
+      "TXN003114",
+      "TXN003115",
+      "TXN003116",
+      "TXN003117"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00211"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00252",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003118",
+      "TXN003119",
+      "TXN003120",
+      "TXN003121",
+      "TXN003122",
+      "TXN003123",
+      "TXN003124",
+      "TXN003125",
+      "TXN003126",
+      "TXN003127",
+      "TXN003128",
+      "TXN003129",
+      "TXN003130",
+      "TXN003131",
+      "TXN003132",
+      "TXN003133",
+      "TXN003134",
+      "TXN003135",
+      "TXN003136",
+      "TXN003137",
+      "TXN003138",
+      "TXN003139",
+      "TXN003140",
+      "TXN003141",
+      "TXN003142",
+      "TXN003143"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00212"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00253",
+    "defect_classes": [
+      "BATCH_N1",
+      "NO_UTR"
+    ],
+    "matched_txn_ids": [
+      "TXN003144",
+      "TXN003145",
+      "TXN003146",
+      "TXN003147",
+      "TXN003148",
+      "TXN003149",
+      "TXN003150",
+      "TXN003151",
+      "TXN003152",
+      "TXN003153",
+      "TXN003154",
+      "TXN003155",
+      "TXN003156",
+      "TXN003157",
+      "TXN003158",
+      "TXN003159",
+      "TXN003160",
+      "TXN003161",
+      "TXN003162",
+      "TXN003163",
+      "TXN003164",
+      "TXN003165",
+      "TXN003166",
+      "TXN003167",
+      "TXN003168",
+      "TXN003169",
+      "TXN003170",
+      "TXN003171",
+      "TXN003172",
+      "TXN003173",
+      "TXN003174",
+      "TXN003175",
+      "TXN003176",
+      "TXN003177"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00213"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00254",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003178",
+      "TXN003179",
+      "TXN003180",
+      "TXN003181",
+      "TXN003182",
+      "TXN003183",
+      "TXN003184",
+      "TXN003185",
+      "TXN003186",
+      "TXN003187",
+      "TXN003188",
+      "TXN003189",
+      "TXN003190",
+      "TXN003191",
+      "TXN003192",
+      "TXN003193",
+      "TXN003194",
+      "TXN003195",
+      "TXN003196",
+      "TXN003197",
+      "TXN003198",
+      "TXN003199",
+      "TXN003200",
+      "TXN003201",
+      "TXN003202",
+      "TXN003203",
+      "TXN003204",
+      "TXN003205",
+      "TXN003206",
+      "TXN003207",
+      "TXN003208",
+      "TXN003209",
+      "TXN003210",
+      "TXN003211",
+      "TXN003212",
+      "TXN003213",
+      "TXN003214",
+      "TXN003215",
+      "TXN003216",
+      "TXN003217"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00214"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00255",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003218",
+      "TXN003219",
+      "TXN003220",
+      "TXN003221",
+      "TXN003222",
+      "TXN003223",
+      "TXN003224",
+      "TXN003225",
+      "TXN003226",
+      "TXN003227",
+      "TXN003228",
+      "TXN003229",
+      "TXN003230",
+      "TXN003231",
+      "TXN003232",
+      "TXN003233",
+      "TXN003234",
+      "TXN003235",
+      "TXN003236",
+      "TXN003237",
+      "TXN003238",
+      "TXN003239",
+      "TXN003240",
+      "TXN003241",
+      "TXN003242",
+      "TXN003243",
+      "TXN003244",
+      "TXN003245",
+      "TXN003246",
+      "TXN003247",
+      "TXN003248",
+      "TXN003249",
+      "TXN003250",
+      "TXN003251",
+      "TXN003252",
+      "TXN003253",
+      "TXN003254",
+      "TXN003255",
+      "TXN003256",
+      "TXN003257",
+      "TXN003258",
+      "TXN003259",
+      "TXN003260",
+      "TXN003261",
+      "TXN003262",
+      "TXN003263",
+      "TXN003264",
+      "TXN003265",
+      "TXN003266"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00215"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00256",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003267",
+      "TXN003268",
+      "TXN003269",
+      "TXN003270",
+      "TXN003271",
+      "TXN003272",
+      "TXN003273",
+      "TXN003274",
+      "TXN003275",
+      "TXN003276",
+      "TXN003277",
+      "TXN003278",
+      "TXN003279",
+      "TXN003280",
+      "TXN003281",
+      "TXN003282",
+      "TXN003283",
+      "TXN003284",
+      "TXN003285",
+      "TXN003286"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00216"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00257",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003287",
+      "TXN003288",
+      "TXN003289",
+      "TXN003290",
+      "TXN003291",
+      "TXN003292",
+      "TXN003293",
+      "TXN003294",
+      "TXN003295",
+      "TXN003296",
+      "TXN003297",
+      "TXN003298",
+      "TXN003299",
+      "TXN003300",
+      "TXN003301",
+      "TXN003302",
+      "TXN003303",
+      "TXN003304",
+      "TXN003305",
+      "TXN003306",
+      "TXN003307",
+      "TXN003308",
+      "TXN003309",
+      "TXN003310",
+      "TXN003311",
+      "TXN003312",
+      "TXN003313",
+      "TXN003314",
+      "TXN003315",
+      "TXN003316",
+      "TXN003317",
+      "TXN003318",
+      "TXN003319",
+      "TXN003320",
+      "TXN003321",
+      "TXN003322",
+      "TXN003323",
+      "TXN003324",
+      "TXN003325",
+      "TXN003326",
+      "TXN003327",
+      "TXN003328",
+      "TXN003329",
+      "TXN003330",
+      "TXN003331",
+      "TXN003332",
+      "TXN003333",
+      "TXN003334",
+      "TXN003335",
+      "TXN003336",
+      "TXN003337",
+      "TXN003338",
+      "TXN003339",
+      "TXN003340",
+      "TXN003341",
+      "TXN003342",
+      "TXN003343",
+      "TXN003344",
+      "TXN003345",
+      "TXN003346",
+      "TXN003347",
+      "TXN003348",
+      "TXN003349",
+      "TXN003350",
+      "TXN003351",
+      "TXN003352",
+      "TXN003353",
+      "TXN003354",
+      "TXN003355",
+      "TXN003356",
+      "TXN003357",
+      "TXN003358",
+      "TXN003359",
+      "TXN003360",
+      "TXN003361"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00217"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00258",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003362",
+      "TXN003363",
+      "TXN003364",
+      "TXN003365",
+      "TXN003366",
+      "TXN003367",
+      "TXN003368",
+      "TXN003369",
+      "TXN003370",
+      "TXN003371",
+      "TXN003372",
+      "TXN003373",
+      "TXN003374",
+      "TXN003375",
+      "TXN003376",
+      "TXN003377",
+      "TXN003378",
+      "TXN003379",
+      "TXN003380",
+      "TXN003381",
+      "TXN003382",
+      "TXN003383",
+      "TXN003384",
+      "TXN003385",
+      "TXN003386",
+      "TXN003387",
+      "TXN003388",
+      "TXN003389",
+      "TXN003390",
+      "TXN003391",
+      "TXN003392",
+      "TXN003393",
+      "TXN003394",
+      "TXN003395",
+      "TXN003396",
+      "TXN003397",
+      "TXN003398",
+      "TXN003399",
+      "TXN003400",
+      "TXN003401",
+      "TXN003402",
+      "TXN003403",
+      "TXN003404",
+      "TXN003405",
+      "TXN003406",
+      "TXN003407",
+      "TXN003408",
+      "TXN003409",
+      "TXN003410",
+      "TXN003411",
+      "TXN003412",
+      "TXN003413"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00218"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00259",
+    "defect_classes": [
+      "BATCH_N1",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN003414",
+      "TXN003415",
+      "TXN003416",
+      "TXN003417",
+      "TXN003418",
+      "TXN003419",
+      "TXN003420",
+      "TXN003421",
+      "TXN003422",
+      "TXN003423",
+      "TXN003424",
+      "TXN003425",
+      "TXN003426",
+      "TXN003427",
+      "TXN003428",
+      "TXN003429",
+      "TXN003430",
+      "TXN003431",
+      "TXN003432",
+      "TXN003433",
+      "TXN003434",
+      "TXN003435",
+      "TXN003436",
+      "TXN003437",
+      "TXN003438",
+      "TXN003439",
+      "TXN003440",
+      "TXN003441",
+      "TXN003442",
+      "TXN003443",
+      "TXN003444",
+      "TXN003445",
+      "TXN003446",
+      "TXN003447",
+      "TXN003448",
+      "TXN003449",
+      "TXN003450",
+      "TXN003451",
+      "TXN003452",
+      "TXN003453",
+      "TXN003454",
+      "TXN003455",
+      "TXN003456",
+      "TXN003457",
+      "TXN003458",
+      "TXN003459",
+      "TXN003460",
+      "TXN003461",
+      "TXN003462",
+      "TXN003463",
+      "TXN003464",
+      "TXN003465",
+      "TXN003466",
+      "TXN003467",
+      "TXN003468",
+      "TXN003469",
+      "TXN003470",
+      "TXN003471",
+      "TXN003472",
+      "TXN003473",
+      "TXN003474",
+      "TXN003475",
+      "TXN003476",
+      "TXN003477",
+      "TXN003478",
+      "TXN003479",
+      "TXN003480",
+      "TXN003481",
+      "TXN003482",
+      "TXN003483",
+      "TXN003484",
+      "TXN003485",
+      "TXN003486",
+      "TXN003487",
+      "TXN003488"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00219"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00260",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003489",
+      "TXN003490",
+      "TXN003491",
+      "TXN003492",
+      "TXN003493",
+      "TXN003494",
+      "TXN003495",
+      "TXN003496",
+      "TXN003497",
+      "TXN003498",
+      "TXN003499",
+      "TXN003500",
+      "TXN003501",
+      "TXN003502",
+      "TXN003503",
+      "TXN003504",
+      "TXN003505",
+      "TXN003506",
+      "TXN003507",
+      "TXN003508",
+      "TXN003509",
+      "TXN003510",
+      "TXN003511",
+      "TXN003512",
+      "TXN003513",
+      "TXN003514",
+      "TXN003515",
+      "TXN003516",
+      "TXN003517",
+      "TXN003518",
+      "TXN003519",
+      "TXN003520",
+      "TXN003521",
+      "TXN003522",
+      "TXN003523",
+      "TXN003524",
+      "TXN003525",
+      "TXN003526",
+      "TXN003527",
+      "TXN003528",
+      "TXN003529",
+      "TXN003530",
+      "TXN003531"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00220"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00261",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003532",
+      "TXN003533",
+      "TXN003534",
+      "TXN003535",
+      "TXN003536",
+      "TXN003537",
+      "TXN003538",
+      "TXN003539",
+      "TXN003540",
+      "TXN003541",
+      "TXN003542",
+      "TXN003543",
+      "TXN003544",
+      "TXN003545",
+      "TXN003546",
+      "TXN003547",
+      "TXN003548",
+      "TXN003549",
+      "TXN003550",
+      "TXN003551",
+      "TXN003552",
+      "TXN003553",
+      "TXN003554",
+      "TXN003555",
+      "TXN003556",
+      "TXN003557",
+      "TXN003558",
+      "TXN003559",
+      "TXN003560",
+      "TXN003561",
+      "TXN003562",
+      "TXN003563",
+      "TXN003564",
+      "TXN003565",
+      "TXN003566",
+      "TXN003567",
+      "TXN003568",
+      "TXN003569",
+      "TXN003570",
+      "TXN003571",
+      "TXN003572",
+      "TXN003573",
+      "TXN003574",
+      "TXN003575",
+      "TXN003576",
+      "TXN003577",
+      "TXN003578",
+      "TXN003579",
+      "TXN003580",
+      "TXN003581",
+      "TXN003582",
+      "TXN003583",
+      "TXN003584",
+      "TXN003585",
+      "TXN003586",
+      "TXN003587",
+      "TXN003588",
+      "TXN003589",
+      "TXN003590",
+      "TXN003591",
+      "TXN003592",
+      "TXN003593",
+      "TXN003594",
+      "TXN003595",
+      "TXN003596",
+      "TXN003597",
+      "TXN003598",
+      "TXN003599",
+      "TXN003600",
+      "TXN003601",
+      "TXN003602",
+      "TXN003603",
+      "TXN003604",
+      "TXN003605",
+      "TXN003606",
+      "TXN003607",
+      "TXN003608",
+      "TXN003609",
+      "TXN003610",
+      "TXN003611",
+      "TXN003612",
+      "TXN003613",
+      "TXN003614",
+      "TXN003615"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00221"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00262",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003616",
+      "TXN003617",
+      "TXN003618",
+      "TXN003619",
+      "TXN003620",
+      "TXN003621",
+      "TXN003622",
+      "TXN003623",
+      "TXN003624",
+      "TXN003625",
+      "TXN003626",
+      "TXN003627",
+      "TXN003628",
+      "TXN003629",
+      "TXN003630",
+      "TXN003631",
+      "TXN003632",
+      "TXN003633",
+      "TXN003634",
+      "TXN003635",
+      "TXN003636",
+      "TXN003637",
+      "TXN003638",
+      "TXN003639",
+      "TXN003640",
+      "TXN003641",
+      "TXN003642",
+      "TXN003643",
+      "TXN003644",
+      "TXN003645",
+      "TXN003646",
+      "TXN003647",
+      "TXN003648",
+      "TXN003649",
+      "TXN003650",
+      "TXN003651",
+      "TXN003652",
+      "TXN003653",
+      "TXN003654",
+      "TXN003655"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00222"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00263",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN003656",
+      "TXN003657",
+      "TXN003658",
+      "TXN003659",
+      "TXN003660",
+      "TXN003661",
+      "TXN003662",
+      "TXN003663",
+      "TXN003664",
+      "TXN003665",
+      "TXN003666",
+      "TXN003667",
+      "TXN003668",
+      "TXN003669",
+      "TXN003670",
+      "TXN003671",
+      "TXN003672",
+      "TXN003673",
+      "TXN003674",
+      "TXN003675",
+      "TXN003676",
+      "TXN003677",
+      "TXN003678",
+      "TXN003679",
+      "TXN003680",
+      "TXN003681",
+      "TXN003682",
+      "TXN003683",
+      "TXN003684",
+      "TXN003685",
+      "TXN003686",
+      "TXN003687",
+      "TXN003688",
+      "TXN003689",
+      "TXN003690",
+      "TXN003691",
+      "TXN003692",
+      "TXN003693",
+      "TXN003694",
+      "TXN003695",
+      "TXN003696",
+      "TXN003697",
+      "TXN003698",
+      "TXN003699",
+      "TXN003700",
+      "TXN003701",
+      "TXN003702",
+      "TXN003703",
+      "TXN003704",
+      "TXN003705",
+      "TXN003706",
+      "TXN003707",
+      "TXN003708",
+      "TXN003709",
+      "TXN003710",
+      "TXN003711",
+      "TXN003712",
+      "TXN003713",
+      "TXN003714",
+      "TXN003715",
+      "TXN003716",
+      "TXN003717",
+      "TXN003718",
+      "TXN003719",
+      "TXN003720",
+      "TXN003721",
+      "TXN003722",
+      "TXN003723",
+      "TXN003724",
+      "TXN003725",
+      "TXN003726",
+      "TXN003727",
+      "TXN003728",
+      "TXN003729",
+      "TXN003730",
+      "TXN003731",
+      "TXN003732"
+    ],
+    "notes": "decoy_txn_id=TXN005019",
+    "settlement_batch_ids": [
+      "STL00223"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00264",
+    "defect_classes": [
+      "BATCH_N1",
+      "TRANSPOSE"
+    ],
+    "matched_txn_ids": [
+      "TXN003733",
+      "TXN003734",
+      "TXN003735",
+      "TXN003736",
+      "TXN003737",
+      "TXN003738",
+      "TXN003739",
+      "TXN003740",
+      "TXN003741",
+      "TXN003742",
+      "TXN003743",
+      "TXN003744",
+      "TXN003745",
+      "TXN003746",
+      "TXN003747",
+      "TXN003748",
+      "TXN003749",
+      "TXN003750",
+      "TXN003751",
+      "TXN003752",
+      "TXN003753",
+      "TXN003754",
+      "TXN003755",
+      "TXN003756",
+      "TXN003757",
+      "TXN003758",
+      "TXN003759",
+      "TXN003760",
+      "TXN003761",
+      "TXN003762",
+      "TXN003763",
+      "TXN003764",
+      "TXN003765",
+      "TXN003766",
+      "TXN003767",
+      "TXN003768",
+      "TXN003769",
+      "TXN003770",
+      "TXN003771",
+      "TXN003772",
+      "TXN003773",
+      "TXN003774",
+      "TXN003775",
+      "TXN003776",
+      "TXN003777",
+      "TXN003778",
+      "TXN003779",
+      "TXN003780",
+      "TXN003781",
+      "TXN003782",
+      "TXN003783",
+      "TXN003784",
+      "TXN003785",
+      "TXN003786",
+      "TXN003787",
+      "TXN003788",
+      "TXN003789"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00224"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00265",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003790",
+      "TXN003791",
+      "TXN003792",
+      "TXN003793",
+      "TXN003794",
+      "TXN003795",
+      "TXN003796",
+      "TXN003797",
+      "TXN003798",
+      "TXN003799",
+      "TXN003800",
+      "TXN003801",
+      "TXN003802",
+      "TXN003803",
+      "TXN003804",
+      "TXN003805",
+      "TXN003806",
+      "TXN003807",
+      "TXN003808",
+      "TXN003809",
+      "TXN003810",
+      "TXN003811",
+      "TXN003812",
+      "TXN003813",
+      "TXN003814",
+      "TXN003815",
+      "TXN003816",
+      "TXN003817",
+      "TXN003818",
+      "TXN003819",
+      "TXN003820",
+      "TXN003821"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00225"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00266",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN003822",
+      "TXN003823",
+      "TXN003824",
+      "TXN003825",
+      "TXN003826",
+      "TXN003827",
+      "TXN003828",
+      "TXN003829",
+      "TXN003830",
+      "TXN003831",
+      "TXN003832",
+      "TXN003833",
+      "TXN003834",
+      "TXN003835",
+      "TXN003836",
+      "TXN003837",
+      "TXN003838",
+      "TXN003839",
+      "TXN003840",
+      "TXN003841",
+      "TXN003842",
+      "TXN003843"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00226"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00267",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003844",
+      "TXN003845",
+      "TXN003846",
+      "TXN003847",
+      "TXN003848",
+      "TXN003849",
+      "TXN003850",
+      "TXN003851",
+      "TXN003852",
+      "TXN003853",
+      "TXN003854",
+      "TXN003855",
+      "TXN003856",
+      "TXN003857",
+      "TXN003858",
+      "TXN003859",
+      "TXN003860",
+      "TXN003861",
+      "TXN003862",
+      "TXN003863",
+      "TXN003864",
+      "TXN003865",
+      "TXN003866"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00227"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00268",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003867",
+      "TXN003868",
+      "TXN003869",
+      "TXN003870",
+      "TXN003871",
+      "TXN003872",
+      "TXN003873",
+      "TXN003874",
+      "TXN003875",
+      "TXN003876",
+      "TXN003877",
+      "TXN003878",
+      "TXN003879",
+      "TXN003880",
+      "TXN003881",
+      "TXN003882",
+      "TXN003883",
+      "TXN003884",
+      "TXN003885",
+      "TXN003886",
+      "TXN003887",
+      "TXN003888",
+      "TXN003889",
+      "TXN003890",
+      "TXN003891",
+      "TXN003892",
+      "TXN003893",
+      "TXN003894",
+      "TXN003895",
+      "TXN003896",
+      "TXN003897",
+      "TXN003898",
+      "TXN003899",
+      "TXN003900",
+      "TXN003901",
+      "TXN003902",
+      "TXN003903",
+      "TXN003904",
+      "TXN003905",
+      "TXN003906",
+      "TXN003907",
+      "TXN003908",
+      "TXN003909",
+      "TXN003910",
+      "TXN003911",
+      "TXN003912",
+      "TXN003913",
+      "TXN003914",
+      "TXN003915",
+      "TXN003916",
+      "TXN003917"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00228"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00269",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN003918",
+      "TXN003919",
+      "TXN003920",
+      "TXN003921",
+      "TXN003922",
+      "TXN003923",
+      "TXN003924",
+      "TXN003925",
+      "TXN003926",
+      "TXN003927",
+      "TXN003928",
+      "TXN003929",
+      "TXN003930",
+      "TXN003931",
+      "TXN003932",
+      "TXN003933",
+      "TXN003934",
+      "TXN003935",
+      "TXN003936",
+      "TXN003937",
+      "TXN003938",
+      "TXN003939",
+      "TXN003940",
+      "TXN003941",
+      "TXN003942",
+      "TXN003943",
+      "TXN003944",
+      "TXN003945",
+      "TXN003946",
+      "TXN003947",
+      "TXN003948",
+      "TXN003949",
+      "TXN003950",
+      "TXN003951",
+      "TXN003952",
+      "TXN003953",
+      "TXN003954",
+      "TXN003955",
+      "TXN003956",
+      "TXN003957",
+      "TXN003958",
+      "TXN003959",
+      "TXN003960",
+      "TXN003961",
+      "TXN003962",
+      "TXN003963",
+      "TXN003964",
+      "TXN003965",
+      "TXN003966",
+      "TXN003967",
+      "TXN003968",
+      "TXN003969",
+      "TXN003970",
+      "TXN003971",
+      "TXN003972",
+      "TXN003973",
+      "TXN003974",
+      "TXN003975",
+      "TXN003976",
+      "TXN003977",
+      "TXN003978",
+      "TXN003979",
+      "TXN003980",
+      "TXN003981",
+      "TXN003982",
+      "TXN003983",
+      "TXN003984",
+      "TXN003985",
+      "TXN003986",
+      "TXN003987",
+      "TXN003988",
+      "TXN003989",
+      "TXN003990",
+      "TXN003991",
+      "TXN003992",
+      "TXN003993",
+      "TXN003994",
+      "TXN003995",
+      "TXN003996",
+      "TXN003997",
+      "TXN003998",
+      "TXN003999",
+      "TXN004000",
+      "TXN004001"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00229"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00270",
+    "defect_classes": [
+      "BATCH_N1",
+      "DUPLICATE"
+    ],
+    "matched_txn_ids": [
+      "TXN004002",
+      "TXN004003",
+      "TXN004004",
+      "TXN004005",
+      "TXN004006",
+      "TXN004007",
+      "TXN004008",
+      "TXN004009",
+      "TXN004010",
+      "TXN004011",
+      "TXN004012",
+      "TXN004013",
+      "TXN004014",
+      "TXN004015",
+      "TXN004016",
+      "TXN004017",
+      "TXN004018",
+      "TXN004019",
+      "TXN004020",
+      "TXN004021",
+      "TXN004022",
+      "TXN004023",
+      "TXN004024",
+      "TXN004025",
+      "TXN004026",
+      "TXN004027",
+      "TXN004028",
+      "TXN004029",
+      "TXN004030",
+      "TXN004031",
+      "TXN004032",
+      "TXN004033",
+      "TXN004034",
+      "TXN004035",
+      "TXN004036",
+      "TXN004037",
+      "TXN004038",
+      "TXN004039",
+      "TXN004040",
+      "TXN004041",
+      "TXN004042",
+      "TXN004043",
+      "TXN004044",
+      "TXN004045",
+      "TXN004046",
+      "TXN004047",
+      "TXN004048",
+      "TXN004049",
+      "TXN004050",
+      "TXN004051",
+      "TXN004052"
+    ],
+    "notes": "decoy_txn_id=TXN005020",
+    "settlement_batch_ids": [
+      "STL00230"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00271",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004053",
+      "TXN004054",
+      "TXN004055",
+      "TXN004056",
+      "TXN004057",
+      "TXN004058",
+      "TXN004059",
+      "TXN004060",
+      "TXN004061",
+      "TXN004062",
+      "TXN004063",
+      "TXN004064",
+      "TXN004065",
+      "TXN004066",
+      "TXN004067",
+      "TXN004068",
+      "TXN004069",
+      "TXN004070",
+      "TXN004071",
+      "TXN004072",
+      "TXN004073",
+      "TXN004074",
+      "TXN004075",
+      "TXN004076",
+      "TXN004077",
+      "TXN004078",
+      "TXN004079",
+      "TXN004080",
+      "TXN004081",
+      "TXN004082",
+      "TXN004083",
+      "TXN004084",
+      "TXN004085",
+      "TXN004086",
+      "TXN004087",
+      "TXN004088",
+      "TXN004089",
+      "TXN004090",
+      "TXN004091",
+      "TXN004092",
+      "TXN004093",
+      "TXN004094",
+      "TXN004095",
+      "TXN004096",
+      "TXN004097",
+      "TXN004098",
+      "TXN004099",
+      "TXN004100",
+      "TXN004101",
+      "TXN004102",
+      "TXN004103",
+      "TXN004104",
+      "TXN004105",
+      "TXN004106",
+      "TXN004107",
+      "TXN004108",
+      "TXN004109",
+      "TXN004110",
+      "TXN004111",
+      "TXN004112"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00231"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00272",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004113",
+      "TXN004114",
+      "TXN004115",
+      "TXN004116",
+      "TXN004117",
+      "TXN004118",
+      "TXN004119",
+      "TXN004120",
+      "TXN004121",
+      "TXN004122",
+      "TXN004123",
+      "TXN004124",
+      "TXN004125",
+      "TXN004126",
+      "TXN004127",
+      "TXN004128",
+      "TXN004129",
+      "TXN004130",
+      "TXN004131",
+      "TXN004132",
+      "TXN004133",
+      "TXN004134",
+      "TXN004135",
+      "TXN004136",
+      "TXN004137",
+      "TXN004138",
+      "TXN004139",
+      "TXN004140",
+      "TXN004141",
+      "TXN004142",
+      "TXN004143",
+      "TXN004144",
+      "TXN004145",
+      "TXN004146",
+      "TXN004147",
+      "TXN004148",
+      "TXN004149",
+      "TXN004150",
+      "TXN004151"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00232"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00273",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN004152",
+      "TXN004153",
+      "TXN004154",
+      "TXN004155",
+      "TXN004156",
+      "TXN004157",
+      "TXN004158",
+      "TXN004159",
+      "TXN004160",
+      "TXN004161",
+      "TXN004162",
+      "TXN004163",
+      "TXN004164",
+      "TXN004165",
+      "TXN004166",
+      "TXN004167",
+      "TXN004168",
+      "TXN004169",
+      "TXN004170",
+      "TXN004171",
+      "TXN004172",
+      "TXN004173",
+      "TXN004174",
+      "TXN004175",
+      "TXN004176",
+      "TXN004177",
+      "TXN004178",
+      "TXN004179",
+      "TXN004180",
+      "TXN004181",
+      "TXN004182",
+      "TXN004183",
+      "TXN004184",
+      "TXN004185",
+      "TXN004186",
+      "TXN004187",
+      "TXN004188",
+      "TXN004189",
+      "TXN004190",
+      "TXN004191",
+      "TXN004192",
+      "TXN004193",
+      "TXN004194",
+      "TXN004195",
+      "TXN004196",
+      "TXN004197",
+      "TXN004198",
+      "TXN004199",
+      "TXN004200",
+      "TXN004201",
+      "TXN004202",
+      "TXN004203",
+      "TXN004204",
+      "TXN004205",
+      "TXN004206",
+      "TXN004207",
+      "TXN004208",
+      "TXN004209",
+      "TXN004210",
+      "TXN004211",
+      "TXN004212",
+      "TXN004213",
+      "TXN004214",
+      "TXN004215",
+      "TXN004216",
+      "TXN004217",
+      "TXN004218",
+      "TXN004219",
+      "TXN004220",
+      "TXN004221",
+      "TXN004222",
+      "TXN004223",
+      "TXN004224"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00233"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00274",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004225",
+      "TXN004226",
+      "TXN004227",
+      "TXN004228",
+      "TXN004229",
+      "TXN004230",
+      "TXN004231",
+      "TXN004232",
+      "TXN004233",
+      "TXN004234",
+      "TXN004235",
+      "TXN004236",
+      "TXN004237",
+      "TXN004238",
+      "TXN004239",
+      "TXN004240",
+      "TXN004241",
+      "TXN004242",
+      "TXN004243",
+      "TXN004244",
+      "TXN004245",
+      "TXN004246",
+      "TXN004247",
+      "TXN004248",
+      "TXN004249",
+      "TXN004250",
+      "TXN004251",
+      "TXN004252",
+      "TXN004253",
+      "TXN004254",
+      "TXN004255",
+      "TXN004256",
+      "TXN004257",
+      "TXN004258",
+      "TXN004259",
+      "TXN004260",
+      "TXN004261",
+      "TXN004262",
+      "TXN004263",
+      "TXN004264",
+      "TXN004265",
+      "TXN004266",
+      "TXN004267",
+      "TXN004268",
+      "TXN004269",
+      "TXN004270",
+      "TXN004271",
+      "TXN004272",
+      "TXN004273",
+      "TXN004274",
+      "TXN004275",
+      "TXN004276",
+      "TXN004277",
+      "TXN004278",
+      "TXN004279",
+      "TXN004280",
+      "TXN004281",
+      "TXN004282",
+      "TXN004283",
+      "TXN004284",
+      "TXN004285",
+      "TXN004286",
+      "TXN004287",
+      "TXN004288",
+      "TXN004289",
+      "TXN004290"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00234"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00275",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004291",
+      "TXN004292",
+      "TXN004293",
+      "TXN004294",
+      "TXN004295",
+      "TXN004296",
+      "TXN004297",
+      "TXN004298",
+      "TXN004299",
+      "TXN004300",
+      "TXN004301",
+      "TXN004302",
+      "TXN004303",
+      "TXN004304",
+      "TXN004305",
+      "TXN004306",
+      "TXN004307",
+      "TXN004308",
+      "TXN004309",
+      "TXN004310",
+      "TXN004311",
+      "TXN004312",
+      "TXN004313",
+      "TXN004314",
+      "TXN004315",
+      "TXN004316",
+      "TXN004317"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00235"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00276",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004318",
+      "TXN004319",
+      "TXN004320",
+      "TXN004321",
+      "TXN004322",
+      "TXN004323",
+      "TXN004324",
+      "TXN004325",
+      "TXN004326",
+      "TXN004327",
+      "TXN004328",
+      "TXN004329",
+      "TXN004330",
+      "TXN004331",
+      "TXN004332",
+      "TXN004333",
+      "TXN004334",
+      "TXN004335",
+      "TXN004336",
+      "TXN004337",
+      "TXN004338",
+      "TXN004339",
+      "TXN004340",
+      "TXN004341",
+      "TXN004342",
+      "TXN004343",
+      "TXN004344",
+      "TXN004345",
+      "TXN004346",
+      "TXN004347",
+      "TXN004348",
+      "TXN004349",
+      "TXN004350",
+      "TXN004351",
+      "TXN004352",
+      "TXN004353",
+      "TXN004354",
+      "TXN004355",
+      "TXN004356",
+      "TXN004357",
+      "TXN004358",
+      "TXN004359",
+      "TXN004360",
+      "TXN004361",
+      "TXN004362",
+      "TXN004363",
+      "TXN004364",
+      "TXN004365",
+      "TXN004366",
+      "TXN004367",
+      "TXN004368",
+      "TXN004369",
+      "TXN004370",
+      "TXN004371",
+      "TXN004372",
+      "TXN004373",
+      "TXN004374",
+      "TXN004375",
+      "TXN004376",
+      "TXN004377"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00236"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00277",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004378",
+      "TXN004379",
+      "TXN004380",
+      "TXN004381",
+      "TXN004382",
+      "TXN004383",
+      "TXN004384",
+      "TXN004385",
+      "TXN004386",
+      "TXN004387",
+      "TXN004388",
+      "TXN004389",
+      "TXN004390",
+      "TXN004391",
+      "TXN004392",
+      "TXN004393",
+      "TXN004394",
+      "TXN004395",
+      "TXN004396",
+      "TXN004397",
+      "TXN004398",
+      "TXN004399",
+      "TXN004400",
+      "TXN004401",
+      "TXN004402",
+      "TXN004403",
+      "TXN004404",
+      "TXN004405",
+      "TXN004406",
+      "TXN004407",
+      "TXN004408",
+      "TXN004409",
+      "TXN004410",
+      "TXN004411",
+      "TXN004412"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00237"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00278",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004413",
+      "TXN004414",
+      "TXN004415",
+      "TXN004416",
+      "TXN004417",
+      "TXN004418",
+      "TXN004419",
+      "TXN004420",
+      "TXN004421",
+      "TXN004422",
+      "TXN004423",
+      "TXN004424",
+      "TXN004425",
+      "TXN004426",
+      "TXN004427",
+      "TXN004428",
+      "TXN004429",
+      "TXN004430",
+      "TXN004431",
+      "TXN004432",
+      "TXN004433",
+      "TXN004434",
+      "TXN004435",
+      "TXN004436",
+      "TXN004437",
+      "TXN004438",
+      "TXN004439"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00238"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00279",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004440",
+      "TXN004441",
+      "TXN004442",
+      "TXN004443",
+      "TXN004444",
+      "TXN004445",
+      "TXN004446",
+      "TXN004447",
+      "TXN004448",
+      "TXN004449",
+      "TXN004450",
+      "TXN004451",
+      "TXN004452",
+      "TXN004453",
+      "TXN004454",
+      "TXN004455",
+      "TXN004456",
+      "TXN004457",
+      "TXN004458",
+      "TXN004459",
+      "TXN004460",
+      "TXN004461",
+      "TXN004462",
+      "TXN004463",
+      "TXN004464",
+      "TXN004465",
+      "TXN004466",
+      "TXN004467",
+      "TXN004468",
+      "TXN004469",
+      "TXN004470",
+      "TXN004471",
+      "TXN004472",
+      "TXN004473",
+      "TXN004474",
+      "TXN004475",
+      "TXN004476",
+      "TXN004477",
+      "TXN004478",
+      "TXN004479",
+      "TXN004480",
+      "TXN004481",
+      "TXN004482",
+      "TXN004483",
+      "TXN004484",
+      "TXN004485",
+      "TXN004486",
+      "TXN004487",
+      "TXN004488",
+      "TXN004489",
+      "TXN004490",
+      "TXN004491",
+      "TXN004492",
+      "TXN004493",
+      "TXN004494",
+      "TXN004495",
+      "TXN004496",
+      "TXN004497",
+      "TXN004498",
+      "TXN004499",
+      "TXN004500",
+      "TXN004501",
+      "TXN004502",
+      "TXN004503",
+      "TXN004504",
+      "TXN004505",
+      "TXN004506",
+      "TXN004507",
+      "TXN004508",
+      "TXN004509",
+      "TXN004510",
+      "TXN004511",
+      "TXN004512",
+      "TXN004513",
+      "TXN004514",
+      "TXN004515",
+      "TXN004516",
+      "TXN004517",
+      "TXN004518",
+      "TXN004519",
+      "TXN004520",
+      "TXN004521",
+      "TXN004522",
+      "TXN004523"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00239"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00280",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004524",
+      "TXN004525",
+      "TXN004526",
+      "TXN004527",
+      "TXN004528",
+      "TXN004529",
+      "TXN004530",
+      "TXN004531",
+      "TXN004532",
+      "TXN004533",
+      "TXN004534",
+      "TXN004535",
+      "TXN004536",
+      "TXN004537",
+      "TXN004538",
+      "TXN004539",
+      "TXN004540",
+      "TXN004541",
+      "TXN004542",
+      "TXN004543",
+      "TXN004544",
+      "TXN004545",
+      "TXN004546",
+      "TXN004547",
+      "TXN004548",
+      "TXN004549",
+      "TXN004550",
+      "TXN004551",
+      "TXN004552",
+      "TXN004553",
+      "TXN004554",
+      "TXN004555",
+      "TXN004556",
+      "TXN004557"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00240"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00281",
+    "defect_classes": [
+      "BATCH_N1",
+      "INJECTION"
+    ],
+    "matched_txn_ids": [
+      "TXN004558",
+      "TXN004559",
+      "TXN004560",
+      "TXN004561",
+      "TXN004562",
+      "TXN004563",
+      "TXN004564",
+      "TXN004565",
+      "TXN004566",
+      "TXN004567",
+      "TXN004568",
+      "TXN004569",
+      "TXN004570",
+      "TXN004571",
+      "TXN004572",
+      "TXN004573",
+      "TXN004574",
+      "TXN004575",
+      "TXN004576",
+      "TXN004577",
+      "TXN004578",
+      "TXN004579",
+      "TXN004580",
+      "TXN004581",
+      "TXN004582",
+      "TXN004583",
+      "TXN004584",
+      "TXN004585",
+      "TXN004586",
+      "TXN004587",
+      "TXN004588",
+      "TXN004589",
+      "TXN004590",
+      "TXN004591",
+      "TXN004592",
+      "TXN004593",
+      "TXN004594",
+      "TXN004595",
+      "TXN004596",
+      "TXN004597",
+      "TXN004598",
+      "TXN004599",
+      "TXN004600",
+      "TXN004601",
+      "TXN004602",
+      "TXN004603",
+      "TXN004604",
+      "TXN004605",
+      "TXN004606",
+      "TXN004607",
+      "TXN004608",
+      "TXN004609",
+      "TXN004610",
+      "TXN004611",
+      "TXN004612",
+      "TXN004613",
+      "TXN004614",
+      "TXN004615",
+      "TXN004616",
+      "TXN004617",
+      "TXN004618",
+      "TXN004619",
+      "TXN004620",
+      "TXN004621",
+      "TXN004622",
+      "TXN004623",
+      "TXN004624",
+      "TXN004625",
+      "TXN004626",
+      "TXN004627",
+      "TXN004628",
+      "TXN004629",
+      "TXN004630",
+      "TXN004631",
+      "TXN004632",
+      "TXN004633",
+      "TXN004634",
+      "TXN004635",
+      "TXN004636",
+      "TXN004637",
+      "TXN004638",
+      "TXN004639",
+      "TXN004640",
+      "TXN004641",
+      "TXN004642"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00241"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00282",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004643",
+      "TXN004644",
+      "TXN004645",
+      "TXN004646",
+      "TXN004647",
+      "TXN004648",
+      "TXN004649",
+      "TXN004650",
+      "TXN004651",
+      "TXN004652",
+      "TXN004653",
+      "TXN004654",
+      "TXN004655",
+      "TXN004656",
+      "TXN004657",
+      "TXN004658",
+      "TXN004659",
+      "TXN004660",
+      "TXN004661",
+      "TXN004662",
+      "TXN004663",
+      "TXN004664",
+      "TXN004665",
+      "TXN004666",
+      "TXN004667",
+      "TXN004668",
+      "TXN004669",
+      "TXN004670",
+      "TXN004671",
+      "TXN004672",
+      "TXN004673",
+      "TXN004674",
+      "TXN004675",
+      "TXN004676",
+      "TXN004677",
+      "TXN004678",
+      "TXN004679",
+      "TXN004680",
+      "TXN004681",
+      "TXN004682",
+      "TXN004683",
+      "TXN004684",
+      "TXN004685",
+      "TXN004686",
+      "TXN004687",
+      "TXN004688",
+      "TXN004689",
+      "TXN004690",
+      "TXN004691",
+      "TXN004692",
+      "TXN004693",
+      "TXN004694",
+      "TXN004695",
+      "TXN004696",
+      "TXN004697",
+      "TXN004698",
+      "TXN004699",
+      "TXN004700",
+      "TXN004701",
+      "TXN004702",
+      "TXN004703",
+      "TXN004704",
+      "TXN004705",
+      "TXN004706"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00242"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00283",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004707",
+      "TXN004708",
+      "TXN004709",
+      "TXN004710",
+      "TXN004711",
+      "TXN004712",
+      "TXN004713",
+      "TXN004714",
+      "TXN004715",
+      "TXN004716",
+      "TXN004717",
+      "TXN004718",
+      "TXN004719",
+      "TXN004720",
+      "TXN004721",
+      "TXN004722",
+      "TXN004723",
+      "TXN004724",
+      "TXN004725",
+      "TXN004726",
+      "TXN004727",
+      "TXN004728",
+      "TXN004729",
+      "TXN004730",
+      "TXN004731",
+      "TXN004732",
+      "TXN004733",
+      "TXN004734",
+      "TXN004735",
+      "TXN004736",
+      "TXN004737",
+      "TXN004738",
+      "TXN004739",
+      "TXN004740",
+      "TXN004741",
+      "TXN004742",
+      "TXN004743",
+      "TXN004744",
+      "TXN004745",
+      "TXN004746",
+      "TXN004747",
+      "TXN004748",
+      "TXN004749",
+      "TXN004750",
+      "TXN004751",
+      "TXN004752",
+      "TXN004753",
+      "TXN004754",
+      "TXN004755",
+      "TXN004756",
+      "TXN004757",
+      "TXN004758",
+      "TXN004759",
+      "TXN004760",
+      "TXN004761",
+      "TXN004762",
+      "TXN004763",
+      "TXN004764",
+      "TXN004765",
+      "TXN004766",
+      "TXN004767",
+      "TXN004768",
+      "TXN004769",
+      "TXN004770",
+      "TXN004771",
+      "TXN004772",
+      "TXN004773",
+      "TXN004774",
+      "TXN004775",
+      "TXN004776",
+      "TXN004777",
+      "TXN004778",
+      "TXN004779",
+      "TXN004780",
+      "TXN004781",
+      "TXN004782",
+      "TXN004783",
+      "TXN004784",
+      "TXN004785",
+      "TXN004786",
+      "TXN004787",
+      "TXN004788",
+      "TXN004789",
+      "TXN004790",
+      "TXN004791",
+      "TXN004792"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00243"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00284",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004793",
+      "TXN004794",
+      "TXN004795",
+      "TXN004796",
+      "TXN004797",
+      "TXN004798",
+      "TXN004799",
+      "TXN004800",
+      "TXN004801",
+      "TXN004802",
+      "TXN004803",
+      "TXN004804",
+      "TXN004805",
+      "TXN004806",
+      "TXN004807",
+      "TXN004808",
+      "TXN004809",
+      "TXN004810",
+      "TXN004811",
+      "TXN004812",
+      "TXN004813",
+      "TXN004814",
+      "TXN004815",
+      "TXN004816",
+      "TXN004817",
+      "TXN004818",
+      "TXN004819",
+      "TXN004820",
+      "TXN004821",
+      "TXN004822",
+      "TXN004823",
+      "TXN004824",
+      "TXN004825",
+      "TXN004826",
+      "TXN004827",
+      "TXN004828"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00244"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00285",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004829",
+      "TXN004830",
+      "TXN004831",
+      "TXN004832",
+      "TXN004833",
+      "TXN004834",
+      "TXN004835",
+      "TXN004836",
+      "TXN004837",
+      "TXN004838",
+      "TXN004839",
+      "TXN004840",
+      "TXN004841",
+      "TXN004842",
+      "TXN004843",
+      "TXN004844",
+      "TXN004845",
+      "TXN004846",
+      "TXN004847",
+      "TXN004848",
+      "TXN004849",
+      "TXN004850",
+      "TXN004851",
+      "TXN004852",
+      "TXN004853",
+      "TXN004854",
+      "TXN004855",
+      "TXN004856",
+      "TXN004857",
+      "TXN004858",
+      "TXN004859",
+      "TXN004860",
+      "TXN004861",
+      "TXN004862",
+      "TXN004863",
+      "TXN004864",
+      "TXN004865",
+      "TXN004866",
+      "TXN004867",
+      "TXN004868",
+      "TXN004869",
+      "TXN004870",
+      "TXN004871",
+      "TXN004872",
+      "TXN004873",
+      "TXN004874",
+      "TXN004875",
+      "TXN004876",
+      "TXN004877",
+      "TXN004878",
+      "TXN004879",
+      "TXN004880",
+      "TXN004881",
+      "TXN004882",
+      "TXN004883"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00245"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00286",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004884",
+      "TXN004885",
+      "TXN004886",
+      "TXN004887",
+      "TXN004888",
+      "TXN004889",
+      "TXN004890",
+      "TXN004891",
+      "TXN004892",
+      "TXN004893",
+      "TXN004894",
+      "TXN004895",
+      "TXN004896",
+      "TXN004897",
+      "TXN004898",
+      "TXN004899",
+      "TXN004900",
+      "TXN004901",
+      "TXN004902",
+      "TXN004903",
+      "TXN004904",
+      "TXN004905",
+      "TXN004906",
+      "TXN004907",
+      "TXN004908",
+      "TXN004909",
+      "TXN004910",
+      "TXN004911",
+      "TXN004912",
+      "TXN004913",
+      "TXN004914",
+      "TXN004915",
+      "TXN004916",
+      "TXN004917",
+      "TXN004918",
+      "TXN004919",
+      "TXN004920",
+      "TXN004921",
+      "TXN004922",
+      "TXN004923",
+      "TXN004924",
+      "TXN004925",
+      "TXN004926",
+      "TXN004927",
+      "TXN004928",
+      "TXN004929",
+      "TXN004930",
+      "TXN004931",
+      "TXN004932",
+      "TXN004933",
+      "TXN004934",
+      "TXN004935",
+      "TXN004936",
+      "TXN004937",
+      "TXN004938",
+      "TXN004939"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00246"
+    ]
+  },
+  {
+    "bank_line_id": "BANK00287",
+    "defect_classes": [
+      "BATCH_N1"
+    ],
+    "matched_txn_ids": [
+      "TXN004940",
+      "TXN004941",
+      "TXN004942",
+      "TXN004943",
+      "TXN004944",
+      "TXN004945",
+      "TXN004946",
+      "TXN004947",
+      "TXN004948",
+      "TXN004949",
+      "TXN004950",
+      "TXN004951",
+      "TXN004952",
+      "TXN004953",
+      "TXN004954",
+      "TXN004955",
+      "TXN004956",
+      "TXN004957",
+      "TXN004958",
+      "TXN004959",
+      "TXN004960",
+      "TXN004961",
+      "TXN004962",
+      "TXN004963",
+      "TXN004964",
+      "TXN004965",
+      "TXN004966",
+      "TXN004967",
+      "TXN004968",
+      "TXN004969",
+      "TXN004970",
+      "TXN004971",
+      "TXN004972",
+      "TXN004973",
+      "TXN004974",
+      "TXN004975",
+      "TXN004976",
+      "TXN004977",
+      "TXN004978",
+      "TXN004979",
+      "TXN004980",
+      "TXN004981",
+      "TXN004982",
+      "TXN004983",
+      "TXN004984",
+      "TXN004985",
+      "TXN004986",
+      "TXN004987",
+      "TXN004988",
+      "TXN004989",
+      "TXN004990",
+      "TXN004991",
+      "TXN004992",
+      "TXN004993",
+      "TXN004994",
+      "TXN004995",
+      "TXN004996",
+      "TXN004997",
+      "TXN004998",
+      "TXN004999",
+      "TXN005000"
+    ],
+    "notes": "",
+    "settlement_batch_ids": [
+      "STL00247"
+    ]
+  }
+]
