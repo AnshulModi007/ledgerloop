@@ -27,12 +27,28 @@ fee:
   gst_rate_bps: 1800 # 18.00% GST on the platform fee
   tds_bps: 10 # 0.10% TDS on gross (u/s 194-O), configurable per merchant
 
+# --- tier 1: exact join ---------------------------------------------------
+# "no tolerance" means no amount slack, but a same/next-day settlement->bank
+# posting lag is a structural fact of how payouts clear, not a fuzzy fudge --
+# so it's bounded and configurable rather than open-ended.
+tier1:
+  exact_match_max_lag_days: 1
+
 # --- tier 2: algorithmic matching ---------------------------------------
+# meet_in_middle_max_items and subset_sum_node_budget were both tuned down from an
+# initial 40 / 200,000: profiling showed 2^20 combinations per half at n=40 (~1M
+# subset sums, pure Python) and a 200k-iteration greedy search both dominating
+# pipeline runtime whenever a candidate window had no valid subset at all (the
+# search correctly burns its whole budget before giving up). At 20 / 20,000 the
+# dev-set resolution/false-match numbers are unchanged -- see FAILURES.md.
 tier2:
   amount_tolerance_paise: 200 # +/- INR 2.00 slack for FEE_DRIFT-class rounding
   date_window_days: 5 # settlement is T+2; window absorbs MONTH_CROSS
-  subset_sum_node_budget: 200000 # hard cap before emitting TIER2_TIMEOUT
-  meet_in_middle_max_items: 40 # above this, fall back to greedy + local search
+  subset_sum_node_budget: 20000 # hard cap before emitting TIER2_TIMEOUT
+  meet_in_middle_max_items: 20 # above this, fall back to greedy + local search
+  min_resolve_score: 0.7 # below this, defer to tier3 even if the candidate is unique
+  ambiguity_margin: 0.05 # candidates within this of the best score are treated as tied
+  matcher_rng_seed: 777 # seeds tier2's own tie-breaking RNG (greedy local search); unrelated to generation seeds
 
 # --- tier 3: LLM adjudication -------------------------------------------
 tier3:

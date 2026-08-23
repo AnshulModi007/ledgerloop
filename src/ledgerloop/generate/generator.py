@@ -176,6 +176,7 @@ class Generator:
     def _settle_line(
         self,
         batch_id: str,
+        payout_utr: str,
         txn: GatewayTransaction,
         settlement_date: date,
         refund_paise: int = 0,
@@ -192,6 +193,7 @@ class Generator:
         return SettlementLine(
             settlement_batch_id=batch_id,
             txn_id=txn.txn_id,
+            payout_utr=payout_utr,
             gross_amount_paise=breakdown.gross_paise,
             fee_paise=breakdown.fee_paise,
             gst_on_fee_paise=breakdown.gst_on_fee_paise,
@@ -213,6 +215,7 @@ class Generator:
         value_slack_days: int = 0,
     ) -> BuiltBatch:
         batch_id = self.ids.next_batch()
+        payout_utr = _new_utr(self.rng)
         anchor_date = self._random_date_in_range(near_month_end=near_month_end)
         txns = [self._make_txn(anchor_date, self._random_gross()) for _ in range(n_txns)]
         settlement_date = anchor_date + timedelta(days=2)  # T+2
@@ -227,11 +230,12 @@ class Generator:
             if chargeback_idx == i:
                 chargeback_paise = txn.gross_amount_paise
                 txn.status = "charged_back"
-            lines.append(self._settle_line(batch_id, txn, settlement_date, refund_paise, chargeback_paise))
+            lines.append(
+                self._settle_line(batch_id, payout_utr, txn, settlement_date, refund_paise, chargeback_paise)
+            )
 
         total_net = sum(line.net_paise for line in lines)
         value_date = settlement_date + timedelta(days=value_slack_days)
-        payout_utr = _new_utr(self.rng)
 
         return BuiltBatch(
             settlement_batch_id=batch_id,

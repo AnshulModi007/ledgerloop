@@ -30,6 +30,7 @@ class SettlementLine(BaseModel):
 
     settlement_batch_id: str
     txn_id: str
+    payout_utr: str
     gross_amount_paise: int
     fee_paise: int
     gst_on_fee_paise: int
