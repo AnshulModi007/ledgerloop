@@ -22,9 +22,10 @@ eval:
 
 demo:
 	$(PYTHON) -m ledgerloop.generate.generator --profile dev
-	$(PYTHON) -m ledgerloop.reconcile --profile dev --no-llm
+	$(PYTHON) -m ledgerloop.reconcile --profile dev --no-llm --approve
 	@echo ""
-	@echo "Exceptions, journal entries, and the dashboard land in Phase 4-6."
+	@echo "Re-running now (same command) will show 0 new postings -- the loop is closed."
+	@echo "The dashboard (Phase 6) puts a one-click button on that same re-run."
 	@echo "Set GEMINI_API_KEY/GROQ_API_KEY/OPENROUTER_API_KEY, or run a local Ollama,"
 	@echo "and drop --no-llm above to let tier3 adjudicate the remainder."
 

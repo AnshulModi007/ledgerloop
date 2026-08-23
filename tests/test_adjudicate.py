@@ -89,7 +89,7 @@ def test_invalid_candidate_id_is_discarded_not_trusted(config):
         ]
     )
     provider = FakeProvider([malicious_response, malicious_response, malicious_response])
-    resolutions, reasons, _calls, providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, _calls, providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00001": (bank_line, candidates)}, [provider], config["tier3"]
     )
     assert resolutions == {}
@@ -112,7 +112,7 @@ def test_valid_selection_resolves_with_candidates_matched_txn_ids(config):
         ]
     )
     provider = FakeProvider([response])
-    resolutions, reasons, calls, _providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, calls, _providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00002": (bank_line, candidates)}, [provider], config["tier3"]
     )
     assert reasons == {}
@@ -139,7 +139,7 @@ def test_confidence_below_threshold_is_treated_as_abstain(config):
         ]
     )
     provider = FakeProvider([response])
-    resolutions, reasons, _calls, _providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00003": (bank_line, candidates)}, [provider], config["tier3"]
     )
     assert resolutions == {}
@@ -161,7 +161,7 @@ def test_explicit_abstain_is_respected(config):
         ]
     )
     provider = FakeProvider([response])
-    resolutions, reasons, _calls, _providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00004": (bank_line, candidates)}, [provider], config["tier3"]
     )
     assert resolutions == {}
@@ -172,7 +172,7 @@ def test_retries_are_bounded_by_max_retries(config):
     bank_line = _bank_line("BANK00005")
     candidates = [_candidate("BANK00005-C0", ["TXN000040"])]
     provider = FakeProvider([None, None, None, None])  # always fails transport
-    resolutions, reasons, _calls, _providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00005": (bank_line, candidates)}, [provider], config["tier3"]
     )
     assert resolutions == {}
@@ -185,7 +185,7 @@ def test_malformed_json_is_retried_then_gives_up_gracefully(config):
     bank_line = _bank_line("BANK00006")
     candidates = [_candidate("BANK00006-C0", ["TXN000050"])]
     provider = FakeProvider(["not json at all", "{}", "[1, 2, 3]"])
-    resolutions, _reasons, _calls, _providers = adjudicator.adjudicate_cases(
+    resolutions, _reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00006": (bank_line, candidates)}, [provider], config["tier3"]
     )
     assert resolutions == {}
@@ -196,7 +196,7 @@ def test_malformed_json_is_retried_then_gives_up_gracefully(config):
 def test_no_llm_available_completes_without_hanging_or_crashing(config):
     bank_line = _bank_line("BANK00007")
     candidates = [_candidate("BANK00007-C0", ["TXN000060"])]
-    resolutions, reasons, calls, providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, calls, providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00007": (bank_line, candidates)}, [NullProvider()], config["tier3"]
     )
     assert resolutions == {}

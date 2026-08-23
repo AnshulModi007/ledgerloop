@@ -47,14 +47,6 @@ class PipelineResult:
     tier2_timeouts: int
 
 
-def _transposed_variants(utr: str) -> list[str]:
-    variants = []
-    for i in range(len(utr) - 1):
-        if utr[i].isdigit() and utr[i + 1].isdigit() and utr[i] != utr[i + 1]:
-            chars = list(utr)
-            chars[i], chars[i + 1] = chars[i + 1], chars[i]
-            variants.append("".join(chars))
-    return variants
 
 
 def _strategy_exact_utr(
@@ -100,7 +92,7 @@ def _strategy_transposed_utr(
         return []
     out = []
     seen_batches: set[str] = set()
-    for variant in _transposed_variants(bank_line.extracted_utr):
+    for variant in tier1_exact.transposed_utr_variants(bank_line.extracted_utr):
         for batch in by_utr.get(variant, []):
             if batch.settlement_batch_id in claimed_batch_ids or batch.settlement_batch_id in seen_batches:
                 continue
@@ -208,7 +200,7 @@ def _structural_candidate_batch_ids(
     if not bank_line.extracted_utr:
         return set()
     ids = {b.settlement_batch_id for b in by_utr.get(bank_line.extracted_utr, [])}
-    for variant in _transposed_variants(bank_line.extracted_utr):
+    for variant in tier1_exact.transposed_utr_variants(bank_line.extracted_utr):
         ids.update(b.settlement_batch_id for b in by_utr.get(variant, []))
     return ids
 

@@ -356,3 +356,85 @@ Covered by `test_narration_extraction_tolerates_missing_utr_prefix`.
 **Would do differently:** When a synthetic-data convention leaks into what's supposed
 to be a realistic extraction task, expect the model to normalize it away rather than
 preserve it, and design the downstream join to be tolerant from the start.
+
+---
+
+## 2026-08-23 — the rounding-adjustment posting made every FEE_DRIFT batch *more* unbalanced
+
+**Symptom:** A smoke test summing debits and credits per proposed journal batch found
+20 unbalanced batches (dev set), every one a small paise-level mismatch (2-10 paise).
+
+**Diagnosis:** `journal.py`'s residual-handling logic had the debit/credit direction
+backwards. Worked through the accounting identity by hand: with the bank-receipt leg
+already on the debit side sized to the *actual* credit, `sum(debits) - sum(credits) =
+credit_amount_paise - total_net = residual` *before* any rounding leg is added. So
+`residual > 0` means debits are already ahead and need a **credit** to close the gap
+-- the code did the opposite (`"debit" if residual > 0 else "credit"`), which added
+to the wrong side and doubled the imbalance instead of closing it. Every FEE_DRIFT
+line (the one defect class that makes `credit_amount_paise != total_net` by design)
+was affected; everything else balanced by coincidence (residual == 0, so the buggy
+branch never ran).
+
+**Fix:** Flipped the direction (`"credit" if residual > 0 else "debit"`), verified by
+re-deriving the identity with a worked numeric example before touching the code again,
+and confirmed 0/260 unbalanced batches on the dev set afterward.
+`test_every_journal_batch_balances` now runs this exact check as a standing test.
+
+**Would do differently:** Write out the accounting identity in a comment *before*
+writing the conditional, not after debugging it backwards from a failing balance
+check. Sign errors in double-entry logic are exactly the kind of bug that's invisible
+without an explicit balance assertion -- would add that test before the code that
+needs it, next time, not after.
+
+---
+
+## 2026-08-23 — `journal.py` used `gross_paise` instead of `SettlementLine.gross_amount_paise`
+
+**Symptom:** `propose_postings()` crashed with `AttributeError: 'SettlementLine'
+object has no attribute 'gross_paise'` the first time it ran against real data.
+
+**Diagnosis:** `match/fee_model.py::FeeBreakdown` names the field `gross_paise`;
+`generate/schemas.py::SettlementLine` (a different model, built from a
+`FeeBreakdown`) names the same value `gross_amount_paise`. I carried the wrong
+model's field name into new code without checking, four phases after
+`FeeBreakdown` was written.
+
+**Fix:** One-line correction. No behavior to reconsider -- the field naming
+inconsistency between the two models remains (fixing it now would mean touching
+Phase 1 output schemas that are already load-bearing for `data/dev` and
+`data/holdout`), but it's now a documented trap rather than a silent one.
+
+**Would do differently:** When two closely-related models in the same codebase use
+different names for the same concept, that's worth a one-line comment at the point of
+the naming choice, not just at the point where someone eventually collides with it.
+
+---
+
+## 2026-08-23 — genuinely OUT_OF_SCOPE lines were staying tagged TIER2_TIMEOUT, not reclassified
+
+**Symptom:** Live end-to-end check against the dev set expected 20 `OUT_OF_SCOPE`
+exceptions (matching the generator's 20 `OUT_OF_SCOPE`-defect lines) but got only 6 --
+the other 14 were tagged `TIER2_TIMEOUT` instead.
+
+**Diagnosis:** `exceptions/taxonomy.py`'s reclassification pass (checking for a
+near-UTR batch, a duplicate-amount signature, or "no UTR at all" to distinguish
+`OUT_OF_SCOPE` from a generic miss) only ran for the `NO_CANDIDATE` reason hint.
+`TIER2_TIMEOUT` cases -- which mean exactly the same thing operationally ("tier2
+found nothing usable"), just via a different mechanical path (a bounded search
+exhausting its budget vs. finding literally zero candidates) -- were passed through
+untouched. Both hints can land on the *same* genuinely-out-of-scope line depending on
+how the generic subset-sum search happens to terminate for that particular input
+(itself just a budget-tuning artifact from an earlier fix, not a correctness
+difference -- see the subset-sum performance entry above).
+
+**Fix:** Both `NO_CANDIDATE` and `TIER2_TIMEOUT` now go through the same
+reclassification pass (`_RECLASSIFIABLE` dict, replacing the old direct passthrough
+for `TIER2_TIMEOUT`), falling back to their original code only if none of the more
+specific patterns match. Re-verified: 20/20 `OUT_OF_SCOPE`-defect lines now land
+correctly.
+
+**Would do differently:** When two reason hints can be produced by what's
+semantically the same failure mode via different code paths, treat them as one case
+for any downstream classification, not two -- the mechanical distinction (empty
+result vs. exhausted budget) is real and worth keeping in the reclassified code's
+fallback, but it shouldn't gate whether reclassification runs at all.

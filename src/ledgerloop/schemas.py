@@ -41,3 +41,16 @@ class UnresolvedCase(BaseModel):
     reason_hint: str
     candidates: list[Candidate]
     evidence: dict
+
+
+class Exception_(BaseModel):
+    """An unresolved item, typed so it's never a silent drop. reason_code is one of
+    exceptions.taxonomy.ReasonCode. explanation is None when running --no-llm (or
+    when no LLM ever weighed in on this particular case, e.g. it had zero candidates
+    to begin with). See exceptions/taxonomy.py."""
+
+    bank_line_id: str
+    reason_code: str
+    candidates_considered: list[str]
+    explanation: str | None
+    evidence: dict

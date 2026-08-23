@@ -145,7 +145,7 @@ def test_adversarial_response_never_produces_a_false_match(config):
         extracted_utr="UTR11112222333344",
     )
     candidates = [_candidate("BANK00099-C0", ["TXN000900"])]
-    resolutions, reasons, _calls, _providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00099": (bank_line, candidates)}, [AdversarialProvider()], config["tier3"]
     )
     assert resolutions == {}
@@ -178,7 +178,7 @@ def test_injection_does_not_prevent_legitimate_resolution(config):
             }
         ]
     )
-    resolutions, reasons, _calls, _providers = adjudicator.adjudicate_cases(
+    resolutions, reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
         {"BANK00100": (bank_line, candidates)}, [FakeProvider([response])], config["tier3"]
     )
     assert reasons == {}

@@ -56,6 +56,19 @@ def batches_by_utr(batches: dict[str, SettlementBatch]) -> dict[str, list[Settle
     return index
 
 
+def transposed_utr_variants(utr: str) -> list[str]:
+    """Every single-adjacent-digit-swap variant of utr. Used by tier2's bounded
+    transposition-tolerant UTR lookup and by exceptions/taxonomy.py's reclassification
+    pass, so both agree on exactly what "near-UTR" means."""
+    variants = []
+    for i in range(len(utr) - 1):
+        if utr[i].isdigit() and utr[i + 1].isdigit() and utr[i] != utr[i + 1]:
+            chars = list(utr)
+            chars[i], chars[i + 1] = chars[i + 1], chars[i]
+            variants.append("".join(chars))
+    return variants
+
+
 def audit_id(tier: str, bank_line_id: str, matched_txn_ids: list[str]) -> str:
     """Deterministic, reproducible placeholder id. Phase 4's audit/log.py owns the real trail."""
     digest = hashlib.sha1(

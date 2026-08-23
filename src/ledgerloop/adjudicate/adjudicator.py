@@ -126,17 +126,21 @@ def adjudicate_cases(
     cases: dict[str, tuple[NormalisedBankLine, list[Candidate]]],
     chain: list[LLMProvider],
     cfg: dict,
-) -> tuple[dict[str, Resolution], dict[str, str], int, list[str]]:
+) -> tuple[dict[str, Resolution], dict[str, str], int, list[str], dict[str, str]]:
     """Batches `cases` (bank_line_id -> (bank_line, candidates)) into tier3.batch_size
     chunks, retrying only the cases that didn't get a usable answer, up to
     tier3.max_retries extra rounds. Returns (resolutions, reason_hint_by_bank_line_id
     for cases tier3 determined it couldn't resolve, llm_calls_made, provider names
-    actually used). A bank_line_id absent from both outputs means tier3 never got a
-    usable answer for it at all (e.g. no LLM configured) -- the caller should keep
-    whatever reason_hint tier2 already gave it.
+    actually used, reasoning_by_bank_line_id -- the model's own explanation text, kept
+    for any bank_line_id where a syntactically valid Adjudication was parsed at all,
+    even an abstain or a discarded invalid selection, for exceptions/taxonomy.py's
+    reviewer-facing explanation). A bank_line_id absent from the first two outputs
+    means tier3 never got a usable answer for it at all (e.g. no LLM configured) --
+    the caller should keep whatever reason_hint tier2 already gave it.
     """
     resolutions: dict[str, Resolution] = {}
     reason_hints: dict[str, str] = {}
+    reasoning: dict[str, str] = {}
     llm_calls = 0
     providers_used: list[str] = []
     seen_invalid_selection: set[str] = set()
@@ -168,6 +172,8 @@ def adjudicate_cases(
                 adjudication = parsed.get(bid)
                 if adjudication is None:
                     continue  # missing from the response; retry next attempt
+                if adjudication.reasoning:
+                    reasoning[bid] = adjudication.reasoning
                 _bank_line, candidates = remaining[bid]
                 candidates_by_id = {c.candidate_id: c for c in candidates}
                 if adjudication.decision == "select" and adjudication.candidate_id not in candidates_by_id:
@@ -191,7 +197,7 @@ def adjudicate_cases(
             reason_hints[bid] = "TIER3_INVALID_SELECTION"
             del remaining[bid]
 
-    return resolutions, reason_hints, llm_calls, providers_used
+    return resolutions, reason_hints, llm_calls, providers_used, reasoning
 
 
 def extract_narration_utrs(
@@ -344,7 +350,7 @@ def run(
         bid: (bank_line_by_id[bid], case.candidates) for bid, case in still_unresolved.items() if case.candidates
     }
     if to_adjudicate:
-        new_resolutions, reason_hints, calls, providers = adjudicate_cases(to_adjudicate, chain, cfg)
+        new_resolutions, reason_hints, calls, providers, reasoning = adjudicate_cases(to_adjudicate, chain, cfg)
         llm_calls += calls
         providers_used.extend(providers)
 
@@ -360,8 +366,11 @@ def run(
             case = still_unresolved.get(bid)
             if case is None:
                 continue
+            evidence = case.evidence
+            if bid in reasoning:
+                evidence = {**evidence, "tier3_reasoning": reasoning[bid]}
             still_unresolved[bid] = UnresolvedCase(
-                bank_line_id=bid, reason_hint=reason, candidates=case.candidates, evidence=case.evidence
+                bank_line_id=bid, reason_hint=reason, candidates=case.candidates, evidence=evidence
             )
 
     llm_available = any(not isinstance(p, NullProvider) for p in chain)
