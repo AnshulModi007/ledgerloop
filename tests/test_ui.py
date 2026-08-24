@@ -1,0 +1,84 @@
+"""Dashboard smoke tests via Streamlit's AppTest -- runs ui/app.py's actual script
+(sidebar controls, button clicks, session-state reruns) rather than importing
+functions out of it, since almost everything in that module is Streamlit call
+wiring rather than testable logic on its own (the logic it wires lives in
+pipeline.py and exceptions/queue.py, already covered by their own tests). See
+IMPLEMENTATION.md section 4 (Phase 6).
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+pytest.importorskip("streamlit")  # ui/app.py only needs to be installed via `make install-ui`
+from streamlit.testing.v1 import AppTest
+
+from ledgerloop.config import load_config
+from ledgerloop.generate.generator import Generator, write_dataset
+
+APP_PATH = str(Path(__file__).resolve().parents[1] / "src" / "ledgerloop" / "ui" / "app.py")
+
+
+@pytest.fixture
+def app_env(tmp_path, monkeypatch):
+    config = load_config()
+    seed = config["generate"]["dev_seed"]
+    ds = Generator(seed, config).generate()
+    data_root = tmp_path / "data"
+    write_dataset(ds, data_root / "dev", seed=seed, config=config)
+    runs_root = tmp_path / "runs"
+
+    monkeypatch.setenv("LEDGERLOOP_DATA_ROOT", str(data_root))
+    monkeypatch.setenv("LEDGERLOOP_RUNS_ROOT", str(runs_root))
+    return data_root, runs_root
+
+
+def test_initial_load_prompts_for_a_run(app_env):
+    at = AppTest.from_file(APP_PATH, default_timeout=60).run()
+    assert not at.exception
+    assert any("Run reconciliation" in block.value for block in at.info)
+
+
+def test_running_reconciliation_shows_headline_metrics(app_env):
+    at = AppTest.from_file(APP_PATH, default_timeout=60).run()
+    at.sidebar.checkbox[0].set_value(True)  # --no-llm, so this stays deterministic and fast
+    at.sidebar.button[0].click().run()
+
+    assert not at.exception
+    labels = {m.label for m in at.main.metric}
+    assert labels == {"Match rate", "Exceptions", "Throughput", "Tier split"}
+    match_rate_metric = next(m for m in at.main.metric if m.label == "Match rate")
+    assert match_rate_metric.value.endswith("%")
+
+
+def test_approve_then_rerun_demonstrates_idempotency(app_env):
+    at = AppTest.from_file(APP_PATH, default_timeout=60).run()
+    at.sidebar.checkbox[0].set_value(True)
+    at.sidebar.button[0].click().run()
+    assert not at.exception
+
+    approve_button = next(b for b in at.button if b.label and "Approve postings" in b.label)
+    approve_button.click().run()
+    assert not at.exception
+    assert any("new postings" in block.value for block in at.success)
+
+    # a second click over the identical, unapproved-nothing-new batch must show 0 new
+    approve_button_again = next(b for b in at.button if b.label and "Approve postings" in b.label)
+    approve_button_again.click().run()
+    assert not at.exception
+    assert any(block.value == "Approved 0 new postings." for block in at.success)
+    assert any("0 new postings" in block.value and "closed" in block.value for block in at.success)
+
+
+def test_exception_queue_row_action_does_not_raise(app_env):
+    at = AppTest.from_file(APP_PATH, default_timeout=60).run()
+    at.sidebar.checkbox[0].set_value(True)
+    at.sidebar.button[0].click().run()
+    assert not at.exception
+
+    row_buttons = [b for b in at.button if b.key and b.key.startswith("approve-")]
+    assert row_buttons, "expected at least one exception row on the dev profile"
+    row_buttons[0].click().run()
+    assert not at.exception

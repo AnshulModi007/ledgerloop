@@ -32,4 +32,4 @@ demo:
 	@echo "and drop --no-llm above to let tier3 adjudicate the remainder."
 
 ui:
-	@echo "Streamlit dashboard lands in Phase 6 (src/ledgerloop/ui/app.py) -- not implemented yet."
+	$(PYTHON) -m streamlit run src/ledgerloop/ui/app.py
