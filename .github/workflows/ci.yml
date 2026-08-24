@@ -32,7 +32,8 @@ jobs:
       - name: Re-run shows zero new postings (idempotency, live)
         run: python -m ledgerloop.reconcile --profile dev --no-llm --approve | grep -q "0 new postings recorded"
 
-      # Phase 5 adds: eval harness threshold gates (false-match rate <= 1%,
-      # auto-match rate >= 80%) run against this same --no-llm path. Wired in as
-      # that phase lands. Determinism (test_determinism.py) and injection defence
-      # (test_injection.py) are already exercised above via `pytest`.
+      - name: Eval harness threshold gates (false-match <= 1%, auto-match >= 80%)
+        run: python -m ledgerloop.eval.metrics --profile dev --no-llm
+
+      # Determinism (test_determinism.py) and injection defence (test_injection.py)
+      # are already exercised above via `pytest`.

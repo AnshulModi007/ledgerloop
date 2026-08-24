@@ -18,7 +18,9 @@ lint:
 	$(PYTHON) -m ruff check src tests
 
 eval:
-	@echo "eval harness lands in Phase 5 (src/ledgerloop/eval/) -- not implemented yet."
+	$(PYTHON) -m ledgerloop.eval.metrics --profile dev --no-llm
+	$(PYTHON) -m ledgerloop.eval.ablation --profile dev --no-llm
+	$(PYTHON) -m ledgerloop.eval.calibration --profile dev --no-llm
 
 demo:
 	$(PYTHON) -m ledgerloop.generate.generator --profile dev
