@@ -438,3 +438,36 @@ semantically the same failure mode via different code paths, treat them as one c
 for any downstream classification, not two -- the mechanical distinction (empty
 result vs. exhausted budget) is real and worth keeping in the reclassified code's
 fallback, but it shouldn't gate whether reclassification runs at all.
+
+---
+
+## 2026-08-25 — the one-time holdout calibration run came back empty
+
+**Symptom:** Running `eval/metrics.py --profile holdout` and `eval/ablation.py --profile
+holdout` (the mandatory, once-only final evaluation per IMPLEMENTATION.md section 7) both
+showed 10 resolutions attributed to tier3 with 2 real Groq calls. Running
+`eval/calibration.py --profile holdout` moments later -- a separate process, its own
+independent `harness.run(..., "full")` call -- reported "no tier3 resolutions this run,
+nothing to calibrate."
+
+**Diagnosis:** Not a bug. Each `eval/*.py` CLI entry point re-runs the full pipeline from
+scratch rather than sharing one run, and tier3 confidence is genuinely non-deterministic
+run-to-run against a live model (already documented above, 2026-08-23 entry). The same
+handful of borderline candidates that cleared `tier3_confidence_threshold=0.85` in the
+metrics/ablation invocations apparently came back just under it in calibration's own
+invocation, so they were recorded as `LOW_CONFIDENCE` exceptions instead of tier3
+resolutions that run -- same system, same inputs, different live model sampling.
+
+**Fix:** None needed -- `calibration.py::format_report` already handles the empty case
+without crashing, and the module docstring already scopes this exact possibility. The
+README cites the dev-set calibration report (which does have populated bins, gathered
+during Phase 5 build) as the illustrative reliability table, and reports this holdout-run
+outcome honestly as its own data point rather than re-running holdout again to get a
+"nicer" result -- re-running until the numbers look better is exactly the kind of holdout
+gaming section 5's honesty rule exists to prevent.
+
+**Would do differently:** If a calibration table populated specifically from the held-out
+run mattered for the final submission, the three `eval/*.py` scripts should share one
+`harness.run()` result within a single process instead of three independent ones -- worth
+doing if there's a Phase 7+ pass over `eval/`, but out of scope to change on the one
+evaluation pass itself.

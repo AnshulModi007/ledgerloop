@@ -35,5 +35,26 @@ jobs:
       - name: Eval harness threshold gates (false-match <= 1%, auto-match >= 80%)
         run: python -m ledgerloop.eval.metrics --profile dev --no-llm
 
-      # Determinism (test_determinism.py) and injection defence (test_injection.py)
+      - name: Determinism check (run twice, diff the reports)
+        run: |
+          python -m ledgerloop.eval.metrics --profile dev --no-llm --runs-root runs/det_a
+          python -m ledgerloop.eval.metrics --profile dev --no-llm --runs-root runs/det_b
+          python -c "
+          import json, sys
+          def load(p):
+              d = json.load(open(p))
+              d.pop('throughput_records_per_sec', None)  # wall-clock, not a correctness signal
+              return d
+          a = load('runs/det_a/dev_eval_metrics.json')
+          b = load('runs/det_b/dev_eval_metrics.json')
+          if a != b:
+              print('DETERMINISM CHECK FAILED: two --no-llm runs over identical inputs diverged')
+              print('run a:', a)
+              print('run b:', b)
+              sys.exit(1)
+          print('determinism check passed: identical reports across two independent runs')
+          "
+
+      # Unit-level determinism (test_determinism.py), injection defence
+      # (test_injection.py), and the holdout honesty rule (test_holdout_honesty.py)
       # are already exercised above via `pytest`.
