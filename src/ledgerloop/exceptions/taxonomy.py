@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
+from ledgerloop.exceptions import explain
 from ledgerloop.ingest.normalise import NormalisedBankLine
 from ledgerloop.match.tier1_exact import SettlementBatch, transposed_utr_variants
 from ledgerloop.schemas import Exception_, UnresolvedCase
@@ -94,10 +95,12 @@ def classify(
     unclaimed_gross_amounts_paise: list[int],
     tier2_cfg: dict,
 ) -> Exception_:
+    near_batch: SettlementBatch | None = None
     if case.reason_hint in _DIRECT_PASSTHROUGH:
         code = _DIRECT_PASSTHROUGH[case.reason_hint]
     elif case.reason_hint in _RECLASSIFIABLE:
-        if _near_utr_batch(bank_line, by_utr, claimed_batch_ids) is not None:
+        near_batch = _near_utr_batch(bank_line, by_utr, claimed_batch_ids)
+        if near_batch is not None:
             code = ReasonCode.AMOUNT_MISMATCH_BEYOND_TOLERANCE
         elif _has_duplicate_amount_signature(
             bank_line, unclaimed_gross_amounts_paise, tier2_cfg["amount_tolerance_paise"]
@@ -112,20 +115,49 @@ def classify(
         # silent drop, worst case it's just under-classified.
         code = ReasonCode.NO_CANDIDATE
 
-    explanation = case.evidence.get("tier3_reasoning")
-    if explanation is None:
+    # The deterministic account of why this line escalated is always present, computed
+    # from what tier2 already measured. tier3's own reasoning, when there is any, is
+    # appended as a labelled note rather than substituted for it -- so every figure a
+    # reviewer reads is machine-derived and a model can only add narrative around it.
+    # See exceptions/explain.py.
+    explanation = explain.build_explanation(
+        bank_line, case, code.value, tier2_cfg, near_utr_batch=near_batch
+    )
+    model_note = case.evidence.get("tier3_reasoning")
+    if model_note is None:
         for candidate in case.candidates:
             reasoning = candidate.evidence.get("reasoning")
             if reasoning:
-                explanation = reasoning
+                model_note = reasoning
                 break
+    if model_note:
+        explanation = f"{explanation} Adjudicator note: {model_note}"
+
+    evidence: dict = {
+        "tier2_reason_hint": case.reason_hint,
+        "bank_credit_paise": bank_line.credit_amount_paise,
+        "value_date": bank_line.value_date.isoformat(),
+        "extracted_utr": bank_line.extracted_utr,
+        "candidate_count": len(case.candidates),
+        **case.evidence,
+    }
+    if case.candidates:
+        evidence["candidate_detail"] = explain.candidate_details(case)
+    if near_batch is not None:
+        evidence["near_utr_batch"] = {
+            "settlement_batch_id": near_batch.settlement_batch_id,
+            "payout_utr": near_batch.payout_utr,
+            "total_net_paise": near_batch.total_net_paise,
+            "txn_count": len(near_batch.txn_ids),
+            "amount_diff_paise": abs(bank_line.credit_amount_paise - near_batch.total_net_paise),
+        }
 
     return Exception_(
         bank_line_id=bank_line.bank_line_id,
         reason_code=code.value,
         candidates_considered=[c.candidate_id for c in case.candidates],
         explanation=explanation,
-        evidence={"tier2_reason_hint": case.reason_hint, **case.evidence},
+        evidence=evidence,
     )
 
 

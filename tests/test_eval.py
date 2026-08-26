@@ -57,6 +57,8 @@ def test_compute_metrics_arithmetic():
     run = HarnessRun(
         profile="dev", tier_ceiling="full", resolutions=resolutions, exceptions=[],
         total_records=4, llm_calls_made=0, providers_used=[], wall_seconds=1.0, config={},
+        # B1 and B2 resolved (100 + 200 paise), B3 and B4 not (300 + 400)
+        credit_paise_by_bank_line={"B1": 100, "B2": 200, "B3": 300, "B4": 400},
     )
     m = compute_metrics(run, answer_key)
 
@@ -68,6 +70,13 @@ def test_compute_metrics_arithmetic():
     assert m.false_match_rate == pytest.approx(0.25)  # 1 of 4 total records
     assert m.missed_count == 1
 
+    # value-weighted: half the lines resolved, but only 300 of 1000 paise. The two
+    # rates are deliberately allowed to diverge -- that divergence is the signal.
+    assert m.value_total_paise == 1000
+    assert m.value_auto_reconciled_paise == 300
+    assert m.value_escalated_paise == 700
+    assert m.value_auto_match_rate == pytest.approx(0.3)
+
 
 def test_compute_metrics_resolving_an_out_of_scope_line_counts_as_false_match():
     answer_key = {"B1": _answer("B1", [])}
@@ -75,10 +84,30 @@ def test_compute_metrics_resolving_an_out_of_scope_line_counts_as_false_match():
     run = HarnessRun(
         profile="dev", tier_ceiling="full", resolutions=resolutions, exceptions=[],
         total_records=1, llm_calls_made=0, providers_used=[], wall_seconds=1.0, config={},
+        credit_paise_by_bank_line={"B1": 100},
     )
     m = compute_metrics(run, answer_key)
     assert m.false_match_count == 1
     assert m.precision == 0.0
+
+
+def test_analyst_hours_are_derived_from_exception_count_not_guessed():
+    """The savings figure must fall out of measured counts times the documented
+    per-item assumptions -- never a number typed in to look good."""
+    from ledgerloop.eval import metrics as metrics_mod
+
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full", resolutions=[_resolution("B1", ["TXN1"])],
+        exceptions=[], total_records=60, llm_calls_made=0, providers_used=[],
+        wall_seconds=1.0, config={}, credit_paise_by_bank_line={"B1": 100},
+    )
+    m = compute_metrics(run, {"B1": _answer("B1", ["TXN1"])})
+    # 60 records * 4 min = 240 min = 4h manual; no exceptions = 0h review
+    assert m.illustrative_analyst_hours_manual == pytest.approx(
+        60 * metrics_mod.ASSUMED_MINUTES_PER_MANUAL_TRACE / 60
+    )
+    assert m.illustrative_analyst_hours_with_ledgerloop == pytest.approx(0.0)
+    assert m.illustrative_analyst_hours_saved == pytest.approx(4.0)
 
 
 def test_compute_calibration_bins_by_confidence_and_accuracy():

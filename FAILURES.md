@@ -471,3 +471,54 @@ run mattered for the final submission, the three `eval/*.py` scripts should shar
 `harness.run()` result within a single process instead of three independent ones -- worth
 doing if there's a Phase 7+ pass over `eval/`, but out of scope to change on the one
 evaluation pass itself.
+
+---
+
+## 2026-08-26 — the exception queue escalated every line with no explanation at all
+
+**Symptom:** Inspecting a real `--no-llm` dev run's exception objects (the exact path
+`make demo` takes, and the one a reviewer with no API key will see) showed all 24
+exceptions carrying `explanation=None`, `candidates_considered=['BANK00115-C0']`, and
+`evidence={'tier2_reason_hint': 'LOW_CONFIDENCE'}`. Rendered through the dashboard, an
+analyst opening a queue item saw a bank line ID, a reason code, and an opaque internal
+candidate handle. Nothing about the amount in dispute, what was nearly matched, or how
+close it came.
+
+**Diagnosis:** `taxonomy.classify()` only ever populated `explanation` from tier3's own
+reasoning (`case.evidence["tier3_reasoning"]`, or a candidate's `reasoning` key). With no
+LLM in the chain neither exists, so the field stayed `None` — and an existing test,
+`test_explanation_is_none_without_llm`, asserted exactly that, which is why this never
+surfaced as a failure. The test was right about the contract (`Exception_.explanation` is
+`str | None`) and wrong about the product: the project's whole thesis is that an
+unresolved line is escalated *with a plain-English account of why* rather than dropped,
+and the flagship zero-key demo was delivering the escalation without the account.
+
+The information needed was never missing. Tier 2 already computed the amount gap, the
+match rule, the candidate score, the lag in days — it recorded all of it in
+`Candidate.evidence` and then dropped it on the floor at classification time.
+
+**Fix:** Added `exceptions/explain.py`: a deterministic explanation per reason code,
+composed from what tier2 already measured, so an explanation never depends on a model
+being configured. `LOW_CONFIDENCE` now reads *"Bank credit of ₹16,743.04 on 25 Jan 2026.
+The strongest of 1 candidate(s) groups 1 transaction(s) by cross-batch subset-sum search,
+but scores 0.55 against a 0.70 resolve threshold. Escalated for review rather than matched
+on a weak signal."* Exception `evidence` now carries the credit amount, value date, UTR,
+and per-candidate detail with real transaction IDs. Where tier3 *has* reasoned, its text
+is appended as a labelled `Adjudicator note:` rather than substituted — so every figure a
+reviewer acts on stays machine-derived and the model can add narrative around the numbers
+but never replace one. `test_explanation_is_none_without_llm` was rewritten into
+`test_explanation_is_present_without_an_llm`, and `tests/test_explanations.py` added as
+the standing guard (21 tests, including one asserting every exception in a real `--no-llm`
+run quotes its own credit amount).
+
+Two things fell out of it. `exceptions/` joined `match/` and `ledger/` under the
+`test_money.py` AST float ban, since `explain.py` now renders paise into strings a
+reviewer approves postings against; and `ui/app.py`'s float-division `rupees()` — the one
+deliberate exception the README documented — was deleted in favour of the integer
+`divmod` formatter, so the codebase now has no float in any money path at all.
+
+**Would do differently:** Written the test as "a reviewer can act on this exception"
+rather than "this field is None." The original test encoded an implementation detail as if
+it were the requirement, and passing it for five phases actively concealed the gap. A test
+that asserts an absence should be suspicious of itself — `assert x is None` is only ever
+worth writing when the absence is the *feature*, and here it plainly wasn't.

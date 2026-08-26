@@ -16,6 +16,7 @@ import streamlit as st
 
 from ledgerloop import pipeline
 from ledgerloop.exceptions import queue as queue_mod
+from ledgerloop.exceptions.explain import rupees
 from ledgerloop.schemas import Exception_
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -25,11 +26,6 @@ DATA_ROOT = Path(os.environ.get("LEDGERLOOP_DATA_ROOT", REPO_ROOT / "data"))
 RUNS_ROOT = Path(os.environ.get("LEDGERLOOP_RUNS_ROOT", REPO_ROOT / "runs"))
 
 st.set_page_config(page_title="LedgerLoop", layout="wide")
-
-
-def rupees(paise: int) -> str:
-    sign = "-" if paise < 0 else ""
-    return f"{sign}₹{abs(paise) / 100:,.2f}"
 
 
 # -- sidebar: select a batch, run reconciliation -------------------------------------

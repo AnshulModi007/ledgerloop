@@ -53,6 +53,29 @@ evaluated exactly once — see [Results](#results) for the full report.
 92.5% auto-matched without a human touching anything; the remaining 7.5% is typed, explained,
 and queued rather than silently dropped or guessed at.
 
+## What an escalation actually looks like
+
+The exception queue is the human-facing half of the product, so an escalation has to carry
+its own reasoning. Every figure below is computed by the pipeline — no model is involved,
+and this is what you see with **zero API keys configured**:
+
+> **BANK00115** — `AMOUNT_MISMATCH_BEYOND_TOLERANCE`
+> Bank credit of ₹34,748.47 on 02 Feb 2026 carries UTR UTR17367488852335, which identifies
+> settlement batch STL00098 (5 transactions, net ₹54,128.26). The ₹19,379.79 difference
+> exceeds the ₹2.00 tolerance. The linkage is near-certain, so this is an amount discrepancy
+> for a human to price, not a matching failure.
+
+> **BANK00093** — `LOW_CONFIDENCE`
+> Bank credit of ₹41,494.74 on 18 Jan 2026. The strongest of 1 candidate groups 3
+> transactions by cross-batch subset-sum search, but scores 0.55 against a 0.70 resolve
+> threshold. Escalated for review rather than matched on a weak signal.
+
+When an LLM *is* configured, its reasoning is appended as a labelled `Adjudicator note:`
+rather than replacing this text. That's deliberate: the numbers a reviewer acts on stay
+machine-derived, and the model can add narrative around them but can never alter one. It's
+the same containment argument as the fixed candidate menu, applied to the explanation
+surface. See `src/ledgerloop/exceptions/explain.py`.
+
 ## The thesis
 
 > The LLM does **extraction, selection, and explanation**. It never does arithmetic, and it
@@ -87,6 +110,36 @@ made afterward:
 | Throughput | 37.0 records/sec |
 | LLM calls made | 2 (7.1 per 1,000 records) |
 | Illustrative cost at published paid rates | ₹0.08 total, ₹0.29 per 1,000 records — actual cost: ₹0 (free tier) |
+
+### Weighted by value, not just by line count
+
+Resolving most of the *lines* while leaving most of the *money* escalated would be a
+materially different result, so the harness reports both. On the dev set (5,000 transactions,
+284 bank lines):
+
+| Metric | Value |
+|---|---|
+| Lines auto-matched | 91.5% (260/284) |
+| **Value auto-reconciled** | **99.7%** — ₹4,76,97,961.88 of ₹4,78,56,920.92 |
+| Value escalated for review | ₹1,58,959.04 |
+| Illustrative analyst effort | 18.9h manual → 0.8h reviewing exceptions |
+
+The two rates diverge because escalations skew heavily toward small-value `OUT_OF_SCOPE`
+lines — direct transfers and refund reversals that were never gateway settlements. Under
+1% of the money in the batch needs a human.
+
+The analyst-hour figures are **illustrative**, derived from measured counts times documented
+per-item assumptions (4 min to trace a credit by hand, 2 min to review a pre-explained
+exception); the constants and their reasoning are in `eval/metrics.py`'s module docstring,
+and you should substitute your own desk's numbers before quoting them. The value figures are
+measured, in integer paise.
+
+These value-weighted metrics were added after the held-out set had already been evaluated,
+and the held-out run was **not** repeated to obtain them — running it exactly once is the
+rule, and re-running it to fill in a nicer table is precisely what that rule exists to
+prevent. The dev-set figures are labelled as such above.
+
+### Why false-match rate is the metric that matters
 
 In finance a wrong match is materially worse than an escalation to a human — a false positive
 posts money to the wrong place, an escalation just costs someone five minutes. The system is
@@ -134,9 +187,12 @@ sizes here are small (n=4 total) — this is a directional read, not a statistic
   already produced; a response naming anything else is discarded and retried, then recorded as
   `TIER3_INVALID_SELECTION` if it never resolves. This is the actual mechanism that makes
   hallucinated reconciliation structurally impossible, not just unlikely.
-- **Integer paise everywhere.** `match/` and `ledger/` are AST-walked in CI to ban `float` in any
-  code path touching an amount (`tests/test_money.py`). The one deliberate exception is
-  `ui/app.py`'s ₹-display formatting, which is presentation, not accounting.
+- **Integer paise everywhere.** `match/`, `ledger/` and `exceptions/` are AST-walked in CI to
+  ban `float` in any code path touching an amount (`tests/test_money.py`). `exceptions/` is in
+  that set because `explain.py` renders paise into the rupee strings a reviewer reads before
+  approving a posting — that is a money path in every sense that matters. Rendering goes
+  through one integer `divmod` formatter with Indian digit grouping, so there is now no float
+  in any money path in the codebase, presentation included.
 - **A provider fallback chain that always terminates in `NullProvider`.** Gemini → Groq →
   OpenRouter → local Ollama → abstain-on-everything. `make demo` exercises the last link on
   purpose so the zero-key path is a first-class, CI-tested mode, not a fallback nobody runs.

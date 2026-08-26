@@ -1,5 +1,10 @@
-"""No floats anywhere near money. AST-walks match/ and ledger/ and fails on any
-float literal or float() call. See IMPLEMENTATION.md section 7.
+"""No floats anywhere near money. AST-walks match/, ledger/ and exceptions/ and fails
+on any float literal or float() call. See IMPLEMENTATION.md section 7.
+
+exceptions/ joined the ban when explain.py started rendering paise into the rupee
+strings a reviewer reads off the queue before approving a posting: that is a money
+code path in every sense that matters, so it is held to the same bar as the matchers
+and the ledger rather than being treated as mere presentation.
 """
 
 from __future__ import annotations
@@ -8,7 +13,7 @@ import ast
 from pathlib import Path
 
 SRC_ROOT = Path(__file__).resolve().parents[1] / "src" / "ledgerloop"
-MONEY_SENSITIVE_DIRS = ["match", "ledger"]
+MONEY_SENSITIVE_DIRS = ["match", "ledger", "exceptions"]
 
 
 def _money_sensitive_files() -> list[Path]:

@@ -211,10 +211,18 @@ def test_explanation_carries_tier3_reasoning_when_present(config):
         unclaimed_gross_amounts_paise=[],
         tier2_cfg=config["tier2"],
     )
-    assert exception.explanation == "the narration doesn't clearly support any candidate"
+    # tier3's reasoning is preserved, but as a labelled note appended to the computed
+    # account -- never as a replacement for it. See exceptions/explain.py.
+    assert "the narration doesn't clearly support any candidate" in exception.explanation
+    assert exception.explanation.startswith("Bank credit of")
 
 
-def test_explanation_is_none_without_llm(config):
+def test_explanation_is_present_without_an_llm(config):
+    """Previously this asserted `explanation is None` on the --no-llm path. That was
+    the contract's letter (Exception_.explanation is nullable) but it made the zero-key
+    demo escalate every line with nothing a reviewer could act on. The explanation is
+    now computed from tier2's own evidence, so the LLM is what adds narrative, not what
+    makes the queue legible. See tests/test_explanations.py for the full guarantee."""
     bank_line = NormalisedBankLine(
         bank_line_id="BANK00006",
         value_date=date(2026, 3, 1),
@@ -231,7 +239,8 @@ def test_explanation_is_none_without_llm(config):
         unclaimed_gross_amounts_paise=[],
         tier2_cfg=config["tier2"],
     )
-    assert exception.explanation is None
+    assert exception.explanation
+    assert "Adjudicator note" not in exception.explanation
 
 
 # -- exception queue ------------------------------------------------------------------

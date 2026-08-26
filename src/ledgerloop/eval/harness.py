@@ -39,6 +39,10 @@ class HarnessRun:
     providers_used: list[str]
     wall_seconds: float
     config: dict
+    # Integer paise per bank line, so metrics can weight by value as well as by count.
+    # A pipeline that resolves 92% of lines but only 40% of the money is a materially
+    # different system from one that does both, and a count-only report hides that.
+    credit_paise_by_bank_line: dict[str, int]
 
 
 def load_answer_key(data_root: Path, profile: str) -> dict[str, AnswerKeyEntry]:
@@ -138,4 +142,5 @@ def run(
         providers_used=providers_used,
         wall_seconds=wall_seconds,
         config=config,
+        credit_paise_by_bank_line={b.bank_line_id: b.credit_amount_paise for b in normalised.bank_lines},
     )

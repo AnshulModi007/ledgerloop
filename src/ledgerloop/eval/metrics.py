@@ -23,6 +23,7 @@ import click
 
 from ledgerloop.eval import harness
 from ledgerloop.eval.harness import HarnessRun, is_correct_resolution
+from ledgerloop.exceptions.explain import format_paise
 from ledgerloop.generate.schemas import AnswerKeyEntry
 
 # Groq's published on-demand rate for openai/gpt-oss-20b (the default provider this
@@ -43,6 +44,19 @@ GROQ_OUTPUT_USD_PER_M_TOKENS = 0.30
 ASSUMED_INPUT_TOKENS_PER_CALL = 3000
 ASSUMED_OUTPUT_TOKENS_PER_CALL = 800
 ASSUMED_USD_TO_INR = 88.0
+
+# Analyst-effort constants. These are ASSUMPTIONS in exactly the same sense as the
+# token counts above, and are labelled "illustrative" everywhere they surface.
+# Tracing one bank credit back to its constituent transactions by hand -- opening the
+# settlement report, filtering to the payout UTR, reconciling the fee arithmetic --
+# is taken at 4 minutes. Reviewing an escalation is taken at 2 minutes rather than 0,
+# because an exception still costs a human their attention; it arrives with the
+# candidates already generated, the arithmetic already done, and a written account of
+# why it escalated (see exceptions/explain.py), which is the entire reason it is
+# cheaper than tracing from scratch rather than merely being someone else's problem.
+# Change these to your own desk's figures before quoting the savings anywhere real.
+ASSUMED_MINUTES_PER_MANUAL_TRACE = 4
+ASSUMED_MINUTES_PER_EXCEPTION_REVIEW = 2
 
 
 def _illustrative_cost_inr(llm_calls: int) -> float:
@@ -74,6 +88,15 @@ class Metrics:
     providers_used: list[str]
     illustrative_cost_inr: float
     illustrative_cost_inr_per_1000_records: float
+    # -- business impact. Value figures are measured (integer paise); the analyst-hour
+    # figures are derived from measured counts and the assumed per-item minutes above.
+    value_total_paise: int
+    value_auto_reconciled_paise: int
+    value_escalated_paise: int
+    value_auto_match_rate: float
+    illustrative_analyst_hours_manual: float
+    illustrative_analyst_hours_with_ledgerloop: float
+    illustrative_analyst_hours_saved: float
 
 
 def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> Metrics:
@@ -110,6 +133,13 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
 
     cost_inr = _illustrative_cost_inr(run.llm_calls_made)
 
+    credit_by_bid = run.credit_paise_by_bank_line
+    value_total = sum(credit_by_bid.values())
+    value_resolved = sum(credit_by_bid.get(r.bank_line_id, 0) for r in run.resolutions)
+
+    manual_minutes = total * ASSUMED_MINUTES_PER_MANUAL_TRACE
+    assisted_minutes = len(run.exceptions) * ASSUMED_MINUTES_PER_EXCEPTION_REVIEW
+
     return Metrics(
         profile=run.profile,
         tier_ceiling=run.tier_ceiling,
@@ -130,6 +160,13 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
         providers_used=run.providers_used,
         illustrative_cost_inr=cost_inr,
         illustrative_cost_inr_per_1000_records=cost_inr * 1000 / total if total else 0.0,
+        value_total_paise=value_total,
+        value_auto_reconciled_paise=value_resolved,
+        value_escalated_paise=value_total - value_resolved,
+        value_auto_match_rate=value_resolved / value_total if value_total else 0.0,
+        illustrative_analyst_hours_manual=manual_minutes / 60,
+        illustrative_analyst_hours_with_ledgerloop=assisted_minutes / 60,
+        illustrative_analyst_hours_saved=(manual_minutes - assisted_minutes) / 60,
     )
 
 
@@ -145,6 +182,15 @@ def format_report(m: Metrics) -> str:
             "  <- PRIMARY RISK METRIC"
         ),
         f"missed (escalated instead of matched): {m.missed_count}",
+        "",
+        # Value-weighted, not just count-weighted: resolving most of the lines while
+        # leaving most of the money escalated would be a materially different result.
+        (
+            f"value auto-reconciled: {m.value_auto_match_rate:.1%}  "
+            f"({format_paise(m.value_auto_reconciled_paise, 'Rs.')} "
+            f"of {format_paise(m.value_total_paise, 'Rs.')})"
+        ),
+        f"value escalated for review: {format_paise(m.value_escalated_paise, 'Rs.')}",
         "",
         "tier attribution:",
     ]
@@ -164,6 +210,13 @@ def format_report(m: Metrics) -> str:
             f"illustrative cost at published paid rates: Rs.{m.illustrative_cost_inr:.2f} total "
             f"(Rs.{m.illustrative_cost_inr_per_1000_records:.2f} per 1,000 records) -- "
             "actual cost this run: Rs.0 (free tier); see module docstring for rate assumptions"
+        ),
+        (
+            f"illustrative analyst effort: {m.illustrative_analyst_hours_manual:.1f}h manual "
+            f"-> {m.illustrative_analyst_hours_with_ledgerloop:.1f}h reviewing exceptions "
+            f"({m.illustrative_analyst_hours_saved:.1f}h saved on {m.total_records} records) -- "
+            f"assumes {ASSUMED_MINUTES_PER_MANUAL_TRACE} min/trace and "
+            f"{ASSUMED_MINUTES_PER_EXCEPTION_REVIEW} min/exception; see module docstring"
         ),
     ]
     return "\n".join(lines)
