@@ -1,5 +1,11 @@
 # LedgerLoop
 
+[![CI](https://github.com/AnshulModi007/ledgerloop/actions/workflows/ci.yml/badge.svg)](https://github.com/AnshulModi007/ledgerloop/actions/workflows/ci.yml)
+
+The badge gates on correctness, not just unit tests: the workflow fails the build if the
+false-match rate exceeds 1%, if the auto-match rate falls below 80%, if an approved batch
+re-run produces any new postings, or if two `--no-llm` runs over identical inputs diverge.
+
 Multi-source settlement reconciliation agent for the Razorpay AI Buildathon 2026 (Track 04 —
 AI Finance Controller). LedgerLoop ingests a gateway transaction log, a settlement report, a
 bank statement, and an ERP ledger; matches bank credits back to the transactions that make them
