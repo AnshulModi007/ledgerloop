@@ -199,6 +199,15 @@ with tab_journal:
 # -- run details ------------------------------------------------------------------------
 
 with tab_run:
+    if run.duplicate_receivable_relief:
+        st.error(
+            f"**Ledger control: {len(run.duplicate_receivable_relief)} transaction(s) had their settlement "
+            "receivable cleared by more than one bank line.** Every batch still balances -- each one balances "
+            "against its own credit -- so a per-batch check cannot see this. It needs a human: which payout "
+            "was the erroneous one is a question about the gateway, not about the statement's arithmetic."
+        )
+        st.json(run.duplicate_receivable_relief)
+
     st.write("exceptions by reason code:")
     st.json(run.reason_counts)
     st.write("config hash and tier thresholds live in the audit log:")

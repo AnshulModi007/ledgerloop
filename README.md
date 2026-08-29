@@ -63,6 +63,10 @@ that were never gateway settlements, where declining to match is itself the righ
 line. Both rates are reported, always together; see [Correct
 disposition](#correct-disposition-declining-to-match-is-also-a-right-answer).
 
+It also holds on defect shapes it was never built for: 40 lines of deliberately unfamiliar
+failure modes, **zero matched wrongly** — see
+[Generalization](#generalization-defect-shapes-the-matcher-was-never-designed-for).
+
 ## What an escalation actually looks like
 
 The exception queue is the human-facing half of the product, so an escalation has to carry
@@ -246,6 +250,71 @@ partition of the batch, and `tests/test_eval.py` asserts the double-count so nob
 at all — a class silently dropping out of scoring is exactly what a single aggregate hides.
 
 Regenerate with `python -m ledgerloop.eval.metrics --profile dev --no-llm`.
+
+## Generalization: defect shapes the matcher was never designed for
+
+Every number above this line is scored against the twelve defect classes in
+`generate/defects.py` — and Tier 2's matching rules were written knowing all twelve. That
+makes those figures a measure of implementation, not of generalization: the same author
+wrote the exam and the student. `make generalization` writes an exam the student never saw.
+
+Four shapes, deliberately absent from `DefectClass`, each breaking an assumption the
+matching tiers quietly rely on:
+
+| Novel shape | The assumption it breaks |
+|---|---|
+| `WIRE_FEE_DEDUCTION` | the credited amount equals the settled net — a bank can levy its own charge, far outside the fee-drift tolerance |
+| `STALE_UTR_REUSE` | a UTR in the narration identifies this credit — banks recycle reference strings |
+| `POST_DATED_SETTLEMENT` | a credit lands on or after its settlement date — value-dating can put money in the account first |
+| `DOUBLE_SETTLEMENT` | a transaction settles at most once — a gateway bug can pay one transaction inside two batches |
+
+**The pass criterion is not resolution.** These are unfamiliar inputs and failing to match
+them is fine. What fails the build is a *wrong* match, or a line that vanishes without a
+typed reason. Run with the deterministic tiers only, no API key:
+
+| Novel shape | n | Matched | **Wrong** | Escalated | Reason codes given |
+|---|---|---|---|---|---|
+| `WIRE_FEE_DEDUCTION` | 8 | 0 | **0** | 8 | `AMOUNT_MISMATCH_BEYOND_TOLERANCE` ×5, `LOW_CONFIDENCE` ×2, `AMBIGUOUS_CANDIDATES` ×1 |
+| `STALE_UTR_REUSE` | 8 | 0 | **0** | 8 | `NO_CANDIDATE` ×8 |
+| `POST_DATED_SETTLEMENT` | 8 | 0 | **0** | 8 | `AMOUNT_MISMATCH_BEYOND_TOLERANCE` ×8 |
+| `DOUBLE_SETTLEMENT` | 16 | 16 | **0** | 0 | — |
+
+40 novel lines, **zero matched wrongly, nothing silently dropped**, and the 12
+in-distribution control lines still match 12/12 — so a pipeline that simply escalated
+everything could not have passed this. On input it was never designed for, the system
+escalated rather than guessed, with a typed reason on every line.
+
+`STALE_UTR_REUSE` is the one that carries the weight. The other three make the *amount* or
+the *date* look wrong, which is the easy direction to fail safely in. That one makes the
+evidence look right while pointing at the wrong batch — a real UTR, extracted successfully,
+naming a real settlement batch that was already paid in full. The pipeline refused all
+eight. `tests/test_generalization.py` asserts the trap is actually loaded (UTR extractable,
+naming a real batch, ground truth saying "match nothing"), because a generalization test
+that quietly stops testing generalization would keep printing PASS forever.
+
+### What the suite found on its first run
+
+`DOUBLE_SETTLEMENT` matched 16/16 — correctly, since each credit genuinely corresponds to
+its own batch. But following it downstream turned up a real defect the matching layer was
+never responsible for:
+
+> **The same transaction had its settlement receivable cleared twice**, once from each bank
+> line — and nothing in the system noticed. Every journal batch still balanced, because each
+> one balances against its own credit. Idempotency did not catch it either: `posting_key` is
+> scoped to the bank line, which is exactly what makes re-running a statement safe, and so
+> two different credits clearing one transaction produce two distinct keys and both postings
+> stand.
+
+A per-batch balance check cannot see this; only a check across batches can. `journal.py`
+now has `find_duplicate_receivable_relief`, surfaced by the CLI and the dashboard as a
+ledger control finding rather than auto-resolved — which of the two payouts was the
+erroneous one is a question about the gateway's behaviour, not the statement's arithmetic.
+It reports 8 findings on the novel set and is silent on dev and holdout.
+
+Worth being precise about what changed and what didn't: **the matcher was not touched.** Its
+behaviour on the novel shapes is exactly what it was before the suite existed. The fix went
+into the ledger, which had a missing control. Tuning the matcher against the novel set would
+have destroyed the very thing the suite is for.
 
 ## Threshold sensitivity: what the tuning actually buys
 

@@ -33,6 +33,14 @@ from ledgerloop.generate.schemas import (
 from ledgerloop.match.fee_model import compute_net
 
 MERCHANT_REF = "MERCHANT_LEDGERLOOP_DEMO"
+# Shared with generate/novel.py: a novel-shape narration has to look exactly as ordinary
+# as a graded one, or the suite would be testing wording rather than the defect shape.
+NARRATION_TEMPLATES = (
+    "NEFT/{utr}/RAZORPAY SOFTWARE PVT LTD",
+    "IMPS-P2A/{utr}/RAZORPAY SETTLEMENT",
+    "RTGS CR-{utr}-RAZORPAY PAYOUTS",
+    "UPI/CR/{utr}/RAZORPAY SOFTWARE PVT LTD",
+)
 PAYMENT_METHODS = ("upi", "card", "netbanking", "wallet")
 
 INJECTION_PAYLOADS = (
@@ -249,15 +257,7 @@ class Generator:
         )
 
     def _narration(self, payout_utr: str) -> str:
-        template = self.rng.choice(
-            [
-                "NEFT/{utr}/RAZORPAY SOFTWARE PVT LTD",
-                "IMPS-P2A/{utr}/RAZORPAY SETTLEMENT",
-                "RTGS CR-{utr}-RAZORPAY PAYOUTS",
-                "UPI/CR/{utr}/RAZORPAY SOFTWARE PVT LTD",
-            ]
-        )
-        return template.format(utr=payout_utr)
+        return self.rng.choice(NARRATION_TEMPLATES).format(utr=payout_utr)
 
     def _emit_batch_line(
         self,

@@ -1,4 +1,4 @@
-.PHONY: install generate test eval sensitivity scale demo ui lint
+.PHONY: install generate test eval sensitivity scale generalization demo ui lint
 
 PYTHON ?= python
 
@@ -25,6 +25,11 @@ eval:
 # Threshold trade-off curves: what each tier2 knob would have cost or bought. ~30s.
 sensitivity:
 	$(PYTHON) -m ledgerloop.eval.sensitivity --profile dev
+
+# Defect shapes the matcher was never designed for. Passes only if none of them is
+# matched WRONGLY -- escalating them all is a correct outcome. Seconds.
+generalization:
+	$(PYTHON) -m ledgerloop.eval.generalization
 
 # Volume benchmark, 5k -> 100k transactions. ~2 minutes, and it writes ~45 MB of
 # generated CSV under data/scale_* (gitignored).

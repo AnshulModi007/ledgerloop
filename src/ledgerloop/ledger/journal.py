@@ -141,3 +141,36 @@ def propose_postings(
         )
 
     return batches
+
+
+def find_duplicate_receivable_relief(postings: list[Posting]) -> dict[str, list[str]]:
+    """Transactions whose settlement receivable is cleared by more than one bank line,
+    mapped to the lines that cleared it.
+
+    Idempotency deliberately does not catch this. `posting_key` is scoped to the bank
+    line (see ledger/idempotency.py), which is what makes re-running the same statement
+    safe -- but it means two *different* credits clearing the same transaction produce two
+    distinct keys and both postings stand. The receivable is then relieved twice for one
+    transaction, and the run still balances, because each batch balances against its own
+    bank credit independently. A per-batch balance check cannot see it; only a check
+    across batches can.
+
+    This is not hypothetical. It was found by the generalization suite's DOUBLE_SETTLEMENT
+    shape (generate/novel.py), where a gateway bug settles one transaction inside two
+    batches and both are paid out. The matching is *correct* on that input -- each credit
+    genuinely corresponds to its own batch -- so nothing upstream is wrong and nothing
+    upstream should change. The gap was here, in the ledger, which had no control for it.
+
+    Returns an empty dict on a clean run. A non-empty result is a finding for a human,
+    not something to auto-resolve: which of the two payouts was the erroneous one is a
+    question about the gateway's behaviour, not the statement's arithmetic.
+    """
+    lines_by_txn: dict[str, list[str]] = {}
+    for posting in postings:
+        if posting.posting_type == "settlement_receivable_clear" and posting.txn_id:
+            lines_by_txn.setdefault(posting.txn_id, []).append(posting.bank_line_id)
+    return {
+        txn_id: sorted(set(bank_line_ids))
+        for txn_id, bank_line_ids in sorted(lines_by_txn.items())
+        if len(set(bank_line_ids)) > 1
+    }

@@ -24,6 +24,14 @@ generate:
   # scale profile would get *easier* than dev (same hard cases diluted across more clean
   # ones) and the benchmark would measure nothing worth measuring.
   scale_min_instances_per_defect: 200
+  # --- generalization suite (generate/novel.py) ---------------------------------
+  # Defect shapes the matcher was never designed for. Small on purpose: the suite is
+  # scored on whether anything is matched WRONGLY, not on volume, and every case is
+  # meant to be readable by hand when one of them fails.
+  novel_seed: 31337
+  novel_instances_per_shape: 8
+  novel_clean_controls: 12
+  novel_wire_fee_paise: 11800 # INR 118.00 -- a typical RTGS charge plus GST
   min_instances_per_defect: 20
   start_date: "2026-01-01"
   end_date: "2026-03-31"

@@ -1,0 +1,15 @@
+{
+  "config_hash": "6d513b0fdb4a22286b228bb575e7d17a309339053ac42b6af2fccc138dc6fab3",
+  "defect_counts": {
+    "CLEAN": 12,
+    "DOUBLE_SETTLEMENT": 16,
+    "POST_DATED_SETTLEMENT": 8,
+    "STALE_UTR_REUSE": 8,
+    "WIRE_FEE_DEDUCTION": 8
+  },
+  "n_bank_lines": 52,
+  "n_erp_invoices": 86,
+  "n_gateway_transactions": 86,
+  "n_settlement_lines": 94,
+  "seed": 31337
+}

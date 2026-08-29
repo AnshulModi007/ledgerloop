@@ -21,7 +21,12 @@ from ledgerloop import pipeline
 
 
 @click.command()
-@click.option("--profile", type=click.Choice(["dev", "holdout"]), default="dev", help="Which data profile to reconcile.")
+@click.option(
+    "--profile",
+    type=click.Choice(["dev", "holdout", "novel"]),
+    default="dev",
+    help="Which data profile to reconcile. 'novel' is the generalization suite (generate/novel.py).",
+)
 @click.option(
     "--no-llm",
     "no_llm",
@@ -72,6 +77,15 @@ def main(
         f"journal postings proposed: {len(run.all_postings)} "
         f"({len(run.new_postings)} new, {len(run.all_postings) - len(run.new_postings)} already approved)"
     )
+
+    if run.duplicate_receivable_relief:
+        click.echo(
+            f"LEDGER CONTROL: {len(run.duplicate_receivable_relief)} transaction(s) had their "
+            "settlement receivable cleared by more than one bank line -- each batch balances, "
+            "but the receivable is relieved twice. Needs a human:"
+        )
+        for txn_id, bank_line_ids in run.duplicate_receivable_relief.items():
+            click.echo(f"  {txn_id}: cleared by {', '.join(bank_line_ids)}")
 
     if approve:
         new_count = pipeline.approve(runs_root, run)

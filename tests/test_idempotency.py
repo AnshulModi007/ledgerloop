@@ -144,3 +144,43 @@ def test_resolutions_that_reference_a_missing_settlement_line_are_skipped_not_cr
     # and the whole credit becomes a rounding_adjustment residual against zero net.
     posting_types = {p.posting_type for p in batches[0].postings}
     assert posting_types == {"bank_receipt", "rounding_adjustment"}
+
+
+def test_duplicate_receivable_relief_is_clean_on_the_dev_set(dev_pipeline_state):
+    """The control must be silent on ordinary data, or it is just noise."""
+    resolutions, settlement_lines_by_txn, bank_line_by_id = dev_pipeline_state
+    batches = journal.propose_postings(resolutions, settlement_lines_by_txn, bank_line_by_id)
+    postings = [p for batch in batches for p in batch.postings]
+    assert journal.find_duplicate_receivable_relief(postings) == {}
+
+
+def test_duplicate_receivable_relief_catches_what_per_batch_balance_cannot():
+    """Two different bank lines clearing the same transaction: every batch balances, both
+    idempotency keys are distinct (they are scoped to the bank line, which is what makes
+    re-running a statement safe), and so nothing else in the system notices. Found by the
+    generalization suite's DOUBLE_SETTLEMENT shape -- see journal.py."""
+    postings = [
+        journal.Posting(
+            bank_line_id=bank_line_id,
+            posting_type="settlement_receivable_clear",
+            account="settlement_receivable",
+            direction="credit",
+            amount_paise=100_000,
+            txn_id="TXN000001",
+            idempotency_key=f"key-{bank_line_id}",
+        )
+        for bank_line_id in ("BANK00001", "BANK00002")
+    ]
+    # A second transaction cleared exactly once must not be reported.
+    postings.append(
+        journal.Posting(
+            bank_line_id="BANK00003",
+            posting_type="settlement_receivable_clear",
+            account="settlement_receivable",
+            direction="credit",
+            amount_paise=50_000,
+            txn_id="TXN000002",
+            idempotency_key="key-BANK00003",
+        )
+    )
+    assert journal.find_duplicate_receivable_relief(postings) == {"TXN000001": ["BANK00001", "BANK00002"]}

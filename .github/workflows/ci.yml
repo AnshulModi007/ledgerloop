@@ -35,6 +35,11 @@ jobs:
       - name: Eval harness threshold gates (false-match <= 1%, auto-match >= 80%)
         run: python -m ledgerloop.eval.metrics --profile dev --no-llm
 
+      # Defect shapes the matcher was never designed for. Fails the build only on a
+      # WRONG match -- escalating every novel line is a correct outcome and passes.
+      - name: Generalization suite (no novel shape may be matched wrongly)
+        run: python -m ledgerloop.eval.generalization
+
       - name: Determinism check (run twice, diff the reports)
         run: |
           python -m ledgerloop.eval.metrics --profile dev --no-llm --runs-root runs/det_a

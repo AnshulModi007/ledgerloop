@@ -35,6 +35,9 @@ class ReconcileRun:
     new_postings: list[Posting]
     tier_counts: dict[str, int]
     reason_counts: dict[str, int]
+    # Transactions whose receivable was cleared by more than one bank line -- a control
+    # that per-batch balance cannot see. Empty on a clean run. See journal.py.
+    duplicate_receivable_relief: dict[str, list[str]]
     llm_calls_made: int
     providers_used: list[str]
     llm_available: bool
@@ -98,6 +101,8 @@ def run(
     journal_batches = journal.propose_postings(all_resolutions, settlement_lines_by_txn, bank_line_by_id)
     all_postings = [p for batch in journal_batches for p in batch.postings]
 
+    duplicate_relief = journal.find_duplicate_receivable_relief(all_postings)
+
     approved_keys = load_approved_keys(_approved_store_path(runs_root, profile))
     new_postings = [p for p in all_postings if p.idempotency_key not in approved_keys]
 
@@ -114,6 +119,7 @@ def run(
         new_postings=new_postings,
         tier_counts=dict(Counter(r.resolved_by for r in all_resolutions)),
         reason_counts=dict(Counter(e.reason_code for e in exceptions)),
+        duplicate_receivable_relief=duplicate_relief,
         llm_calls_made=tier3_result.llm_calls_made,
         providers_used=tier3_result.providers_used,
         llm_available=tier3_result.llm_available,

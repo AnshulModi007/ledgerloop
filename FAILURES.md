@@ -565,3 +565,49 @@ on top of an eval harness that already exists. Cheap enough that there was no ex
 asserting it instead. Worth noting the finding is scoped to this dataset: it says wrong
 candidates are rare here, not that they are impossible on messier real-world data, which is
 an argument for keeping the threshold rather than deleting it now that it is measured.
+
+---
+
+## 2026-08-29 — the same receivable was cleared twice and every balance check passed
+
+**Symptom:** Found by the generalization suite (`generate/novel.py`) on its first run, and
+not by anything that already existed. Its `DOUBLE_SETTLEMENT` shape — one transaction
+settled inside two different batches, both paid out — was matched 16/16 *correctly*: each
+bank credit genuinely does correspond to its own batch, so both resolutions name the right
+transaction sets and the suite's own gate was satisfied. Following the postings downstream
+showed 8 transactions whose `settlement_receivable` was cleared by two different bank lines.
+The receivable is relieved twice for one transaction.
+
+**Diagnosis:** Three separate guards all had a clean view of this and none of them could
+see it, which is the interesting part:
+
+- `test_every_journal_batch_balances` passes, because every batch *does* balance — each one
+  balances against its own bank credit independently. Per-batch balance is structurally
+  incapable of catching a cross-batch double-count.
+- Idempotency passes, and correctly so. `posting_key` is scoped to the bank line, which is
+  precisely what makes re-running the same statement safe. Two *different* credits clearing
+  the same transaction therefore produce two distinct keys, and both postings legitimately
+  stand.
+- The exception taxonomy never saw it, because nothing was unresolved. `SUSPECTED_DUPLICATE`
+  exists, but it fires on two candidate transactions with near-identical amounts competing
+  for one credit — the mirror image of this, and no help here.
+
+The gap was not in matching. Matching was right. There was simply no control anywhere in
+the ledger that looked *across* batches at the same transaction.
+
+**Fix:** `journal.find_duplicate_receivable_relief()` — transactions whose receivable is
+cleared by more than one bank line, reported with the lines that cleared it. Surfaced by
+`reconcile.py` and the dashboard's run details as a finding for a human, deliberately not
+auto-resolved: which of the two payouts was the erroneous one is a question about the
+gateway's behaviour, not about the statement's arithmetic. 8 findings on the novel set,
+silent on dev and holdout. `tests/test_idempotency.py` pins both directions.
+
+**What I'd do differently:** I would have kept believing per-batch balance was a sufficient
+ledger control, because on every dataset I had written myself it was. The suite that found
+this had existed for about twenty minutes. That is the argument for building an adversarial
+set you did not design the system against — not that it improves the score (it does not
+appear in any accuracy figure), but that it looks in the one direction your own test data
+structurally cannot. Worth stating plainly for anyone reading the numbers above: the matcher
+was **not** changed in response to this. Tuning it against the novel set would have turned a
+generalization test into another in-distribution one, and the finding was never in the
+matcher anyway.
