@@ -15,6 +15,7 @@ from pathlib import Path
 import streamlit as st
 
 from ledgerloop import pipeline
+from ledgerloop.exceptions import decisions as decisions_mod
 from ledgerloop.exceptions import queue as queue_mod
 from ledgerloop.exceptions.explain import rupees
 from ledgerloop.schemas import Exception_
@@ -38,6 +39,15 @@ with st.sidebar:
     profile = st.selectbox("Batch (data profile)", available_profiles, index=available_profiles.index("dev") if "dev" in available_profiles else 0)
     no_llm = st.checkbox("Force --no-llm (deterministic tiers 1+2 only)", value=False)
 
+    # Self-reported, and labelled as such: authentication is a stated non-goal, so this
+    # records who says they made a decision rather than proving it. Still worth having --
+    # an unattributed decision log answers "what" but never "who".
+    reviewer = st.text_input(
+        "Reviewer (recorded with each decision)",
+        value=decisions_mod.default_actor(),
+        help="Self-reported. Set LEDGERLOOP_REVIEWER to change the default. Not authentication.",
+    )
+
     run_clicked = st.button("Run reconciliation", type="primary", width="stretch")
 
 if run_clicked:
@@ -47,7 +57,9 @@ if run_clicked:
         wall_seconds = time.perf_counter() - start
     st.session_state.run = run_result
     st.session_state.wall_seconds = wall_seconds
-    st.session_state.queue_items = queue_mod.build_queue(run_result.exceptions)
+    st.session_state.queue_items = queue_mod.apply_stored_decisions(
+        queue_mod.build_queue(run_result.exceptions), run_result.review_decisions
+    )
     st.session_state.last_reapprove_new_count = None
 
 run: pipeline.ReconcileRun | None = st.session_state.get("run")
@@ -80,11 +92,19 @@ _needs_review, _no_action = queue_mod.partition_by_review_need(st.session_state.
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Match rate", f"{match_rate:.1%}", f"{resolved_count}/{run.total_records}")
-col2.metric("Needs review", len(_needs_review), f"+{len(_no_action)} no-action", delta_color="off")
+_undecided = [i for i in _needs_review if i.status == "open"]
+col2.metric(
+    "Needs review",
+    len(_undecided),
+    f"{len(_needs_review) - len(_undecided)} decided, +{len(_no_action)} no-action",
+    delta_color="off",
+)
 col3.metric("Throughput", f"{throughput:,.0f} rec/s")
 col4.metric("Tier split", f"{run.tier_counts.get('tier1', 0)}/{run.tier_counts.get('tier2', 0)}/{run.tier_counts.get('tier3', 0)}", "tier1 / tier2 / tier3")
 
-tab_exceptions, tab_journal, tab_run = st.tabs(["Exception queue", "Proposed journal entries", "Run details"])
+tab_exceptions, tab_journal, tab_tieout, tab_run = st.tabs(
+    ["Exception queue", "Proposed journal entries", "Tie-out", "Run details"]
+)
 
 # -- exception queue --------------------------------------------------------------------
 
@@ -117,16 +137,44 @@ with tab_exceptions:
             with st.expander("evidence"):
                 st.json(exc.evidence)
 
+            stored = run.review_decisions.get(exc.bank_line_id)
+            if stored is not None:
+                st.caption(
+                    f"decided **{stored.action}** by *{stored.actor}* at {stored.decided_at_utc}"
+                    + (f" -- {stored.note}" if stored.note else "")
+                )
+
+            note = st.text_input(
+                "Reviewer note (recorded with the decision)",
+                key=f"note-{exc.bank_line_id}",
+                value=stored.note or "" if stored else "",
+                label_visibility="collapsed",
+                placeholder="Optional note -- recorded in the audit trail with your decision",
+            )
+
             b_approve, b_reject, b_reassign = st.columns(3)
-            if b_approve.button("Approve", key=f"approve-{exc.bank_line_id}", disabled=item.status == "approved"):
-                items[items.index(item)] = queue_mod.apply_action(item, "approved")
-                st.rerun()
-            if b_reject.button("Reject", key=f"reject-{exc.bank_line_id}", disabled=item.status == "rejected"):
-                items[items.index(item)] = queue_mod.apply_action(item, "rejected")
-                st.rerun()
-            if b_reassign.button("Reassign", key=f"reassign-{exc.bank_line_id}", disabled=item.status == "reassigned"):
-                items[items.index(item)] = queue_mod.apply_action(item, "reassigned")
-                st.rerun()
+            for column, action, label in (
+                (b_approve, "approved", "Approve"),
+                (b_reject, "rejected", "Reject"),
+                (b_reassign, "reassigned", "Reassign"),
+            ):
+                if column.button(label, key=f"{action}-{exc.bank_line_id}", disabled=item.status == action):
+                    # Durable and mirrored into the audit trail, not just session state --
+                    # a refresh used to erase every decision ever made here.
+                    pipeline.decide(
+                        RUNS_ROOT,
+                        profile,
+                        exception=exc,
+                        action=action,
+                        config=run.config,
+                        actor=reviewer,
+                        note=note or None,
+                    )
+                    run.review_decisions = pipeline.DecisionLog(
+                        pipeline.decision_log_path(RUNS_ROOT, profile)
+                    ).current()
+                    items[items.index(item)] = queue_mod.apply_action(item, action, note=note or None)
+                    st.rerun()
 
     st.subheader(f"Needs a decision ({len(visible_needs_review)})")
     if visible_needs_review:
@@ -182,7 +230,9 @@ with tab_journal:
             rerun_wall = time.perf_counter() - start
         st.session_state.run = rerun_result
         st.session_state.wall_seconds = rerun_wall
-        st.session_state.queue_items = queue_mod.build_queue(rerun_result.exceptions)
+        st.session_state.queue_items = queue_mod.apply_stored_decisions(
+            queue_mod.build_queue(rerun_result.exceptions), rerun_result.review_decisions
+        )
         st.session_state.last_reapprove_new_count = newly_approved
         st.session_state.last_rerun_new_count = len(rerun_result.new_postings)
         st.rerun()
@@ -196,6 +246,66 @@ with tab_journal:
         else:
             st.warning(f"Re-run over the same batch: {rerun_new_count} new postings (expected 0 -- inputs or config changed).")
 
+# -- tie-out: the statement a controller signs -------------------------------------------
+
+with tab_tieout:
+    t = run.tie_out
+    if t.clean:
+        st.success("Tie-out clean: cash and books agree, and no transaction was relieved twice.")
+    else:
+        st.error("Tie-out NOT clean -- review the controls below before approving anything.")
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Statement", rupees(t.statement_total_paise), f"{t.statement_line_count} credits")
+    c2.metric("Reconciled", rupees(t.reconciled_paise), f"{t.reconciled_line_count} lines")
+    c3.metric("Unreconciled", rupees(t.unreconciled_paise), f"{t.unreconciled_line_count} lines", delta_color="off")
+
+    st.subheader("Controls")
+    st.dataframe(
+        [
+            {
+                "control": "cash ties out",
+                "result": "PASS" if t.cash_ties_out else "FAIL",
+                "detail": f"bank receipts {rupees(t.bank_receipt_total_paise)} vs {rupees(t.reconciled_paise)} reconciled",
+            },
+            {
+                "control": "books balance",
+                "result": "PASS" if t.balances else "FAIL",
+                "detail": f"debits {rupees(t.total_debits_paise)} vs credits {rupees(t.total_credits_paise)}",
+            },
+            {
+                "control": "receivable cleared once",
+                "result": "PASS" if not t.duplicate_receivable_relief else "FAIL",
+                "detail": f"{len(t.duplicate_receivable_relief)} transaction(s) cleared by more than one bank line",
+            },
+            {
+                "control": "fee drift absorbed",
+                "result": "INFO",
+                "detail": (
+                    f"{rupees(t.rounding_adjustment_gross_paise)} gross across "
+                    f"{t.rounding_adjustment_count} postings (net {rupees(t.rounding_adjustment_net_paise)})"
+                ),
+            },
+        ],
+        width="stretch",
+        hide_index=True,
+    )
+
+    st.subheader("Movement by control account")
+    st.dataframe(
+        [
+            {
+                "account": m.account,
+                "debit": rupees(m.debit_paise),
+                "credit": rupees(m.credit_paise),
+                "postings": m.posting_count,
+            }
+            for m in t.movements
+        ],
+        width="stretch",
+        hide_index=True,
+    )
+
 # -- run details ------------------------------------------------------------------------
 
 with tab_run:
@@ -207,6 +317,9 @@ with tab_run:
             "was the erroneous one is a question about the gateway, not about the statement's arithmetic."
         )
         st.json(run.duplicate_receivable_relief)
+
+    st.write("review decisions on record (durable, mirrored into the audit log):")
+    st.json(decisions_mod.counts_by_action(run.review_decisions) or {"(none yet)": 0})
 
     st.write("exceptions by reason code:")
     st.json(run.reason_counts)

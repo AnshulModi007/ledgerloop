@@ -19,12 +19,16 @@ from typing import Literal
 from pydantic import BaseModel
 
 from ledgerloop.config import config_hash
+from ledgerloop.exceptions.decisions import ReviewDecision
 from ledgerloop.schemas import Exception_, Resolution
 
 
 class AuditRecord(BaseModel):
     bank_line_id: str
-    outcome: Literal["resolved", "exception"]
+    # "review_decision" is a human's decision about an escalation, mirrored here from
+    # exceptions/decisions.py so one file answers "what happened to this bank line",
+    # machine and human alike, rather than the trail stopping at the escalation.
+    outcome: Literal["resolved", "exception", "review_decision"]
     resolved_by: str | None  # tier1/tier2/tier3; None for exceptions
     reason_code: str | None  # only for exceptions
     rule: str | None
@@ -34,6 +38,10 @@ class AuditRecord(BaseModel):
     model_response: dict | None  # the full tier3 evidence dict, when tier3 was involved
     config_hash: str
     timestamp_utc: str
+    # -- review_decision only; None for machine outcomes.
+    review_action: str | None = None
+    review_actor: str | None = None
+    review_note: str | None = None
 
 
 def _record_for_resolution(resolution: Resolution, run_config_hash: str) -> AuditRecord:
@@ -88,6 +96,28 @@ class AuditLog:
             self.append(_record_for_resolution(resolution, run_config_hash))
         for exception in sorted(exceptions, key=lambda e: e.bank_line_id):
             self.append(_record_for_exception(exception, run_config_hash))
+
+    def append_decision(self, decision: ReviewDecision, *, config: dict) -> None:
+        """Mirrors a human review decision into the audit trail. The decision log itself
+        (exceptions/decisions.py) remains the queue's state; this is the history."""
+        self.append(
+            AuditRecord(
+                bank_line_id=decision.bank_line_id,
+                outcome="review_decision",
+                resolved_by=None,
+                reason_code=decision.reason_code,
+                rule=None,
+                prompt_version=None,
+                confidence=None,
+                evidence={},
+                model_response=None,
+                config_hash=config_hash(config),
+                timestamp_utc=decision.decided_at_utc,
+                review_action=decision.action,
+                review_actor=decision.actor,
+                review_note=decision.note,
+            )
+        )
 
     def read_all(self) -> list[AuditRecord]:
         if not self.path.exists():

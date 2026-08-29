@@ -90,6 +90,74 @@ machine-derived, and the model can add narrative around them but can never alter
 the same containment argument as the fixed candidate menu, applied to the explanation
 surface. See `src/ledgerloop/exceptions/explain.py`.
 
+## The human half of the loop is auditable too
+
+Every machine decision was already recorded — tier, rule, confidence, prompt version, full
+model response, config hash, timestamp, appended to `runs/{profile}_audit.jsonl` and never
+rewritten. The human half had none of that. Approve, reject and reassign lived in Streamlit
+session state, so a browser refresh erased every decision a reviewer had ever made, and
+nothing anywhere recorded *who* decided.
+
+For a product whose entire pitch is that it escalates to a person, the part where the person
+decides was the one part nobody could review afterwards. Decisions are now durable, attributed
+and append-only (`src/ledgerloop/exceptions/decisions.py`):
+
+- **Attributed and timestamped.** Reviewer name is recorded with every decision, from the
+  dashboard sidebar or `LEDGERLOOP_REVIEWER`. It is self-reported and labelled as such —
+  authentication is a stated non-goal, and this records who *says* they decided, which is
+  worth having and is not the same as proof.
+- **Idempotent.** Re-recording an identical decision is a no-op and writes nothing — the same
+  guarantee `ledger/idempotency.py` gives postings, applied to review actions, so a
+  double-click or a replayed session can't manufacture review history.
+- **Append-only, so a reversal keeps its own history.** Changing a verdict writes a new
+  record; the earlier one stays. "Who decided this, when, and what did they say" remains
+  answerable *after* the decision is reversed, which is the question an auditor actually asks.
+- **Mirrored into the audit log** as `outcome: "review_decision"`, so one file answers what
+  happened to a bank line end to end, machine and human alike, rather than the trail stopping
+  at the escalation.
+
+The dashboard rehydrates the queue from that log on every run, so a decided exception comes
+back decided rather than open, and the headline count separates decided from still-waiting.
+
+## Tie-out: the statement a controller signs
+
+Every journal batch balancing internally was already tested — and it is a weak check on its
+own, because it looks at one batch at a time and can never see a problem that exists only
+*between* batches. Nothing tied the run as a whole back to the statement it came from.
+
+`ledger/tieout.py` produces the reconciliation statement, printed by `reconcile.py` and shown
+as a dashboard tab. On the dev set, with no API key:
+
+```
+RECONCILIATION STATEMENT
+  bank statement, 284 credits ...................... Rs.4,78,56,920.92
+  reconciled (260 lines) ........................... Rs.4,76,97,961.88
+  unreconciled (24 lines) ............................. Rs.1,58,959.04
+
+CONTROLS
+  cash ties out             YES   bank receipts posted Rs.4,76,97,961.88 vs Rs.4,76,97,961.88 reconciled
+  books balance             YES   debits Rs.4,91,51,481.73 vs credits Rs.4,91,51,481.73
+  fee drift absorbed              Rs.0.69 gross across 20 postings (net Rs.0.09)
+  receivable cleared twice        none
+```
+
+Four controls, each answering a question a finance reviewer asks in order — does the cash tie
+out, do the books balance, was any receivable relieved twice, and what did we absorb — plus
+movement by control account. Every figure is integer paise computed from the postings
+themselves, not an estimate.
+
+The last control line is the one that didn't exist before and is worth reading closely.
+**₹0.69 of fee-rounding drift, across 20 postings, out of ₹4.79 crore.** Tier 2 tolerates
+drift up to `amount_tolerance_paise` per line and posts the residual explicitly to
+`rounding_adjustment` rather than swallowing it — but until this report, that residual was
+only ever visible one posting at a time, so "how much did the tolerance actually let through"
+had no answer. Now it is a single number, and a test asserts no individual residual can
+exceed the configured tolerance.
+
+`tests/test_tieout.py` also proves each control can *fail* — a ledger disagreeing with the
+statement, a one-sided run, and a run that balances perfectly while relieving one receivable
+twice — because a control only asserted in its passing state proves nothing.
+
 ## The thesis
 
 > The LLM does **extraction, selection, and explanation**. It never does arithmetic, and it

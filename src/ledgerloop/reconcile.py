@@ -18,6 +18,7 @@ from pathlib import Path
 import click
 
 from ledgerloop import pipeline
+from ledgerloop.ledger import tieout
 
 
 @click.command()
@@ -77,6 +78,10 @@ def main(
         f"journal postings proposed: {len(run.all_postings)} "
         f"({len(run.new_postings)} new, {len(run.all_postings) - len(run.new_postings)} already approved)"
     )
+
+    click.echo("")
+    click.echo(tieout.format_report(run.tie_out))
+    click.echo("")
 
     if run.duplicate_receivable_relief:
         click.echo(

@@ -11,6 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from ledgerloop.exceptions.decisions import ReviewDecision
 from ledgerloop.exceptions.taxonomy import ReasonCode
 from ledgerloop.schemas import Exception_
 
@@ -69,3 +70,21 @@ def partition_by_review_need(items: list[QueueItem]) -> tuple[list[QueueItem], l
     needs_review = [item for item in items if requires_review(item)]
     no_action = [item for item in items if not requires_review(item)]
     return needs_review, no_action
+
+
+def apply_stored_decisions(items: list[QueueItem], decisions: dict[str, ReviewDecision]) -> list[QueueItem]:
+    """Rehydrates a freshly-built queue with the decisions a human already made.
+
+    Without this the queue is correct but amnesiac: a re-run rebuilds every exception as
+    "open" and the reviewer's work is invisible even though it was durably recorded. An
+    exception with no stored decision stays open, which is why a line that was never
+    decided and a line whose decision was reversed to open look different here.
+    """
+    rehydrated = []
+    for item in items:
+        decision = decisions.get(item.exception.bank_line_id)
+        if decision is None:
+            rehydrated.append(item)
+        else:
+            rehydrated.append(apply_action(item, decision.action, note=decision.note))
+    return rehydrated

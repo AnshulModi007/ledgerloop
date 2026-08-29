@@ -18,9 +18,19 @@ from ledgerloop.adjudicate.provider import LLMProvider, resolve_chain
 from ledgerloop.audit.log import AuditLog
 from ledgerloop.config import load_config
 from ledgerloop.exceptions import taxonomy
+from ledgerloop.exceptions.decisions import (
+    DecisionAction,
+    DecisionLog,
+    ReviewDecision,
+    decision_log_path,
+)
+
+__all__ = ["DecisionLog", "ReconcileRun", "ReviewDecision", "approve", "decide", "decision_log_path", "run"]
 from ledgerloop.ingest.normalise import load_and_normalise
 from ledgerloop.ledger import journal
+from ledgerloop.ledger import tieout as tieout_mod
 from ledgerloop.ledger.journal import JournalBatch, Posting
+from ledgerloop.ledger.tieout import TieOut
 from ledgerloop.match import tier1_exact, tier2_algorithmic
 from ledgerloop.schemas import Exception_, Resolution
 
@@ -38,6 +48,13 @@ class ReconcileRun:
     # Transactions whose receivable was cleared by more than one bank line -- a control
     # that per-batch balance cannot see. Empty on a clean run. See journal.py.
     duplicate_receivable_relief: dict[str, list[str]]
+    # Human decisions already standing against this profile's exceptions, keyed by bank
+    # line. Loaded on every run so a reviewer's work survives a restart -- see
+    # exceptions/decisions.py.
+    review_decisions: dict[str, ReviewDecision]
+    # The whole-run reconciliation statement and its controls -- see ledger/tieout.py.
+    # Per-batch balance cannot see a cross-batch problem; this can.
+    tie_out: TieOut
     llm_calls_made: int
     providers_used: list[str]
     llm_available: bool
@@ -102,6 +119,12 @@ def run(
     all_postings = [p for batch in journal_batches for p in batch.postings]
 
     duplicate_relief = journal.find_duplicate_receivable_relief(all_postings)
+    review_decisions = DecisionLog(decision_log_path(runs_root, profile)).current()
+    tie_out = tieout_mod.build(
+        all_postings,
+        {b.bank_line_id: b.credit_amount_paise for b in normalised.bank_lines},
+        {r.bank_line_id for r in all_resolutions},
+    )
 
     approved_keys = load_approved_keys(_approved_store_path(runs_root, profile))
     new_postings = [p for p in all_postings if p.idempotency_key not in approved_keys]
@@ -120,12 +143,44 @@ def run(
         tier_counts=dict(Counter(r.resolved_by for r in all_resolutions)),
         reason_counts=dict(Counter(e.reason_code for e in exceptions)),
         duplicate_receivable_relief=duplicate_relief,
+        review_decisions=review_decisions,
+        tie_out=tie_out,
         llm_calls_made=tier3_result.llm_calls_made,
         providers_used=tier3_result.providers_used,
         llm_available=tier3_result.llm_available,
         total_records=len(normalised.bank_lines),
         config=config,
     )
+
+
+def decide(
+    runs_root: Path,
+    profile: str,
+    *,
+    exception: Exception_,
+    action: DecisionAction,
+    config: dict,
+    actor: str | None = None,
+    note: str | None = None,
+) -> tuple[ReviewDecision, bool]:
+    """Records a human decision about one escalation, durably and idempotently, and
+    mirrors it into the audit trail. Returns (decision, was_new); was_new is False when
+    the identical decision already stands.
+
+    Both surfaces go through here for the same reason they both go through run(): so the
+    dashboard and any future CLI can never diverge on what a decision means or where it
+    is written."""
+    log = DecisionLog(decision_log_path(runs_root, profile))
+    decision, was_new = log.record(
+        bank_line_id=exception.bank_line_id,
+        action=action,
+        reason_code=exception.reason_code,
+        actor=actor,
+        note=note,
+    )
+    if was_new:
+        AuditLog(runs_root / f"{profile}_audit.jsonl").append_decision(decision, config=config)
+    return decision, was_new
 
 
 def approve(runs_root: Path, run_result: ReconcileRun) -> int:

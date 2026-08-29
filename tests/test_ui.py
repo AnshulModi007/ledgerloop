@@ -48,7 +48,9 @@ def test_running_reconciliation_shows_headline_metrics(app_env):
 
     assert not at.exception
     labels = {m.label for m in at.main.metric}
-    assert labels == {"Match rate", "Needs review", "Throughput", "Tier split"}
+    # AppTest renders every tab, so the tie-out tab's metrics appear here too.
+    assert {"Match rate", "Needs review", "Throughput", "Tier split"} <= labels
+    assert {"Statement", "Reconciled", "Unreconciled"} <= labels
     match_rate_metric = next(m for m in at.main.metric if m.label == "Match rate")
     assert match_rate_metric.value.endswith("%")
 
@@ -63,7 +65,8 @@ def test_headline_exception_count_is_the_reviewable_queue_not_every_exception(ap
     assert not at.exception
 
     needs_review = next(m for m in at.main.metric if m.label == "Needs review")
-    no_action_count = int(needs_review.delta.split()[0].lstrip("+"))
+    # delta reads "<n> decided, +<n> no-action"
+    no_action_count = int(needs_review.delta.split("+")[1].split()[0])
     assert no_action_count > 0  # dev set always carries OUT_OF_SCOPE lines
     assert int(needs_review.value) < no_action_count
 
@@ -98,7 +101,41 @@ def test_exception_queue_row_action_does_not_raise(app_env):
     at.sidebar.button[0].click().run()
     assert not at.exception
 
-    row_buttons = [b for b in at.button if b.key and b.key.startswith("approve-")]
+    row_buttons = [b for b in at.button if b.key and b.key.startswith("approved-")]
     assert row_buttons, "expected at least one exception row on the dev profile"
     row_buttons[0].click().run()
     assert not at.exception
+
+
+def test_a_review_decision_survives_a_fresh_run(app_env):
+    """The gap this closes: decisions used to live only in Streamlit session state, so a
+    refresh erased every approve and reject ever made. They must now come back from disk,
+    attributed, and land in the audit trail beside the machine's own decisions."""
+    from ledgerloop.audit.log import AuditLog
+    from ledgerloop.exceptions.decisions import DecisionLog, decision_log_path
+
+    _data_root, runs_root = app_env
+    at = AppTest.from_file(APP_PATH, default_timeout=60).run()
+    at.sidebar.checkbox[0].set_value(True)
+    at.sidebar.text_input[0].set_value("test-reviewer")
+    at.sidebar.button[0].click().run()
+
+    approve_button = next(b for b in at.button if b.key and b.key.startswith("approved-"))
+    decided_line = approve_button.key.removeprefix("approved-")
+    approve_button.click().run()
+    assert not at.exception
+
+    stored = DecisionLog(decision_log_path(runs_root, "dev")).current()
+    assert stored[decided_line].action == "approved"
+    assert stored[decided_line].actor == "test-reviewer"
+
+    audit = [r for r in AuditLog(runs_root / "dev_audit.jsonl").read_all() if r.outcome == "review_decision"]
+    assert [r.bank_line_id for r in audit] == [decided_line]
+
+    # A completely fresh app process must rebuild the queue with that decision in place.
+    fresh = AppTest.from_file(APP_PATH, default_timeout=60).run()
+    fresh.sidebar.checkbox[0].set_value(True)
+    fresh.sidebar.button[0].click().run()
+    assert not fresh.exception
+    restored = next(b for b in fresh.button if b.key == f"approved-{decided_line}")
+    assert restored.disabled, "the already-approved row should come back disabled, not open"
