@@ -72,9 +72,15 @@ resolved_count = len(run.resolutions)
 match_rate = resolved_count / run.total_records if run.total_records else 0.0
 throughput = run.total_records / wall_seconds if wall_seconds > 0 else float("inf")
 
+# The headline exception number is the queue a human actually has to work. The
+# out-of-scope lines are still exceptions and still listed below -- they are just not
+# pending decisions, and showing the combined count as "the backlog" overstates it by
+# an order of magnitude on a typical batch. See exceptions/queue.py.
+_needs_review, _no_action = queue_mod.partition_by_review_need(st.session_state.queue_items)
+
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Match rate", f"{match_rate:.1%}", f"{resolved_count}/{run.total_records}")
-col2.metric("Exceptions", len(run.exceptions))
+col2.metric("Needs review", len(_needs_review), f"+{len(_no_action)} no-action", delta_color="off")
 col3.metric("Throughput", f"{throughput:,.0f} rec/s")
 col4.metric("Tier split", f"{run.tier_counts.get('tier1', 0)}/{run.tier_counts.get('tier2', 0)}/{run.tier_counts.get('tier3', 0)}", "tier1 / tier2 / tier3")
 
@@ -95,7 +101,9 @@ with tab_exceptions:
     visible = [item for item in items if item.exception.reason_code in reason_filter and item.status in status_filter]
     st.caption(f"{len(visible)} of {len(items)} exceptions shown")
 
-    for item in visible:
+    visible_needs_review, visible_no_action = queue_mod.partition_by_review_need(visible)
+
+    def render(item: queue_mod.QueueItem) -> None:
         exc: Exception_ = item.exception
         with st.container(border=True):
             header_col, status_col2 = st.columns([4, 1])
@@ -119,6 +127,25 @@ with tab_exceptions:
             if b_reassign.button("Reassign", key=f"reassign-{exc.bank_line_id}", disabled=item.status == "reassigned"):
                 items[items.index(item)] = queue_mod.apply_action(item, "reassigned")
                 st.rerun()
+
+    st.subheader(f"Needs a decision ({len(visible_needs_review)})")
+    if visible_needs_review:
+        for item in visible_needs_review:
+            render(item)
+    else:
+        st.success("Nothing pending a human decision in this batch.")
+
+    if visible_no_action:
+        st.subheader(f"No action required ({len(visible_no_action)})")
+        st.caption(
+            "Bank credits the pipeline positively determined were never gateway settlements "
+            "-- direct transfers, refund reversals. Declining to match these is the correct "
+            "outcome, not a failure, so they are separated from the work rather than dropped. "
+            "Expand to review or override any of them."
+        )
+        with st.expander(f"Show {len(visible_no_action)} auto-dispositioned lines"):
+            for item in visible_no_action:
+                render(item)
 
 # -- proposed journal entries + the idempotency demo -------------------------------------
 

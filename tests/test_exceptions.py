@@ -255,6 +255,23 @@ def test_queue_filter_and_count_by_reason_code(dev_exceptions):
         assert len(queue.filter_by_reason_code(items, reason_code)) == count
 
 
+def test_queue_partitions_no_action_items_without_dropping_any(dev_exceptions):
+    """OUT_OF_SCOPE lines are separated from the work, not removed from the queue --
+    every exception must still appear in exactly one of the two halves."""
+    exceptions, _ds = dev_exceptions
+    items = queue.build_queue(exceptions)
+    needs_review, no_action = queue.partition_by_review_need(items)
+
+    assert len(needs_review) + len(no_action) == len(items)
+    assert {i.exception.bank_line_id for i in needs_review + no_action} == {
+        e.bank_line_id for e in exceptions
+    }
+    assert all(i.exception.reason_code == taxonomy.ReasonCode.OUT_OF_SCOPE for i in no_action)
+    assert not any(i.exception.reason_code == taxonomy.ReasonCode.OUT_OF_SCOPE for i in needs_review)
+    # Sort order survives the split, so a reviewer working the list sees stable IDs.
+    assert needs_review == sorted(needs_review, key=lambda i: i.exception.bank_line_id)
+
+
 def test_queue_action_is_immutable():
     from ledgerloop.schemas import Exception_
 

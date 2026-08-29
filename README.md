@@ -57,7 +57,11 @@ evaluated exactly once — see [Results](#results) for the full report.
 ```
 
 92.5% auto-matched without a human touching anything; the remaining 7.5% is typed, explained,
-and queued rather than silently dropped or guessed at.
+and queued rather than silently dropped or guessed at. 20 of those 21 escalations are credits
+that were never gateway settlements, where declining to match is itself the right answer — so
+**99.6% of lines were disposed of correctly** and the queue a human actually works was one
+line. Both rates are reported, always together; see [Correct
+disposition](#correct-disposition-declining-to-match-is-also-a-right-answer).
 
 ## What an escalation actually looks like
 
@@ -113,9 +117,39 @@ made afterward:
 | Tier 2 (algorithmic) | 85 records — 30.4% |
 | Tier 3 (LLM adjudication) | 10 records — 3.6% |
 | Exceptions | 21 records — 7.5% (`OUT_OF_SCOPE` × 20, `AMOUNT_MISMATCH_BEYOND_TOLERANCE` × 1) |
+| **Correct disposition** (matched right + correctly refused) | **99.6%** (279/280) |
+| Queue a human actually works | 1 record (the other 20 exceptions need no decision) |
 | Throughput | 37.0 records/sec |
 | LLM calls made | 2 (7.1 per 1,000 records) |
 | Illustrative cost at published paid rates | ₹0.08 total, ₹0.29 per 1,000 records — actual cost: ₹0 (free tier) |
+
+### Correct disposition: declining to match is also a right answer
+
+20 of those 21 escalations are `OUT_OF_SCOPE` — bank credits that were never gateway
+settlements at all (direct transfers, refund reversals). Ground truth says they have no
+match to make, so refusing to match them is the correct outcome, already reached. Auto-match
+rate scores every one of them as a failure and leaves them sitting in the review queue, which
+overstates the backlog by 20x: the queue a human actually had to work on the held-out set was
+**one line**, the `AMOUNT_MISMATCH_BEYOND_TOLERANCE` shown earlier.
+
+So the harness reports **correct disposition** — matched correctly, or correctly left
+unmatched — beside the strict rate: **99.6% (279/280)**. The one shortfall is a genuine miss.
+
+Three things keep this from being a softer number to hide behind. The strict auto-match rate
+is always printed beside it. Resolving an out-of-scope line counts as a **false match**, never
+a correct rejection, so the disposition rate can't be reached by matching things that
+shouldn't be matched — `tests/test_eval.py` asserts exactly that. And the analyst-hour figures
+below still charge full review time for all 21 exceptions, including the 20 the queue marks
+no-action, because a reviewer still lays eyes on them.
+
+The dashboard makes the same split: "Needs a decision" is the working list, and the
+auto-dispositioned lines are collapsed below it — demoted, never dropped. The split is
+computed from reason codes alone, with no ground truth involved, so it behaves identically
+on data that has no answer key (`src/ledgerloop/exceptions/queue.py`).
+
+These held-out figures are **arithmetic on the numbers already published above** — 259
+correct resolutions, 0 false matches, 20 lines with no match to make — not a second
+evaluation run. The holdout is still scored exactly once.
 
 ### Weighted by value, not just by line count
 
@@ -165,6 +199,49 @@ wrong about more of what it does resolve can't hide behind a smaller denominator
 **Marginal value of Tier 3:** +10 records auto-matched, recall +3.8pp, false-match rate +0.00pp,
 for 2 LLM calls. Tier 3 bought real recall on the held-out set at zero cost in precision — the
 candidates it selected among were all correct.
+
+## Per-defect-class results (dev set, `--no-llm`)
+
+One aggregate number can't tell you whether a system nails the easy cases and folds on the
+hard ones. The generator tags every bank line in the answer key with the defect classes it
+carries, so the harness scores each of the twelve independently. This is the deterministic
+tiers alone — no LLM, no API key — which is what makes it the honest read on how much of
+the problem Python actually solves:
+
+| Defect class | n | Matched | Correctly refused | Missed | Correct |
+|---|---|---|---|---|---|
+| `BATCH_N1` | 104 | 104 | — | 0 | 100.0% |
+| `CHARGEBACK` | 20 | 20 | — | 0 | 100.0% |
+| `CLEAN` | 40 | 40 | — | 0 | 100.0% |
+| `DUPLICATE` | 20 | 20 | — | 0 | 100.0% |
+| `FEE_DRIFT` | 20 | 20 | — | 0 | 100.0% |
+| `INJECTION` | 20 | 20 | — | 0 | 100.0% |
+| `REFUND_NET` | 20 | 20 | — | 0 | 100.0% |
+| `TRANSPOSE` | 20 | 20 | — | 0 | 100.0% |
+| `OUT_OF_SCOPE` | 20 | — | 20 | 0 | 100.0% |
+| `SPLIT_1N` | 40 | 38 | — | 2 | 95.0% |
+| `MONTH_CROSS` | 20 | 18 | — | 2 | 90.0% |
+| `NO_UTR` | 20 | 17 | — | 3 | 85.0% |
+
+**False matches: zero in every class.** Where the deterministic tiers fall short they fall
+short by escalating, never by guessing — which is the design claim, made per-class instead
+of in aggregate.
+
+The three imperfect rows are the honest picture of where the hard problems are, and they are
+exactly the classes with no reliable join key: `NO_UTR` (the narration carries no UTR at all,
+so there is nothing to join on and only a subset-sum over amounts remains), `MONTH_CROSS` (a
+T+2 settlement landing across a month boundary, where the date window stops helping), and
+`SPLIT_1N` (one batch paid out across two credits, so no single credit equals any batch
+total). These are precisely the cases Tier 3 exists for — the ablation above is the same
+claim measured end-to-end.
+
+A line carrying two defect classes is counted under each, so the rows sum to more than the
+284 records in the batch. That overlap is intentional: these are per-class rates, not a
+partition of the batch, and `tests/test_eval.py` asserts the double-count so nobody
+"corrects" it later. A test also fails the build if any class stops appearing in this table
+at all — a class silently dropping out of scoring is exactly what a single aggregate hides.
+
+Regenerate with `python -m ledgerloop.eval.metrics --profile dev --no-llm`.
 
 ## Calibration table
 

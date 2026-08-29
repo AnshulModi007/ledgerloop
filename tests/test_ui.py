@@ -48,9 +48,29 @@ def test_running_reconciliation_shows_headline_metrics(app_env):
 
     assert not at.exception
     labels = {m.label for m in at.main.metric}
-    assert labels == {"Match rate", "Exceptions", "Throughput", "Tier split"}
+    assert labels == {"Match rate", "Needs review", "Throughput", "Tier split"}
     match_rate_metric = next(m for m in at.main.metric if m.label == "Match rate")
     assert match_rate_metric.value.endswith("%")
+
+
+def test_headline_exception_count_is_the_reviewable_queue_not_every_exception(app_env):
+    """The dev set escalates ~20 out-of-scope lines that need no decision. Showing
+    those as the backlog overstates it by roughly 5x, so the headline counts only
+    what needs a human and the rest are carried as a labelled delta."""
+    at = AppTest.from_file(APP_PATH, default_timeout=60).run()
+    at.sidebar.checkbox[0].set_value(True)
+    at.sidebar.button[0].click().run()
+    assert not at.exception
+
+    needs_review = next(m for m in at.main.metric if m.label == "Needs review")
+    no_action_count = int(needs_review.delta.split()[0].lstrip("+"))
+    assert no_action_count > 0  # dev set always carries OUT_OF_SCOPE lines
+    assert int(needs_review.value) < no_action_count
+
+    # Both halves are rendered -- the no-action items are demoted, never hidden.
+    headers = [h.value for h in at.main.subheader]
+    assert any(h.startswith("Needs a decision") for h in headers)
+    assert any(h.startswith("No action required") for h in headers)
 
 
 def test_approve_then_rerun_demonstrates_idempotency(app_env):

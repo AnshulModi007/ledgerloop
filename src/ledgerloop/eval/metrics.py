@@ -4,6 +4,23 @@ Reports the metrics the spec calls out by name: auto-match rate, precision/recal
 against ground truth, false-match rate, tier attribution, throughput, LLM cost, and
 the exception breakdown by reason code.
 
+Two of the numbers here need their framing stated up front, because both are easy
+to misread as score inflation:
+
+* **Correct-disposition rate** counts a line as correctly handled if the pipeline
+  either matched it to the right transactions OR declined to match it when ground
+  truth says it had no match to make. Auto-match rate alone scores a correct refusal
+  as a failure, which understates a system whose whole design preference is to refuse
+  rather than guess. Both rates are always reported together, and the false-match
+  rate below is unchanged and still computed the strict way -- the softer number
+  never appears without the harder ones beside it.
+
+* **Per-defect-class stats** score each of the generator's twelve defect classes
+  separately, using the defect_classes tags the answer key already carries. One bank
+  line can carry two classes (a SPLIT_1N line that also draws a TRANSPOSE overlay),
+  so it counts once under each and the rows deliberately sum to more than the batch
+  size. These are per-class rates, not a partition of the batch.
+
 False-match rate is the primary risk metric: in finance a wrong match is materially
 worse than an escalation to a human, and this pipeline is deliberately tuned to
 prefer escalating (see tier2.min_resolve_score, tier3.confidence_threshold) over
@@ -23,8 +40,10 @@ import click
 
 from ledgerloop.eval import harness
 from ledgerloop.eval.harness import HarnessRun, is_correct_resolution
+from ledgerloop.exceptions import queue as queue_mod
 from ledgerloop.exceptions.explain import format_paise
 from ledgerloop.generate.schemas import AnswerKeyEntry
+from ledgerloop.schemas import Resolution
 
 # Groq's published on-demand rate for openai/gpt-oss-20b (the default provider this
 # pipeline resolves to when a key is configured -- see adjudicate/provider.py) as of
@@ -68,6 +87,23 @@ def _illustrative_cost_inr(llm_calls: int) -> float:
 
 
 @dataclass
+class DefectStats:
+    """How one defect class was handled. `correct_disposition_rate` is the headline:
+    for a class whose lines expect a match it means matched correctly, and for
+    OUT_OF_SCOPE it means correctly left unmatched. A class scoring 100% here is one
+    the pipeline genuinely handles, whichever of the two the right answer was."""
+
+    total: int
+    expects_match: int
+    correctly_matched: int
+    false_matched: int
+    correctly_rejected: int
+    missed: int
+    correct_disposition_rate: float
+    tier_counts: dict[str, int]
+
+
+@dataclass
 class Metrics:
     profile: str
     tier_ceiling: str
@@ -82,6 +118,18 @@ class Metrics:
     tier_counts: dict[str, int]
     tier_shares: dict[str, float]
     exception_counts_by_reason: dict[str, int]
+    # -- disposition: matching correctly and refusing correctly are both right answers.
+    no_match_expected_count: int
+    correctly_rejected_count: int
+    correct_disposition_count: int
+    correct_disposition_rate: float
+    # -- the review queue as a human sees it, split by whether the item needs a decision.
+    # Derived from reason codes alone (no ground truth), so these two are the same
+    # numbers the dashboard shows on a run against data with no answer key at all.
+    exceptions_needing_review: int
+    exceptions_no_action: int
+    # -- per defect class; rows overlap, see module docstring.
+    per_defect: dict[str, DefectStats]
     throughput_records_per_sec: float
     llm_calls_made: int
     llm_calls_per_1000_records: float
@@ -99,6 +147,45 @@ class Metrics:
     illustrative_analyst_hours_saved: float
 
 
+class _DefectTally:
+    """Mutable accumulator behind one DefectStats row. Kept private and separate from
+    the frozen-ish dataclass so compute_metrics can tally in a single pass over the
+    answer key without building intermediate lists per class."""
+
+    def __init__(self) -> None:
+        self.total = 0
+        self.expects_match = 0
+        self.correctly_matched = 0
+        self.false_matched = 0
+        self.correctly_rejected = 0
+        self.missed = 0
+        self.tier_counts = {"tier1": 0, "tier2": 0, "tier3": 0}
+
+    def record(self, outcome: str, *, expects_match: bool, resolution: Resolution | None) -> None:
+        self.total += 1
+        if expects_match:
+            self.expects_match += 1
+        setattr(self, outcome, getattr(self, outcome) + 1)
+        # Tier attribution counts only correct matches: crediting a tier for a line it
+        # got wrong would make a tier look more capable on a defect class the more it
+        # mishandled it.
+        if resolution is not None and outcome == "correctly_matched":
+            self.tier_counts[resolution.resolved_by] += 1
+
+    def finish(self) -> DefectStats:
+        correct = self.correctly_matched + self.correctly_rejected
+        return DefectStats(
+            total=self.total,
+            expects_match=self.expects_match,
+            correctly_matched=self.correctly_matched,
+            false_matched=self.false_matched,
+            correctly_rejected=self.correctly_rejected,
+            missed=self.missed,
+            correct_disposition_rate=correct / self.total if self.total else 0.0,
+            tier_counts=dict(self.tier_counts),
+        )
+
+
 def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> Metrics:
     resolutions_by_bid = {r.bank_line_id: r for r in run.resolutions}
     total = run.total_records
@@ -107,19 +194,43 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
     false_match = 0
     missed = 0
     expects_match_total = 0
+    correctly_rejected = 0
+
+    # Per defect class, keyed by the tags the answer key already carries. Accumulated in
+    # the same pass as the totals so a class row can never disagree with the headline.
+    defect_tallies: dict[str, _DefectTally] = {}
 
     for bid, answer in answer_key.items():
         expects_match = bool(answer.matched_txn_ids)
+        resolution = resolutions_by_bid.get(bid)
+
+        # One of exactly four outcomes per line, and each defect class this line carries
+        # gets tallied against the same one.
+        if resolution is not None and expects_match and is_correct_resolution(resolution, answer):
+            outcome = "correctly_matched"
+        elif resolution is not None:
+            # Resolved something that was wrong, or resolved a line that should never
+            # have been matched at all. Both are false matches -- see the module docstring.
+            outcome = "false_matched"
+        elif expects_match:
+            outcome = "missed"
+        else:
+            outcome = "correctly_rejected"
+
         if expects_match:
             expects_match_total += 1
-        resolution = resolutions_by_bid.get(bid)
-        if resolution is not None:
-            if expects_match and is_correct_resolution(resolution, answer):
-                true_positive += 1
-            else:
-                false_match += 1
-        elif expects_match:
+        if outcome == "correctly_matched":
+            true_positive += 1
+        elif outcome == "false_matched":
+            false_match += 1
+        elif outcome == "missed":
             missed += 1
+        else:
+            correctly_rejected += 1
+
+        for defect_class in answer.defect_classes:
+            tally = defect_tallies.setdefault(defect_class, _DefectTally())
+            tally.record(outcome, expects_match=expects_match, resolution=resolution)
 
     resolved_count = len(run.resolutions)
     tier_counts = {"tier1": 0, "tier2": 0, "tier3": 0}
@@ -131,6 +242,10 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
     for e in run.exceptions:
         exception_counts[e.reason_code] = exception_counts.get(e.reason_code, 0) + 1
 
+    # The review-queue split uses reason codes only -- no ground truth -- so these are
+    # the same two numbers the dashboard can show on data that has no answer key.
+    needing_review, no_action = queue_mod.partition_by_review_need(queue_mod.build_queue(run.exceptions))
+
     cost_inr = _illustrative_cost_inr(run.llm_calls_made)
 
     credit_by_bid = run.credit_paise_by_bank_line
@@ -138,6 +253,9 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
     value_resolved = sum(credit_by_bid.get(r.bank_line_id, 0) for r in run.resolutions)
 
     manual_minutes = total * ASSUMED_MINUTES_PER_MANUAL_TRACE
+    # Every exception is costed at the full review minute, including the ones the queue
+    # marks no-action. Charging those at zero because the pipeline is confident they need
+    # nothing would be scoring our own homework -- a reviewer still lays eyes on them.
     assisted_minutes = len(run.exceptions) * ASSUMED_MINUTES_PER_EXCEPTION_REVIEW
 
     return Metrics(
@@ -154,6 +272,13 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
         tier_counts=tier_counts,
         tier_shares=tier_shares,
         exception_counts_by_reason=dict(sorted(exception_counts.items())),
+        no_match_expected_count=total - expects_match_total,
+        correctly_rejected_count=correctly_rejected,
+        correct_disposition_count=true_positive + correctly_rejected,
+        correct_disposition_rate=(true_positive + correctly_rejected) / total if total else 0.0,
+        exceptions_needing_review=len(needing_review),
+        exceptions_no_action=len(no_action),
+        per_defect={name: tally.finish() for name, tally in sorted(defect_tallies.items())},
         throughput_records_per_sec=total / run.wall_seconds if run.wall_seconds > 0 else float("inf"),
         llm_calls_made=run.llm_calls_made,
         llm_calls_per_1000_records=run.llm_calls_made * 1000 / total if total else 0.0,
@@ -182,6 +307,18 @@ def format_report(m: Metrics) -> str:
             "  <- PRIMARY RISK METRIC"
         ),
         f"missed (escalated instead of matched): {m.missed_count}",
+        (
+            f"correct disposition: {m.correct_disposition_rate:.1%}  "
+            f"({m.correct_disposition_count}/{m.total_records}) = "
+            f"{m.correct_disposition_count - m.correctly_rejected_count} matched correctly + "
+            f"{m.correctly_rejected_count} correctly left unmatched "
+            f"(of {m.no_match_expected_count} that had no match to make)"
+        ),
+        "",
+        (
+            f"review queue: {m.exceptions_needing_review} need a human decision, "
+            f"{m.exceptions_no_action} auto-dispositioned as out-of-scope (no action, still listed)"
+        ),
         "",
         # Value-weighted, not just count-weighted: resolving most of the lines while
         # leaving most of the money escalated would be a materially different result.
@@ -201,6 +338,16 @@ def format_report(m: Metrics) -> str:
         lines.extend(f"  {reason}: {count}" for reason, count in m.exception_counts_by_reason.items())
     else:
         lines.append("  (none)")
+    lines += ["", "per defect class (a line carrying two classes counts under each):"]
+    if m.per_defect:
+        lines.append(f"  {'class':<24}{'n':>5}{'matched':>9}{'false':>7}{'rejected':>10}{'missed':>8}{'correct':>10}")
+        for name, d in m.per_defect.items():
+            lines.append(
+                f"  {name:<24}{d.total:>5}{d.correctly_matched:>9}{d.false_matched:>7}"
+                f"{d.correctly_rejected:>10}{d.missed:>8}{d.correct_disposition_rate:>10.1%}"
+            )
+    else:
+        lines.append("  (answer key carries no defect tags)")
     lines += [
         "",
         f"throughput: {m.throughput_records_per_sec:.1f} records/sec",

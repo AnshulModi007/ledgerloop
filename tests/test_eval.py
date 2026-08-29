@@ -13,17 +13,20 @@ from ledgerloop.eval import ablation, harness
 from ledgerloop.eval.calibration import compute_calibration
 from ledgerloop.eval.harness import HarnessRun
 from ledgerloop.eval.metrics import compute_metrics
+from ledgerloop.generate.defects import ALL_DEFECT_CLASSES
 from ledgerloop.generate.generator import Generator, write_dataset
 from ledgerloop.generate.schemas import AnswerKeyEntry
 from ledgerloop.schemas import Resolution
 
 
-def _answer(bank_line_id: str, matched_txn_ids: list[str]) -> AnswerKeyEntry:
+def _answer(
+    bank_line_id: str, matched_txn_ids: list[str], defect_classes: list[str] | None = None
+) -> AnswerKeyEntry:
     return AnswerKeyEntry(
         bank_line_id=bank_line_id,
         matched_txn_ids=matched_txn_ids,
         settlement_batch_ids=[],
-        defect_classes=["CLEAN"] if matched_txn_ids else ["OUT_OF_SCOPE"],
+        defect_classes=defect_classes or (["CLEAN"] if matched_txn_ids else ["OUT_OF_SCOPE"]),
     )
 
 
@@ -108,6 +111,129 @@ def test_analyst_hours_are_derived_from_exception_count_not_guessed():
     )
     assert m.illustrative_analyst_hours_with_ledgerloop == pytest.approx(0.0)
     assert m.illustrative_analyst_hours_saved == pytest.approx(4.0)
+
+
+def test_correct_disposition_credits_a_correct_refusal_without_softening_the_risk_metric():
+    """Two of these three lines had no match to make; declining them is the right
+    answer, and auto-match rate alone scores that as a failure. The strict rate must
+    still be reported unchanged beside the disposition rate -- the point is that both
+    are visible, not that the flattering one replaces the other."""
+    answer_key = {
+        "B1": _answer("B1", ["TXN1"]),
+        "B2": _answer("B2", []),
+        "B3": _answer("B3", []),
+    }
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full", resolutions=[_resolution("B1", ["TXN1"])],
+        exceptions=[], total_records=3, llm_calls_made=0, providers_used=[],
+        wall_seconds=1.0, config={}, credit_paise_by_bank_line={"B1": 100, "B2": 200, "B3": 300},
+    )
+    m = compute_metrics(run, answer_key)
+
+    assert m.no_match_expected_count == 2
+    assert m.correctly_rejected_count == 2
+    assert m.correct_disposition_count == 3
+    assert m.correct_disposition_rate == pytest.approx(1.0)
+    assert m.auto_match_rate == pytest.approx(1 / 3)  # strict rate, unchanged
+    assert m.false_match_rate == pytest.approx(0.0)
+
+
+def test_resolving_an_out_of_scope_line_is_a_false_match_never_a_correct_rejection():
+    """The disposition rate must not be reachable by matching an out-of-scope line --
+    that is the exact failure it would otherwise disguise."""
+    answer_key = {"B1": _answer("B1", [])}
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full", resolutions=[_resolution("B1", ["TXN1"])],
+        exceptions=[], total_records=1, llm_calls_made=0, providers_used=[],
+        wall_seconds=1.0, config={}, credit_paise_by_bank_line={"B1": 100},
+    )
+    m = compute_metrics(run, answer_key)
+
+    assert m.correctly_rejected_count == 0
+    assert m.correct_disposition_rate == pytest.approx(0.0)
+    assert m.false_match_count == 1
+    assert m.per_defect["OUT_OF_SCOPE"].false_matched == 1
+    assert m.per_defect["OUT_OF_SCOPE"].correctly_rejected == 0
+
+
+def test_per_defect_scores_each_class_separately_and_overlapping_rows_double_count():
+    """A line carrying two defect classes is tallied under both, so the rows sum to
+    more than the batch size. That overlap is intended -- these are per-class rates,
+    not a partition -- and asserting it here keeps anyone from "fixing" it later."""
+    answer_key = {
+        "B1": _answer("B1", ["TXN1"], ["CLEAN"]),
+        "B2": _answer("B2", ["TXN2"], ["SPLIT_1N", "TRANSPOSE"]),  # missed below
+        "B3": _answer("B3", ["TXN3"], ["SPLIT_1N"]),
+        "B4": _answer("B4", [], ["OUT_OF_SCOPE"]),
+    }
+    resolutions = [
+        _resolution("B1", ["TXN1"], resolved_by="tier1"),
+        _resolution("B3", ["TXN3"], resolved_by="tier2"),
+        # B2 left unresolved -- a miss against two classes at once
+        # B4 left unresolved -- a correct refusal
+    ]
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full", resolutions=resolutions, exceptions=[],
+        total_records=4, llm_calls_made=0, providers_used=[], wall_seconds=1.0, config={},
+        credit_paise_by_bank_line={"B1": 100, "B2": 200, "B3": 300, "B4": 400},
+    )
+    m = compute_metrics(run, answer_key)
+
+    split = m.per_defect["SPLIT_1N"]
+    assert (split.total, split.correctly_matched, split.missed) == (2, 1, 1)
+    assert split.correct_disposition_rate == pytest.approx(0.5)
+    assert split.tier_counts == {"tier1": 0, "tier2": 1, "tier3": 0}
+
+    transpose = m.per_defect["TRANSPOSE"]
+    assert (transpose.total, transpose.missed) == (1, 1)
+    assert transpose.correct_disposition_rate == pytest.approx(0.0)
+
+    oos = m.per_defect["OUT_OF_SCOPE"]
+    assert (oos.total, oos.correctly_rejected, oos.expects_match) == (1, 1, 0)
+    assert oos.correct_disposition_rate == pytest.approx(1.0)
+
+    # B2 carries two classes, so the rows over-count the 4 real records by exactly one.
+    assert sum(d.total for d in m.per_defect.values()) == 5
+
+
+def test_per_defect_tier_attribution_ignores_wrong_matches():
+    """Crediting a tier for a line it got wrong would make it look more capable on a
+    defect class the more of it it mishandled."""
+    answer_key = {"B1": _answer("B1", ["TXN1"], ["FEE_DRIFT"])}
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full",
+        resolutions=[_resolution("B1", ["TXN_WRONG"], resolved_by="tier2")],
+        exceptions=[], total_records=1, llm_calls_made=0, providers_used=[],
+        wall_seconds=1.0, config={}, credit_paise_by_bank_line={"B1": 100},
+    )
+    m = compute_metrics(run, answer_key)
+    assert m.per_defect["FEE_DRIFT"].tier_counts == {"tier1": 0, "tier2": 0, "tier3": 0}
+    assert m.per_defect["FEE_DRIFT"].false_matched == 1
+
+
+def test_every_generated_defect_class_gets_a_per_defect_row(generated_dev_data_root):
+    """The generator guarantees every defect class appears in the dev set, so a run
+    that reports fewer rows than DefectClass has means a class silently stopped being
+    scored -- which is precisely what a single aggregate auto-match rate hides."""
+    run = harness.run(generated_dev_data_root, "dev", "full", no_llm=True)
+    answer_key = harness.load_answer_key(generated_dev_data_root, "dev")
+    m = compute_metrics(run, answer_key)
+
+    assert set(m.per_defect) == {c.value for c in ALL_DEFECT_CLASSES}
+    for name, stats in m.per_defect.items():
+        assert stats.total > 0, name
+        # Deterministic tiers alone: no class may be actively wrong, only unresolved.
+        assert stats.false_matched == 0, name
+
+
+def test_review_queue_split_is_derived_without_ground_truth(generated_dev_data_root):
+    """exceptions_needing_review + exceptions_no_action must account for every
+    exception -- an item may be reclassified as not-urgent, never dropped."""
+    run = harness.run(generated_dev_data_root, "dev", "full", no_llm=True)
+    m = compute_metrics(run, harness.load_answer_key(generated_dev_data_root, "dev"))
+
+    assert m.exceptions_needing_review + m.exceptions_no_action == len(run.exceptions)
+    assert m.exceptions_no_action == m.exception_counts_by_reason.get("OUT_OF_SCOPE", 0)
 
 
 def test_compute_calibration_bins_by_confidence_and_accuracy():
