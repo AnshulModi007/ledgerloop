@@ -15,6 +15,15 @@ generate:
   dev_seed: 42
   holdout_seed: 1337
   n_gateway_transactions: 5000
+  # The scale profile exists only to measure where the pure-Python subset-sum search
+  # stops holding up (eval/scale.py). It is generated on demand, never committed, and
+  # never scored as an accuracy claim -- dev and holdout are the graded sets.
+  scale_seed: 90210
+  scale_n_gateway_transactions: 50000
+  # Defect instances scale with volume too. Left at 20 while transactions grow 10x, the
+  # scale profile would get *easier* than dev (same hard cases diluted across more clean
+  # ones) and the benchmark would measure nothing worth measuring.
+  scale_min_instances_per_defect: 200
   min_instances_per_defect: 20
   start_date: "2026-01-01"
   end_date: "2026-03-31"

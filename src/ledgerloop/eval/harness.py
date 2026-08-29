@@ -121,8 +121,16 @@ def run(
     no_llm: bool = False,
     config_path: Path | None = None,
     chain: list[LLMProvider] | None = None,
+    config_override: dict | None = None,
 ) -> HarnessRun:
-    config = load_config(config_path) if config_path else load_config()
+    """config_override replaces the loaded config wholesale -- eval/sensitivity.py
+    passes a copy with one threshold changed. It is deliberately not a merge: a sweep
+    must run against a config it fully controls, or a row could silently reflect a
+    value from config.yaml that the caller thought it had replaced."""
+    if config_override is not None:
+        config = config_override
+    else:
+        config = load_config(config_path) if config_path else load_config()
     normalised = load_and_normalise(data_root / profile)
     resolved_chain = chain if chain is not None else (resolve_chain(no_llm=no_llm) if tier_ceiling == "full" else None)
 

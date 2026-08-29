@@ -183,10 +183,14 @@ prevent. The dev-set figures are labelled as such above.
 
 In finance a wrong match is materially worse than an escalation to a human — a false positive
 posts money to the wrong place, an escalation just costs someone five minutes. The system is
-deliberately tuned to prefer escalating (`tier2.min_resolve_score=0.7`,
-`tier3.confidence_threshold=0.85`) over guessing, and the false-match rate is computed against
-the *total* record count, not just the resolved subset, so a system that resolves less but is
-wrong about more of what it does resolve can't hide behind a smaller denominator.
+deliberately tuned to prefer escalating over guessing, and the false-match rate is computed
+against the *total* record count, not just the resolved subset, so a system that resolves less
+but is wrong about more of what it does resolve can't hide behind a smaller denominator.
+
+An earlier version of this paragraph credited `tier2.min_resolve_score=0.7` and
+`tier3.confidence_threshold=0.85` for that safety. Sweeping the thresholds showed the first of
+those does nothing of the kind — see [Threshold
+sensitivity](#threshold-sensitivity-what-the-tuning-actually-buys) for what does.
 
 ## Ablation table (held-out set)
 
@@ -242,6 +246,90 @@ partition of the batch, and `tests/test_eval.py` asserts the double-count so nob
 at all — a class silently dropping out of scoring is exactly what a single aggregate hides.
 
 Regenerate with `python -m ledgerloop.eval.metrics --profile dev --no-llm`.
+
+## Threshold sensitivity: what the tuning actually buys
+
+Claiming a system is "tuned to escalate rather than guess" is easy; showing the curve is not.
+`python -m ledgerloop.eval.sensitivity --profile dev` re-runs the deterministic pipeline once
+per setting of each Tier 2 threshold, changing one value and nothing else, and reports what
+every setting would have cost or bought.
+
+**Running it corrected a claim this README was making.** Three of the four knobs do not govern
+correctness at all:
+
+| Knob | Swept range | Where it first posts a wrong match |
+|---|---|---|
+| `tier2.amount_tolerance_paise` | ₹0 → ₹5,000 | **₹5,000** (5 false matches, precision 97.8%) |
+| `tier2.min_resolve_score` | 0.00 → 0.90 | never |
+| `tier2.date_window_days` | 1 → 30 | never |
+| `tier2.ambiguity_margin` | 0.00 → 0.50 | never |
+
+`min_resolve_score` can be dropped from the shipped 0.70 all the way to **0.00** — "resolve the
+best candidate no matter how weak its score" — and the dev set still comes back with 100%
+precision and zero false matches. It buys 4 extra auto-matches and costs nothing. The same holds
+for the date window and the ambiguity margin.
+
+So the score threshold is not the safety mechanism this README previously credited. What
+actually prevents false matches sits upstream of it, in candidate *generation*: a candidate set
+that never contains a wrong grouping cannot be mis-scored into one, whatever the threshold is
+set to. The score threshold's real job is narrower and still worth having — it decides how much
+work reaches a human, trading 24 auto-matches against 24 review items across its range.
+
+The knob that does govern correctness is the amount tolerance, and there the margin is wide:
+
+| `amount_tolerance_paise` | Resolved | Precision | False matches | Review queue |
+|---|---|---|---|---|
+| 0 (exact) | 240 | 100.0% | 0 | 23 |
+| 100 (₹1) | 260 | 100.0% | 0 | 4 |
+| **200 (₹2) — shipped** | **260** | **100.0%** | **0** | **4** |
+| 1,000 (₹10) | 260 | 100.0% | 0 | 5 |
+| 5,000 (₹50) | 258 | 100.0% | 0 | 18 |
+| 50,000 (₹500) | 252 | 100.0% | 0 | 28 |
+| 500,000 (₹5,000) | 230 | 97.8% | **5** | 54 |
+
+The shipped ₹2.00 sits **2,500x** below the first setting that posts a wrong entry, and ₹2.00 is
+not arbitrary — it is the width of the fee-rounding drift the `FEE_DRIFT` defect class actually
+produces. Note also that loosening past ₹50 makes the system *worse on both axes at once*: fewer
+matches and more review, because sloppy tolerances turn clean single-candidate matches into
+ambiguous multi-candidate ones.
+
+`tier3.confidence_threshold` is not swept. Doing it honestly means re-adjudicating every
+ambiguous case against a live model once per point — the adjudicator stores its decisions but
+not the raw per-candidate confidences a post-hoc sweep would need — and running the holdout
+repeatedly, which the once-only rule forbids. `eval/sensitivity.py` says so in its docstring
+rather than publishing a curve it cannot compute.
+
+## Scale: 100,000 transactions
+
+Every accuracy figure above comes from a 5,000-transaction batch, which says nothing about
+volume. `make scale` (~2 min, ~45 MB of generated CSV, gitignored) generates the same dataset
+shape at four sizes and runs the identical `--no-llm` pipeline over each. Defect density is held
+constant as volume rises — leaving the defect count fixed while transactions grow would dilute
+the hard cases and make the big runs *easier* than the small ones.
+
+| Transactions | Bank lines | Pipeline time | Lines/sec | Auto-match | Correct disposition | False matches | Search timeouts |
+|---|---|---|---|---|---|---|---|
+| 5,020 | 281 | 0.1s | 2,626 | 89.3% | 96.4% | 0 | 0 |
+| 20,080 | 1,120 | 0.9s | 1,254 | 90.6% | 97.8% | 0 | 0 |
+| 50,200 | 2,825 | 16.3s | 173 | 90.7% | 97.7% | 0 | 0 |
+| 100,400 | 5,645 | 53.8s | 105 | 90.2% | 97.3% | 0 | 0 |
+
+**Accuracy is flat across a 20x range; cost per line is not.** Auto-match holds between 89.3%
+and 90.7% with zero false matches at every size, but per-line cost rises 25x from the smallest
+run to the largest. That shape is expected and worth stating plainly: Tier 2's candidate search
+widens as more transactions fall inside each date window, so the work per bank line grows with
+total volume, not just with the number of lines.
+
+100,400 transactions is where a single-process pure-Python run stops being interactive — not
+where anything breaks. Nothing failed at that size: the subset-sum node budget
+(`tier2.subset_sum_node_budget=20000`) was never exhausted, so `TIER2_TIMEOUT` never fired. That
+matters because of *how* this pipeline degrades under load — when the bounded search runs out of
+budget it emits a typed escalation, never a guess. The failure mode at volume is more work for a
+human, never a wrong posting, and `eval/scale.py` counts those timeouts explicitly so the signal
+to raise the budget is visible before it costs recall.
+
+Not measured: peak memory. Doing it portably needs `psutil`, which is not a dependency, and
+`tracemalloc`'s overhead would distort the very timings the benchmark exists to report.
 
 ## Calibration table
 
@@ -326,6 +414,12 @@ Known limitations:
   8B quantized model as a starting point, and confirm on your own machine.
 - Illustrative LLM cost figures use assumed token counts and a fixed USD/INR rate, documented in
   full in `eval/metrics.py`'s module docstring — they show order of magnitude, not a bill.
+- Single-process throughput falls off well before it fails: measured at 100,400 transactions in
+  53.8s with no loss of accuracy (see [Scale](#scale-100000-transactions)), but per-line cost
+  grows with total volume, so a batch an order of magnitude larger again would want the
+  candidate search parallelised or windowed by date before it stayed interactive. Horizontal
+  scaling is a stated non-goal above; this is a measurement of what that costs today, not a
+  claim that it is solved.
 
 ## Build journal
 

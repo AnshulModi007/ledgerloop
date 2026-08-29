@@ -6,10 +6,13 @@ that shells out to `ledgerloop eval metrics`. See IMPLEMENTATION.md section 4.
 
 from __future__ import annotations
 
+import copy
+from dataclasses import replace
+
 import pytest
 
 from ledgerloop.config import load_config
-from ledgerloop.eval import ablation, harness
+from ledgerloop.eval import ablation, harness, scale, sensitivity
 from ledgerloop.eval.calibration import compute_calibration
 from ledgerloop.eval.harness import HarnessRun
 from ledgerloop.eval.metrics import compute_metrics
@@ -281,6 +284,134 @@ def test_full_no_llm_run_clears_the_configured_gates(generated_dev_data_root, co
     gates = config["eval"]
     assert m.false_match_rate <= gates["false_match_rate_gate"]
     assert m.auto_match_rate >= gates["auto_match_rate_gate"]
+
+
+# -- threshold sensitivity (eval/sensitivity.py) ---------------------------------------
+
+
+def test_sweep_isolates_the_knob_and_leaves_the_shipped_config_untouched(generated_dev_data_root, config):
+    """Every row must differ from the next only in the swept value -- and the sweep must
+    not mutate the caller's config, or row N+1 would silently inherit row N's setting."""
+    knob = next(k for k in sensitivity.KNOBS if k.key == "min_resolve_score")
+    before = copy.deepcopy(config)
+    rows = sensitivity.run_sweep(
+        generated_dev_data_root, "dev", replace(knob, points=(0.60, 0.90)), config=config
+    )
+
+    assert config == before  # caller's config untouched
+    assert [r.value for r in rows] == [0.60, 0.90]
+    assert all(r.knob == "tier2.min_resolve_score" for r in rows)
+    # Tightening the score threshold can only remove resolutions, never add any.
+    assert rows[0].resolved_count >= rows[1].resolved_count
+
+
+def test_sweep_marks_the_shipped_operating_point(generated_dev_data_root, config):
+    knob = next(k for k in sensitivity.KNOBS if k.key == "min_resolve_score")
+    shipped = config["tier2"]["min_resolve_score"]
+    rows = sensitivity.run_sweep(
+        generated_dev_data_root, "dev", replace(knob, points=(0.60, shipped)), config=config
+    )
+    assert [r.is_operating_point for r in rows] == [False, True]
+
+
+def test_amount_tolerance_is_the_knob_that_actually_binds(generated_dev_data_root, config):
+    """The claim the README makes from this sweep, asserted: an absurd amount tolerance
+    posts wrong matches, and the shipped value does not. If a future change makes the
+    pipeline tolerant of INR 5,000 of drift without false matches, this test should fail
+    and the README's safety-margin figure should be rewritten -- not the test deleted."""
+    knob = next(k for k in sensitivity.KNOBS if k.key == "amount_tolerance_paise")
+    shipped = config["tier2"]["amount_tolerance_paise"]
+    rows = sensitivity.run_sweep(
+        generated_dev_data_root, "dev", replace(knob, points=(shipped, 500_000)), config=config
+    )
+    at_shipped, at_absurd = rows
+    assert at_shipped.false_match_count == 0
+    assert at_absurd.false_match_count > 0
+    assert sensitivity.first_unsafe_row(rows, knob).value == 500_000
+
+
+def test_first_unsafe_row_scans_from_the_permissive_end_whichever_way_the_knob_runs():
+    """A knob that loosens downward and one that loosens upward must both report the
+    *most permissive* breaking value, not merely the numerically smallest."""
+    def row(value, false_matches):
+        return sensitivity.SensitivityRow(
+            knob="tier2.k", value=value, is_operating_point=False, resolved_count=0,
+            auto_match_rate=0.0, correct_disposition_rate=0.0, precision=0.0, recall=0.0,
+            false_match_rate=0.0, false_match_count=false_matches, exceptions_needing_review=0,
+        )
+
+    rows = [row(1, 2), row(5, 1), row(9, 0)]
+    looser_lower = replace(sensitivity.KNOBS[0], points=(1, 5, 9), looser_is="lower")
+    looser_higher = replace(sensitivity.KNOBS[0], points=(1, 5, 9), looser_is="higher")
+
+    assert sensitivity.first_unsafe_row(rows, looser_lower).value == 1
+    assert sensitivity.first_unsafe_row(rows, looser_higher).value == 5  # 9 is clean
+    assert sensitivity.first_unsafe_row([row(9, 0)], looser_higher) is None
+
+
+def test_report_names_the_binding_knob_and_calls_the_inert_ones_inert(generated_dev_data_root, config):
+    """An inert knob must never be presented as a safety feature -- that mislabelling is
+    exactly what running this sweep corrected."""
+    knobs = (
+        replace(next(k for k in sensitivity.KNOBS if k.key == "min_resolve_score"), points=(0.0, 0.70)),
+        replace(next(k for k in sensitivity.KNOBS if k.key == "amount_tolerance_paise"), points=(200, 500_000)),
+    )
+    results = sensitivity.run_all(generated_dev_data_root, "dev", knobs=knobs, config=config)
+    report = sensitivity.format_report(results, knobs=knobs)
+
+    assert "binding (a swept value produced a wrong match): tier2.amount_tolerance_paise" in report
+    assert "inert across the whole swept range: tier2.min_resolve_score" in report
+
+
+# -- volume benchmark (eval/scale.py) --------------------------------------------------
+
+
+def test_scale_holds_defect_density_constant_as_volume_rises(config):
+    """A benchmark whose hard cases thin out as it grows measures nothing. Density at
+    every size must match the configured scale profile's own ratio."""
+    gen = config["generate"]
+    configured_density = gen["scale_min_instances_per_defect"] / gen["scale_n_gateway_transactions"]
+
+    at_scale = scale._config_at_size(config, gen["scale_n_gateway_transactions"])["generate"]
+    assert at_scale["min_instances_per_defect"] == gen["scale_min_instances_per_defect"]
+
+    at_double = scale._config_at_size(config, gen["scale_n_gateway_transactions"] * 2)["generate"]
+    assert at_double["min_instances_per_defect"] / at_double["n_gateway_transactions"] == pytest.approx(
+        configured_density
+    )
+
+    # Never below the floor every profile guarantees, however small the size.
+    at_tiny = scale._config_at_size(config, 100)["generate"]
+    assert at_tiny["min_instances_per_defect"] == gen["min_instances_per_defect"]
+    assert scale._config_at_size(config, 100) is not config  # caller's config untouched
+
+
+def test_scale_point_runs_the_shipped_thresholds_and_reports_timeouts(tmp_path, config):
+    """The benchmark must run the config we ship, not the sized one it generated with --
+    otherwise it would measure a configuration nobody uses."""
+    point = scale.run_point(config["generate"]["n_gateway_transactions"], tmp_path, config=config)
+
+    assert point.n_bank_lines > 0
+    assert point.pipeline_seconds > 0
+    assert point.false_match_count == 0
+    assert point.tier2_timeouts >= 0  # the field exists and is counted, not inferred
+    assert 0.0 < point.auto_match_rate <= 1.0
+    assert point.correct_disposition_rate >= point.auto_match_rate
+
+
+def test_scale_report_surfaces_search_timeouts_as_an_action(config):
+    """A timeout under load is the signal to raise the node budget. It must never be
+    reported as a bare number a reader has to interpret."""
+    def point(timeouts):
+        return scale.ScalePoint(
+            n_transactions=5000, n_bank_lines=280, generate_seconds=1.0, pipeline_seconds=1.0,
+            bank_lines_per_sec=280.0, transactions_per_sec=5000.0, auto_match_rate=0.9,
+            correct_disposition_rate=0.95, precision=1.0, false_match_count=0,
+            tier2_timeouts=timeouts, exceptions_needing_review=4,
+        )
+
+    assert "raise tier2.subset_sum_node_budget" in scale.format_report([point(3)])
+    assert "the node budget held at every size tested" in scale.format_report([point(0)])
 
 
 def test_ablation_rows_are_monotonically_non_decreasing(generated_dev_data_root):

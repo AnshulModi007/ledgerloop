@@ -69,7 +69,7 @@ def format_table(results: dict[TierCeiling, Metrics]) -> str:
 
 
 @click.command()
-@click.option("--profile", type=click.Choice(["dev", "holdout"]), default="dev")
+@click.option("--profile", type=click.Choice(["dev", "holdout", "scale"]), default="dev")
 @click.option("--no-llm", "no_llm", is_flag=True, default=False, help="Force NullProvider for the full row too.")
 @click.option("--data-root", type=click.Path(path_type=Path), default=Path("data"))
 @click.option("--runs-root", type=click.Path(path_type=Path), default=Path("runs"))

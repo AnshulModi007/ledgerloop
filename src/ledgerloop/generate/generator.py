@@ -11,6 +11,7 @@ produce byte-identical files. See tests/test_generate.py.
 
 from __future__ import annotations
 
+import copy
 import csv
 import json
 import random
@@ -600,19 +601,35 @@ def write_dataset(ds: GeneratedDataset, out_dir: Path, *, seed: int, config: dic
     )
 
 
+# Each profile draws from its own seed so the three datasets are independent, not
+# prefixes of one another. "scale" additionally overrides the transaction count -- it is
+# a volume benchmark for eval/scale.py, not a third graded set.
+PROFILE_SEED_KEYS = {"dev": "dev_seed", "holdout": "holdout_seed", "scale": "scale_seed"}
+
+
+def config_for_profile(profile: str, config: dict) -> dict:
+    if profile != "scale":
+        return config
+    scaled = copy.deepcopy(config)
+    scaled["generate"]["n_gateway_transactions"] = config["generate"]["scale_n_gateway_transactions"]
+    scaled["generate"]["min_instances_per_defect"] = config["generate"]["scale_min_instances_per_defect"]
+    return scaled
+
+
 def generate_profile(profile: str, config: dict, out_root: Path) -> GeneratedDataset:
-    seed = config["generate"]["dev_seed"] if profile == "dev" else config["generate"]["holdout_seed"]
-    ds = Generator(seed, config).generate()
-    write_dataset(ds, out_root / profile, seed=seed, config=config)
+    seed = config["generate"][PROFILE_SEED_KEYS[profile]]
+    profile_config = config_for_profile(profile, config)
+    ds = Generator(seed, profile_config).generate()
+    write_dataset(ds, out_root / profile, seed=seed, config=profile_config)
     return ds
 
 
 @click.command()
 @click.option(
     "--profile",
-    type=click.Choice(["dev", "holdout", "all"]),
+    type=click.Choice(["dev", "holdout", "scale", "all"]),
     default="all",
-    help="Which dataset(s) to (re)generate.",
+    help="Which dataset(s) to (re)generate. 'all' means dev+holdout; 'scale' is opt-in, large, and gitignored.",
 )
 @click.option("--config-path", type=click.Path(exists=True, path_type=Path), default=None)
 @click.option("--out-root", type=click.Path(path_type=Path), default=Path("data"))

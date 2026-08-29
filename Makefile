@@ -1,4 +1,4 @@
-.PHONY: install generate test eval demo ui lint
+.PHONY: install generate test eval sensitivity scale demo ui lint
 
 PYTHON ?= python
 
@@ -21,6 +21,15 @@ eval:
 	$(PYTHON) -m ledgerloop.eval.metrics --profile dev --no-llm
 	$(PYTHON) -m ledgerloop.eval.ablation --profile dev --no-llm
 	$(PYTHON) -m ledgerloop.eval.calibration --profile dev --no-llm
+
+# Threshold trade-off curves: what each tier2 knob would have cost or bought. ~30s.
+sensitivity:
+	$(PYTHON) -m ledgerloop.eval.sensitivity --profile dev
+
+# Volume benchmark, 5k -> 100k transactions. ~2 minutes, and it writes ~45 MB of
+# generated CSV under data/scale_* (gitignored).
+scale:
+	$(PYTHON) -m ledgerloop.eval.scale
 
 demo:
 	$(PYTHON) -m ledgerloop.generate.generator --profile dev

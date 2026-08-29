@@ -522,3 +522,46 @@ rather than "this field is None." The original test encoded an implementation de
 it were the requirement, and passing it for five phases actively concealed the gap. A test
 that asserts an absence should be suspicious of itself — `assert x is None` is only ever
 worth writing when the absence is the *feature*, and here it plainly wasn't.
+
+## 2026-08-29 — the threshold the README credited for safety turns out to do nothing
+
+**Symptom:** Not a crash. Building the threshold sweep (`eval/sensitivity.py`) to show
+the trade-off curve behind the README's claim that the pipeline is "deliberately tuned to
+prefer escalating over guessing (`tier2.min_resolve_score=0.7`)", the first run came back
+with a flat line: precision 100.0% and zero false matches at every one of the nine swept
+values. Widening the sweep downward to 0.00 — "auto-resolve the single best candidate no
+matter how weak its score" — changed nothing. 264 resolved, 100% precision, zero false
+matches. The knob the README named as the safety mechanism could be switched off entirely
+without producing a single wrong entry.
+
+**Diagnosis:** The claim confused two different jobs. `min_resolve_score` gates whether a
+*candidate that tier2 already generated* is good enough to auto-resolve. It cannot protect
+against a wrong match unless a wrong candidate exists to be scored — and on this data it
+mostly does not, because candidate generation is where the real constraint lives: exact and
+transposed UTR joins produce at most one grouping, and the subset-sum search only emits
+groupings whose amounts actually reconcile inside the tolerance. A candidate set that never
+contains a wrong grouping cannot be mis-scored into one, whatever the threshold is set to.
+
+Sweeping the other three tier2 knobs found the one that does bind. `amount_tolerance_paise`
+breaks the system at ₹5,000 of slack: 5 false matches, precision 97.8%. That is the actual
+safety boundary, and the shipped ₹2.00 sits 2,500x below it — the tolerance is what decides
+whether a wrong grouping can be *generated* in the first place, which is exactly the point.
+`date_window_days` and `ambiguity_margin` are inert across their whole ranges too.
+
+**Fix:** Rewrote the README paragraph to say what is true, with the correction visible
+rather than quietly swapped: the claim it used to make is named, and the sweep table shows
+which knobs are inert and which one binds. `eval/sensitivity.py` reports "inert across the
+whole swept range" per knob and states plainly that an inert knob is not a safety feature.
+`tests/test_eval.py::test_amount_tolerance_is_the_knob_that_actually_binds` pins the finding
+both ways — the shipped value produces no false match, the absurd one does — so if a future
+change makes the pipeline tolerant of ₹5,000 drift, the build fails and the README's
+2,500x margin gets rewritten instead of silently becoming false.
+
+**What I'd do differently:** The original claim wasn't a lie, it was an untested plausible
+story about my own system — the threshold *sounds* like the thing keeping it safe, and I
+wrote it without checking. The general lesson is that a config value with a safety-sounding
+name deserves a sweep before it gets credit in a README, and the sweep is about twenty lines
+on top of an eval harness that already exists. Cheap enough that there was no excuse for
+asserting it instead. Worth noting the finding is scoped to this dataset: it says wrong
+candidates are rare here, not that they are impossible on messier real-world data, which is
+an argument for keeping the threshold rather than deleting it now that it is measured.
