@@ -13,8 +13,8 @@ a failure -- see IMPLEMENTATION.md sections 4 and 10, and the `--no-llm` CLI fla
 
 Every provider here uses plain stdlib HTTP (no vendor SDK) against each service's
 publicly documented free-tier REST endpoint, so there's no extra dependency to
-install just to reach the LLM tier. None of these have been exercised against a
-live key in this environment -- see FAILURES.md.
+install just to reach the LLM tier. Groq (2026-08-23) and Ollama (2026-09-01) have
+been exercised live; Gemini and OpenRouter have not -- see FAILURES.md.
 """
 
 from __future__ import annotations
@@ -29,6 +29,18 @@ REQUEST_TIMEOUT_SECONDS = 20
 OLLAMA_PROBE_TIMEOUT_SECONDS = 0.5
 OLLAMA_HOST_ENV = "OLLAMA_HOST"
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
+
+# A cold local model must be read off disk into VRAM before the first token, which
+# costs far more than any hosted provider's whole round trip -- measured at ~22s for
+# llama3.1 (4.9GB) on an RTX 4060. The 20s budget above is sized for a hosted API and
+# aborts mid-load; Ollama then discards the partial load, so the *next* attempt starts
+# cold again and fails identically. That deadlocks the local path permanently rather
+# than costing one slow call. See FAILURES.md (2026-09-01).
+OLLAMA_REQUEST_TIMEOUT_SECONDS = 180
+# Ollama evicts an idle model after 5 minutes by default, which is shorter than the gap
+# between two demo runs. Holding it resident turns the cold start into a once-per-session
+# cost instead of a recurring one.
+OLLAMA_KEEP_ALIVE = "30m"
 
 _TRANSPORT_ERRORS = (urllib.error.URLError, OSError, ValueError)
 
@@ -57,11 +69,11 @@ _DEFAULT_HEADERS = {
 }
 
 
-def _post_json(url: str, payload: dict, headers: dict) -> dict | None:
+def _post_json(url: str, payload: dict, headers: dict, timeout: float = REQUEST_TIMEOUT_SECONDS) -> dict | None:
     data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(url, data=data, headers={**_DEFAULT_HEADERS, **headers})
     try:
-        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             return json.loads(response.read().decode("utf-8"))
     except _TRANSPORT_ERRORS:
         return None
@@ -184,8 +196,19 @@ class OllamaProvider(LLMProvider):
             return False
 
     def complete(self, prompt: str) -> str | None:
-        payload = {"model": self.model, "prompt": prompt, "stream": False, "format": "json"}
-        response = _post_json(f"{self._host}/api/generate", payload, headers={})
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "stream": False,
+            "format": "json",
+            "keep_alive": OLLAMA_KEEP_ALIVE,
+        }
+        response = _post_json(
+            f"{self._host}/api/generate",
+            payload,
+            headers={},
+            timeout=OLLAMA_REQUEST_TIMEOUT_SECONDS,
+        )
         if response is None:
             return None
         return response.get("response")

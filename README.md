@@ -545,10 +545,15 @@ Known limitations:
 - Free-tier LLM quotas and model names churn; verify current ones before relying on specific
   figures (`src/ledgerloop/adjudicate/provider.py` documents where to re-check each provider).
 - Local Ollama (`llama3.1`, 8B) is the offline fallback the provider chain falls through to when
-  no cloud key is set and an Ollama server is reachable on `localhost:11434` — this path is
-  implemented and covered by the same fallback tests as the cloud providers, but was not
-  hardware-verified in this build's own environment. Expect roughly 8GB of RAM headroom for an
-  8B quantized model as a starting point, and confirm on your own machine.
+  no cloud key is set and an Ollama server is reachable on `localhost:11434`. **Hardware-verified
+  on 2026-09-01** (RTX 4060 Laptop, 24GB RAM): 92.3% auto-match, 0.00% false-match, precision
+  100%, 4 LLM calls on the 284-line dev set, ~2.5s per warm call. Verifying it also uncovered two
+  defects that made the path structurally incapable of resolving anything — a 20s client timeout
+  that aborted the cold model load, and a response-shape check that discarded every answer a
+  local model gave. Both are fixed; the full account is the 2026-09-01 entry in FAILURES.md, and
+  it is the clearest example in this build of why a mocked provider tests your understanding of
+  the wire format rather than the wire format. Budget ~5GB of VRAM or RAM for an 8B quantized
+  model; the first call after a cold start takes ~10s while the model loads.
 - Illustrative LLM cost figures use assumed token counts and a fixed USD/INR rate, documented in
   full in `eval/metrics.py`'s module docstring — they show order of magnitude, not a bill.
 - Single-process throughput falls off well before it fails: measured at 100,400 transactions in

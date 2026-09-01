@@ -366,3 +366,141 @@ def test_prompt_never_places_raw_narration_outside_delimiters(dev_pipeline_state
     from ledgerloop.adjudicate.sanitise import wrap_narration
 
     assert prompt.count(wrap_narration(bank_line.narration)) >= 1
+
+
+# -- bare-object responses (real local-model shape) ----------------------------------
+#
+# Every other test in this file scripts the provider with json.dumps([...]) -- always
+# an array, which is what the prompt asks for and what hosted providers return. A local
+# llama3.1 served through Ollama's format:"json" returns a bare object instead when the
+# batch held one case. That shape was rejected wholesale, so tier3 discarded every
+# answer a local model gave and resolved nothing. See FAILURES.md (2026-09-01).
+
+
+def test_bare_object_response_is_accepted_as_a_one_element_batch(config):
+    """The shape a local model actually returns still has to resolve."""
+    bank_line = _bank_line("BANK00050")
+    candidates = [_candidate("BANK00050-C0", ["TXN000500", "TXN000501"])]
+    response = json.dumps(  # note: object, not array
+        {
+            "bank_line_id": "BANK00050",
+            "decision": "select",
+            "candidate_id": "BANK00050-C0",
+            "confidence": 0.95,
+            "reasoning": "single-case batch, answered as a bare object",
+        }
+    )
+    provider = FakeProvider([response])
+    resolutions, reasons, calls, _providers, _reasoning = adjudicator.adjudicate_cases(
+        {"BANK00050": (bank_line, candidates)}, [provider], config["tier3"]
+    )
+    assert reasons == {}
+    assert resolutions["BANK00050"].matched_txn_ids == ["TXN000500", "TXN000501"]
+    assert calls == 1  # accepted first time -- no retry burned on shape
+
+
+def test_bare_object_extraction_response_is_accepted(config):
+    """Same widened envelope on the narration-extraction path."""
+    bank_line = _bank_line("BANK00051", extracted_utr=None)
+    response = json.dumps(
+        {"bank_line_id": "BANK00051", "utr": "UTR99999999999999", "confidence": 0.9}
+    )
+    provider = FakeProvider([response])
+    extracted, _calls, _providers = adjudicator.extract_narration_utrs(
+        [bank_line], [provider], config["tier3"]
+    )
+    assert extracted["BANK00051"].utr == "UTR99999999999999"
+
+
+def test_bare_object_cannot_smuggle_an_unoffered_candidate(config):
+    """Widening the envelope must not widen what the model may choose. A bare object
+    naming a candidate_id that was never supplied is still discarded."""
+    bank_line = _bank_line("BANK00052")
+    candidates = [_candidate("BANK00052-C0", ["TXN000520"])]
+    response = json.dumps(
+        {
+            "bank_line_id": "BANK00052",
+            "decision": "select",
+            "candidate_id": "BANK00052-C9",  # never offered
+            "confidence": 0.99,
+            "reasoning": "fabricated selection",
+        }
+    )
+    provider = FakeProvider([response] * 3)
+    resolutions, reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
+        {"BANK00052": (bank_line, candidates)}, [provider], config["tier3"]
+    )
+    assert resolutions == {}
+    assert reasons["BANK00052"] == "TIER3_INVALID_SELECTION"
+
+
+def test_bare_object_cannot_answer_for_a_case_that_was_not_asked_about(config):
+    """expected_ids routing still applies to a bare object."""
+    bank_line = _bank_line("BANK00053")
+    candidates = [_candidate("BANK00053-C0", ["TXN000530"])]
+    response = json.dumps(
+        {
+            "bank_line_id": "BANK00099",  # a different, unasked bank line
+            "decision": "select",
+            "candidate_id": "BANK00053-C0",
+            "confidence": 0.99,
+            "reasoning": "answering for someone else",
+        }
+    )
+    provider = FakeProvider([response] * 3)
+    resolutions, _reasons, _calls, _providers, _reasoning = adjudicator.adjudicate_cases(
+        {"BANK00053": (bank_line, candidates)}, [provider], config["tier3"]
+    )
+    assert resolutions == {}
+    assert "BANK00099" not in resolutions
+
+
+def test_non_object_non_array_json_is_still_rejected(config):
+    """A bare string or number is not a batch and must not be coerced into one."""
+    assert adjudicator._parse_json_array('"just a string"') is None
+    assert adjudicator._parse_json_array("42") is None
+    assert adjudicator._parse_json_array("not json at all") is None
+    assert adjudicator._parse_json_array('{"a": 1}') == [{"a": 1}]
+    assert adjudicator._parse_json_array('[{"a": 1}]') == [{"a": 1}]
+
+
+# -- local-model transport settings --------------------------------------------------
+
+
+def test_ollama_uses_its_own_timeout_and_holds_the_model_resident(monkeypatch):
+    """A cold local model takes longer to answer than any hosted provider's whole
+    round trip. If OllamaProvider ever falls back to the shared 20s budget, the load
+    is aborted mid-flight and Ollama discards it, so the retry starts cold and fails
+    the same way -- the local path deadlocks rather than merely running slow.
+    See FAILURES.md (2026-09-01)."""
+    from ledgerloop.adjudicate import provider as provider_mod
+
+    seen: dict = {}
+
+    def fake_post(url, payload, headers, timeout=provider_mod.REQUEST_TIMEOUT_SECONDS):
+        seen.update(url=url, payload=payload, timeout=timeout)
+        return {"response": '{"ok": true}'}
+
+    monkeypatch.setattr(provider_mod, "_post_json", fake_post)
+    assert provider_mod.OllamaProvider().complete("hello") == '{"ok": true}'
+
+    assert seen["timeout"] == provider_mod.OLLAMA_REQUEST_TIMEOUT_SECONDS
+    assert seen["timeout"] > provider_mod.REQUEST_TIMEOUT_SECONDS
+    assert seen["payload"]["keep_alive"] == provider_mod.OLLAMA_KEEP_ALIVE
+
+
+def test_hosted_providers_keep_the_shorter_timeout(monkeypatch):
+    """The longer budget is local-only -- a hung hosted call should still fail fast
+    so the chain can fall through to the next provider."""
+    from ledgerloop.adjudicate import provider as provider_mod
+
+    seen: dict = {}
+
+    def fake_post(url, payload, headers, timeout=provider_mod.REQUEST_TIMEOUT_SECONDS):
+        seen["timeout"] = timeout
+        return {"choices": [{"message": {"content": "{}"}}]}
+
+    monkeypatch.setattr(provider_mod, "_post_json", fake_post)
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
+    provider_mod.GroqProvider().complete("hello")
+    assert seen["timeout"] == provider_mod.REQUEST_TIMEOUT_SECONDS

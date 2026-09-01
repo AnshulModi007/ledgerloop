@@ -611,3 +611,71 @@ structurally cannot. Worth stating plainly for anyone reading the numbers above:
 was **not** changed in response to this. Tuning it against the novel set would have turned a
 generalization test into another in-distribution one, and the finding was never in the
 matcher anyway.
+
+---
+
+## 2026-09-01 — the local Ollama path was reachable, called, and structurally incapable of resolving anything
+
+**Symptom:** Installed Ollama and pulled `llama3.1` to exercise the offline provider for the
+first time on real hardware. The run looked healthy — `llm provider: ollama`, `llm calls
+made: 4`, statement tied out, no errors anywhere — but `tier3: 0`. The dev set came back
+**bit-identical with and without the model**: 260/284 either way. A provider that is being
+called four times and changing nothing is worse than one that is switched off, because the
+run reports it as active.
+
+**Diagnosis:** Two independent defects stacked, and each one alone would have hidden the other.
+
+*First, the client timeout deadlocked the cold start.* `REQUEST_TIMEOUT_SECONDS = 20` is sized
+for a hosted API round trip. Loading llama3.1 (4.9 GB) into VRAM takes ~22 s on an RTX 4060, so
+`urllib` aborted mid-load — and Ollama then **discards the partial load**. The next attempt
+started cold and failed identically. Two consecutive smoke tests returned `None` at 22.1 s and
+22.1 s, and it was that suspiciously exact repeat that gave it away: real inference latency does
+not land on the same tenth of a second twice. This is not a slow path, it is a stuck one. It only
+broke open because a `curl -m 300` let one load finish. Ollama's 5-minute idle eviction then puts
+it straight back — I confirmed this by walking away for two hours and reproducing the failure
+cold, which is exactly the gap between two demo runs.
+
+*Second, every answer that did get through was discarded on shape.* `_parse_json_array` returned
+`None` unless the top-level JSON was a list. The prompt asks for an array and hosted providers
+comply, but llama3.1 under Ollama's `format: "json"` returns a bare object when the batch holds
+one case:
+
+```json
+{"bank_line_id": "BANK00115", "decision": "select",
+ "candidate_id": "BANK00115-C0", "confidence": 1.0, ...}
+```
+
+Valid JSON, correct schema, a candidate that was actually offered — dropped for want of two
+brackets. It retried BANK00115 three times, discarded all three, and abstained.
+
+**Why no test caught it:** every stub in `test_adjudicate.py` scripts the provider with
+`json.dumps([...])`. The suite only ever fed the parser the shape it already expected, so it
+tested the contract against itself. The README's claim that Ollama was "covered by the same
+fallback tests as the cloud providers" was true and worthless in the same breath — the fallback
+*chain* was covered; the response shape a real local model produces was not.
+
+**Fix:** `_parse_json_array` accepts a lone object as a one-element batch. This widens only the
+envelope — per-item schema validation and the `expected_ids` routing check are untouched, so a
+model still cannot name a candidate it wasn't offered or answer for a line nobody asked about,
+and there are now tests pinning both of those against the bare-object shape specifically.
+Separately, `OLLAMA_REQUEST_TIMEOUT_SECONDS = 180` applies to the local provider only (hosted
+calls keep the 20 s fail-fast so the chain can fall through), and `keep_alive: "30m"` holds the
+model resident so the cold start is a once-per-session cost. Cold start after the fix: 10.4 s,
+succeeded. Dev set with Ollama: **92.3% auto-match, 0.00% false-match, precision 100%** — the
+two lines tier3 resolved were both correct.
+
+**One thing worth keeping from the broken run.** Across the three retries on byte-identical
+input, the model returned confidence 0.55, 0.55, then **1.0**, with "The only candidate
+available, with a perfect match" as its reasoning for the 1.0. Same prompt, same candidate, and
+a spread wide enough to cross the 0.85 threshold in one direction and sit well below it in the
+other. The threshold is load-bearing for local models in a way it is not for hosted ones, and
+the containment argument — the model picks from a fixed menu and never writes an ID — is what
+makes a 1.0 from an 8B model safe to accept at all.
+
+**What I'd do differently:** I marked this path "implemented, not hardware-verified" in the
+README and treated that as an honest disclosure. It wasn't quite. "Not verified" reads as *the
+risk is that it might not work*, when the actual state was that it could not work, twice over,
+and would report success while doing so. The lesson is narrower than "test against real
+providers", which is not always possible on free tiers: it is that a mocked provider tests your
+own understanding of the wire format, never the wire format. Where the two disagree, the mock
+always wins the test and always loses in production.

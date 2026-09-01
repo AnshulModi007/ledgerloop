@@ -57,11 +57,28 @@ class Tier3Result:
 
 
 def _parse_json_array(text: str) -> list | None:
+    """Normalises a batch response to a list of items.
+
+    The prompt asks for a JSON array, and hosted providers with a JSON response mode
+    comply. Local models served through Ollama's `format: "json"` routinely return a
+    single bare object instead when the batch happened to contain one case -- valid
+    JSON, correct fields, right candidate, but not wrapped in `[]`. Rejecting those
+    outright discarded every answer a local model ever gave; see FAILURES.md
+    (2026-09-01). A lone object is accepted as a one-element batch.
+
+    This widens only the accepted *envelope*. Each item is still validated against the
+    Adjudication/NarrationExtraction schema, and still checked against expected_ids by
+    the callers below, so a model cannot smuggle in an answer for a case that wasn't
+    asked about, nor a candidate_id that wasn't offered."""
     try:
         raw = json.loads(text)
     except (json.JSONDecodeError, TypeError):
         return None
-    return raw if isinstance(raw, list) else None
+    if isinstance(raw, list):
+        return raw
+    if isinstance(raw, dict):
+        return [raw]
+    return None
 
 
 def _parse_batch_response(text: str, expected_ids: set[str]) -> dict[str, Adjudication]:
