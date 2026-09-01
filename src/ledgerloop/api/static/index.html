@@ -9,7 +9,11 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#129518;</text></svg>">
 </head>
 <body>
-  <header class="masthead">
+  <!-- The two static regions carry their entrance delay inline, so the stagger starts on
+       first paint rather than waiting for app.js to parse. Everything below them is
+       rendered by JS and gets its delay assigned there. A CSS animation never blocks
+       pointer events, so Run is clickable from the first frame. -->
+  <header class="masthead enter" style="--d: 0ms">
     <div class="wordmark">
       <strong>LedgerLoop</strong>
       <span>Settlement reconciliation</span>
@@ -25,7 +29,7 @@
   </header>
 
   <main class="shell">
-    <section class="card controls" aria-label="Run controls">
+    <section class="card controls enter" style="--d: 60ms" aria-label="Run controls">
       <div class="field">
         <label for="profile">Batch</label>
         <select id="profile"></select>
@@ -43,7 +47,7 @@
     </section>
 
     <div id="stage">
-      <div class="card empty">
+      <div class="card empty enter" style="--d: 120ms">
         <h2>No run yet</h2>
         <p>Pick a batch and run it. Four source files — gateway transactions, settlement
            report, bank statement, ERP ledger — go in; matched postings and a typed

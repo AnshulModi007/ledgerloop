@@ -14,6 +14,12 @@
  *
  * The same hexes serve both themes so a tier keeps its colour when the theme flips --
  * colour follows the entity, never its rank.
+ *
+ * MOTION. Every animation here is transform or opacity, with two deliberate exceptions
+ * documented at their definitions (the disclosure's grid-template-rows, and the card
+ * flash which is opacity on an overlay rather than a background transition). Nothing
+ * animates on a table row: a 20,000-posting journal must not pay per-row animation cost.
+ * The whole system collapses under prefers-reduced-motion at the bottom of this file.
  */
 
 :root {
@@ -44,8 +50,18 @@
   --accent-ink: #ffffff;
 
   --shadow: 0 1px 2px rgba(11, 11, 11, 0.06), 0 4px 16px rgba(11, 11, 11, 0.05);
+  --shadow-lift: 0 2px 4px rgba(11, 11, 11, 0.07), 0 10px 28px rgba(11, 11, 11, 0.09);
   --radius: 10px;
   --radius-sm: 6px;
+
+  /* Motion tokens. One ease everywhere: entrances decelerate, so the eye lands on the
+     final position rather than tracking the movement. */
+  --ease: cubic-bezier(0.22, 0.68, 0.32, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 380ms;
+  --stagger: 55ms;
+  --rise: 10px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,6 +80,7 @@
     --good-text: #0ca30c;
     --accent: #3987e5;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.5), 0 12px 30px rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -82,6 +99,7 @@
   --good-text: #0ca30c;
   --accent: #3987e5;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.5), 0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
 * { box-sizing: border-box; }
@@ -100,7 +118,32 @@ h3 { font-size: 13px; color: var(--ink-secondary); }
 
 button, input, select, textarea { font: inherit; color: inherit; }
 
-/* -- shell ------------------------------------------------------------------------ */
+/* == MOTION PRIMITIVES ============================================================= */
+
+/* The single entrance. `both` holds the from-state before the delay elapses, so a
+   staggered element is invisible rather than flashing at full opacity first.
+   Interactivity is never gated on this: a CSS animation does not block pointer events,
+   and nothing here sets pointer-events: none, so the Run button is clickable from the
+   first frame even though the summary row is still arriving. */
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, var(--rise), 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+.enter {
+  animation: rise var(--dur-slow) var(--ease) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Scroll-triggered reveal, applied to section CONTAINERS only -- never to rows. */
+.reveal { opacity: 0; transform: translate3d(0, var(--rise), 0); }
+.reveal.seen {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+}
+
+/* == shell ========================================================================= */
 
 .masthead {
   display: flex;
@@ -127,7 +170,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   box-shadow: var(--shadow);
 }
 
-/* -- controls --------------------------------------------------------------------- */
+/* == controls ====================================================================== */
 
 .controls {
   display: flex;
@@ -147,15 +190,28 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: var(--radius-sm);
   padding: 7px 10px;
   min-width: 170px;
+  transition: border-color var(--dur-fast) var(--ease);
 }
-.field select:focus-visible, .field input:focus-visible, button:focus-visible, .tab:focus-visible {
+.field select:hover, .field input[type="text"]:hover { border-color: var(--ink-muted); }
+
+/* One focus ring for every focusable thing, and it is never removed -- a keyboard
+   reviewer working the queue has to be able to see where they are. */
+.field select:focus-visible,
+.field input:focus-visible,
+button:focus-visible,
+.tab:focus-visible,
+.filter:focus-visible,
+.evidence-toggle:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .check { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; cursor: pointer; }
 .check input { width: 15px; height: 15px; accent-color: var(--accent); }
 
+/* Buttons get a real press: a scale on :active reads as depression in a way a colour
+   swap does not, and it is transform-only so it costs nothing. */
 .btn {
   border: 1px solid var(--rule-strong);
   background: var(--surface-raised);
@@ -163,12 +219,18 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 8px 14px;
   cursor: pointer;
   font-weight: 550;
-  transition: background 0.12s, border-color 0.12s;
+  transform: translateZ(0);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
 }
-.btn:hover:not(:disabled) { border-color: var(--accent); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:hover:not(:disabled) { border-color: var(--accent); transform: translate3d(0, -1px, 0); }
+.btn:active:not(:disabled) { transform: scale(0.972); transition-duration: 60ms; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
 .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+.btn-primary:hover:not(:disabled) { filter: brightness(1.08); box-shadow: var(--shadow-lift); }
 .btn-sm { padding: 5px 10px; font-size: 12px; }
 
 .icon-btn {
@@ -178,9 +240,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
   width: 32px; height: 32px;
   cursor: pointer;
   display: grid; place-items: center;
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
+.icon-btn:hover { border-color: var(--accent); }
+.icon-btn:active { transform: scale(0.94); }
+.icon-btn svg { transition: transform var(--dur) var(--ease); }
+.icon-btn:hover svg { transform: rotate(35deg); }
 
-/* -- provider chip ---------------------------------------------------------------- */
+/* == provider chip ================================================================== */
 
 .chip {
   display: inline-flex;
@@ -197,7 +264,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .dot.live { background: var(--good); }
 .dot.off { background: var(--ink-muted); }
 
-/* -- hero + KPI ------------------------------------------------------------------- */
+/* Pulses ONLY while a run is in flight. A dot that always pulses is decoration and
+   stops meaning anything; a dot that pulses when work is happening is a status light. */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(1.35); }
+}
+.dot.busy { animation: pulse 1.1s var(--ease) infinite; }
+
+/* == hero + KPI ===================================================================== */
 
 .summary { display: grid; grid-template-columns: minmax(210px, 0.85fr) 2fr; gap: 20px; margin-bottom: 20px; }
 @media (max-width: 860px) { .summary { grid-template-columns: 1fr; } }
@@ -208,12 +283,18 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .hero .sub { font-size: 13px; color: var(--ink-secondary); }
 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 12px; }
-.kpi { padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
+.kpi {
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 3px;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.kpi:hover, .hero:hover { transform: translate3d(0, -2px, 0); box-shadow: var(--shadow-lift); }
+.hero { transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
 .kpi .label { font-size: 11px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .kpi .value { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
 .kpi .sub { font-size: 12px; color: var(--ink-secondary); }
 
-/* -- disposition bar -------------------------------------------------------------- */
+/* == disposition bar ================================================================ */
 
 .viz { padding: 18px; margin-bottom: 20px; }
 .viz-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
@@ -222,20 +303,37 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* 2px surface gap between touching segments, per mark spec: the gap is the surface
    colour showing through, not a border. */
 .stack { display: flex; gap: 2px; height: 26px; margin-bottom: 12px; }
+
+/* The segment holds its FINAL width from the first frame (flex-grow), and a child fill
+   scales in. Animating the segment's own width would relayout the whole flex row on
+   every frame; scaleX on an inner fill is compositor-only and produces the same picture.
+   overflow:hidden keeps the rounded ends clipping the fill. */
 .seg {
   position: relative;
   border-radius: 2px;
   min-width: 3px;
+  overflow: hidden;
   cursor: default;
-  transition: filter 0.12s;
 }
 .seg:first-child { border-radius: 4px 2px 2px 4px; }
 .seg:last-child { border-radius: 2px 4px 4px 2px; }
-.seg:hover { filter: brightness(1.12); }
-.seg-tier1 { background: var(--tier1); }
-.seg-tier2 { background: var(--tier2); }
-.seg-tier3 { background: var(--tier3); }
-.seg-escalated { background: var(--escalated); }
+
+.seg-fill {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: grow var(--dur-slow) var(--ease) both;
+  animation-delay: var(--d, 0ms);
+  transition: filter var(--dur-fast) var(--ease);
+}
+@keyframes grow { to { transform: scaleX(1); } }
+.seg:hover .seg-fill { filter: brightness(1.12); }
+
+.seg-tier1 .seg-fill { background: var(--tier1); }
+.seg-tier2 .seg-fill { background: var(--tier2); }
+.seg-tier3 .seg-fill { background: var(--tier3); }
+.seg-escalated .seg-fill { background: var(--escalated); }
 
 .legend { display: flex; flex-wrap: wrap; gap: 16px; }
 .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-secondary); }
@@ -249,20 +347,28 @@ button, input, select, textarea { font: inherit; color: inherit; }
   background: var(--surface-raised);
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lift);
   padding: 8px 10px;
   font-size: 12px;
   max-width: 260px;
   opacity: 0;
-  transition: opacity 0.1s;
+  transform: translate3d(0, 4px, 0);
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.tooltip.on { opacity: 1; }
+.tooltip.on { opacity: 1; transform: none; }
 .tooltip .t-title { font-weight: 600; margin-bottom: 2px; }
 .tooltip .t-row { color: var(--ink-secondary); }
 
-/* -- tabs -------------------------------------------------------------------------- */
+/* == tabs =========================================================================== */
 
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--rule); margin-bottom: 18px; overflow-x: auto; }
+.tabs {
+  position: relative;
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 18px;
+  overflow-x: auto;
+}
 .tab {
   border: 0;
   background: none;
@@ -270,20 +376,72 @@ button, input, select, textarea { font: inherit; color: inherit; }
   cursor: pointer;
   color: var(--ink-secondary);
   font-weight: 550;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
   white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease);
 }
-.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); }
 .tab .count { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 
-/* -- exception queue --------------------------------------------------------------- */
+/* One underline for the whole strip, moved with a transform. Per-tab bottom borders
+   cannot slide -- they can only appear and disappear, which loses the relationship
+   between the tab you left and the tab you arrived at. */
+.tab-underline {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 1px;
+  background: var(--accent);
+  transform-origin: left center;
+  transform: translate3d(var(--x, 0), 0, 0) scaleX(var(--w, 0));
+  transition: transform var(--dur) var(--ease);
+}
+
+.panel-enter { animation: panel-in var(--dur) var(--ease) both; }
+@keyframes panel-in {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* == exception queue ================================================================ */
 
 .section-head { display: flex; align-items: baseline; gap: 10px; margin: 22px 0 10px; }
 .section-head:first-child { margin-top: 0; }
 .section-head p { margin: 0; font-size: 12px; color: var(--ink-secondary); }
 
-.exc { padding: 15px 17px; margin-bottom: 10px; }
+.exc {
+  position: relative;
+  padding: 15px 17px;
+  margin-bottom: 10px;
+  transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.exc:hover { box-shadow: var(--shadow-lift); }
+
+/* The acknowledgement flash. An opacity fade on an overlay pseudo-element, not a
+   background-color transition on the card: opacity composites, and this way the card's
+   own surface token is never overwritten mid-animation. Decided cards STAY in the list
+   -- the queue does not hide what a reviewer has touched -- so this reads as "recorded",
+   not as an exit. */
+.exc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  pointer-events: none;
+  opacity: 0;
+  background: var(--flash, transparent);
+}
+.exc.flash::after { animation: flash 900ms var(--ease) both; }
+@keyframes flash {
+  0%   { opacity: 0; }
+  12%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.exc.flash-approved   { --flash: color-mix(in srgb, var(--good) 22%, transparent); }
+.exc.flash-rejected   { --flash: color-mix(in srgb, var(--critical) 22%, transparent); }
+.exc.flash-reassigned { --flash: color-mix(in srgb, var(--warning) 26%, transparent); }
+
 .exc-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .exc-id { font-weight: 620; font-variant-numeric: tabular-nums; }
 .exc-amount { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; }
@@ -299,12 +457,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
 }
 
-.exc-explain {
-  margin: 0 0 12px;
-  color: var(--ink-secondary);
-  line-height: 1.55;
-  max-width: 88ch;
-}
+.exc-explain { margin: 0 0 12px; color: var(--ink-secondary); line-height: 1.55; max-width: 88ch; }
 .exc-explain em { color: var(--ink-muted); font-style: normal; }
 
 .exc-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -315,7 +468,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   padding: 6px 10px;
+  transition: border-color var(--dur-fast) var(--ease);
 }
+.exc-actions input[type="text"]:hover { border-color: var(--ink-muted); }
 
 .status-pill {
   font-size: 11px;
@@ -331,7 +486,94 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .status-rejected { background: color-mix(in srgb, var(--critical) 16%, transparent); color: var(--critical); }
 .status-reassigned { background: color-mix(in srgb, var(--warning) 20%, transparent); color: var(--ink); }
 
-/* -- tables ------------------------------------------------------------------------ */
+/* == queue filters ================================================================== */
+
+.filterbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--ink-secondary);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.filter:hover { border-color: var(--accent); transform: translate3d(0, -1px, 0); }
+.filter:active { transform: scale(0.96); }
+.filter.on { border-color: var(--accent); color: var(--ink); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.filter-count { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-weight: 600; }
+.filter.on .filter-count { color: var(--accent); }
+
+/* == candidate evidence ============================================================= */
+
+.evidence { margin-top: 10px; }
+
+.evidence-toggle {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.evidence-toggle:hover { filter: brightness(1.15); }
+.evidence-toggle .caret { transition: transform var(--dur) var(--ease); }
+.evidence-toggle[aria-expanded="true"] .caret { transform: rotate(90deg); }
+
+/* The one place a layout property is animated, and it is the sanctioned technique: a
+   grid track from 0fr to 1fr. It measures nothing, so it cannot guess a max-height wrong
+   when a candidate list wraps to a different number of lines. It is confined to one card
+   at a time and never touches a table. */
+.evidence-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur) var(--ease), opacity var(--dur) var(--ease);
+  opacity: 0;
+}
+.evidence-body > .evidence-inner { overflow: hidden; min-height: 0; }
+.evidence.open .evidence-body { grid-template-rows: 1fr; opacity: 1; }
+
+.cand {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--plane);
+}
+/* A withheld pairing is shown but visibly set aside -- never deleted, never animated
+   out of existence, never hidden. */
+.cand-rejected { opacity: 0.72; border-style: dashed; }
+
+.cand-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 7px; }
+.cand-txns {
+  color: var(--ink-secondary);
+  font-size: 12px;
+  line-height: 1.7;
+  word-break: break-word;
+  max-height: 8.5em;
+  overflow-y: auto;
+}
+
+/* == tables ========================================================================= */
+/* Deliberately inert. No row transitions, no per-row entrance, no hover transform: at
+   20,000 postings any of those is a per-row cost paid on every paint. The background
+   change on hover is a single paint with no transition attached. */
 
 .table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); }
 table { border-collapse: collapse; width: 100%; font-size: 13px; }
@@ -342,7 +584,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
 .num { text-align: right; font-variant-numeric: tabular-nums; }
 .mono { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: 12px; }
 
-/* -- tie-out ----------------------------------------------------------------------- */
+/* == tie-out ======================================================================== */
 
 .statement { padding: 20px 22px; margin-bottom: 18px; }
 .stmt-row { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; }
@@ -353,7 +595,12 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
 .stmt-row.total .amt, .stmt-row.total .lede { font-weight: 650; color: var(--ink); }
 
 .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-bottom: 18px; }
-.control-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 5px; }
+.control-card {
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 5px;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.control-card:hover { transform: translate3d(0, -2px, 0); box-shadow: var(--shadow-lift); }
 .control-card .name { font-size: 12px; font-weight: 600; color: var(--ink-secondary); }
 .control-card .detail { font-size: 12px; color: var(--ink-muted); }
 
@@ -364,7 +611,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
 .verdict.fail { color: var(--critical); }
 .verdict.warn { color: var(--ink); }
 
-/* -- misc -------------------------------------------------------------------------- */
+/* == misc =========================================================================== */
 
 .banner {
   padding: 12px 16px;
@@ -391,10 +638,6 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
   display: inline-block;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) {
-  .spinner { animation-duration: 2.4s; }
-  * { transition-duration: 0.01ms !important; }
-}
 
 .hint { font-size: 12px; color: var(--ink-muted); margin: 10px 0 0; }
 .sr-only {
@@ -402,67 +645,28 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* -- queue filters ------------------------------------------------------------------ */
-
-.filterbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-
-.filter {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  border: 1px solid var(--rule-strong);
-  background: var(--surface);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 550;
-  color: var(--ink-secondary);
-  transition: border-color 0.12s, color 0.12s;
-}
-.filter:hover { border-color: var(--accent); }
-.filter.on { border-color: var(--accent); color: var(--ink); background: color-mix(in srgb, var(--accent) 10%, transparent); }
-.filter-count {
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-muted);
-  font-weight: 600;
-}
-.filter.on .filter-count { color: var(--accent); }
-
-/* -- candidate evidence -------------------------------------------------------------- */
-
-.evidence { margin-top: 10px; }
-
-.evidence-toggle {
-  border: 0;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.evidence-toggle:hover { filter: brightness(1.15); }
-
-.cand {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
-  background: var(--plane);
-}
-/* A withheld pairing is shown but visibly set aside -- never deleted, never live. */
-.cand-rejected { opacity: 0.72; border-style: dashed; }
-
-.cand-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 7px; }
-
-.cand-txns {
-  color: var(--ink-secondary);
-  font-size: 12px;
-  line-height: 1.7;
-  word-break: break-word;
-  max-height: 8.5em;
-  overflow-y: auto;
+/* == REDUCED MOTION ================================================================= */
+/* Not "faster" -- off. Entrances resolve to their final state immediately, the bar is
+   drawn at full width rather than grown, the underline jumps, the flash does not fire,
+   and hover lift becomes a shadow with no movement. The spinner is kept but slowed,
+   because it is the only signal that a run is still in progress, and the busy dot is
+   reduced to a static colour rather than a pulse. JS reads this query too: the count-up
+   is skipped and the final figure is written directly. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .enter { animation: none; opacity: 1; transform: none; }
+  .reveal { opacity: 1; transform: none; }
+  .seg-fill { animation: none; transform: scaleX(1); }
+  .exc.flash::after { animation: none; opacity: 0; }
+  .kpi:hover, .hero:hover, .control-card:hover, .filter:hover, .btn:hover:not(:disabled) { transform: none; }
+  .btn:active:not(:disabled), .filter:active, .icon-btn:active { transform: none; }
+  .icon-btn:hover svg { transform: none; }
+  .dot.busy { animation: none; opacity: 0.6; }
+  .spinner { animation-duration: 1.4s !important; }
+  .tooltip { transform: none; }
 }
