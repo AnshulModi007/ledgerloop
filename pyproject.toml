@@ -18,6 +18,11 @@ dev = [
 ui = [
     "streamlit>=1.32",
 ]
+api = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "httpx>=0.27",  # test client for tests/test_api.py
+]
 
 [project.scripts]
 ledgerloop = "ledgerloop.cli:main"

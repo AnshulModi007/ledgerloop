@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LedgerLoop</title>
+  <meta name="description" content="Multi-source settlement reconciliation: deterministic tiers first, LLM adjudication confined to a fixed candidate menu.">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#129518;</text></svg>">
+</head>
+<body>
+  <header class="masthead">
+    <div class="wordmark">
+      <strong>LedgerLoop</strong>
+      <span>Settlement reconciliation</span>
+    </div>
+    <span class="chip" id="provider-chip" title="Which LLM provider the tier-3 chain would reach right now">
+      <span class="dot" id="provider-dot"></span><span id="provider-text">checking…</span>
+    </span>
+    <button class="icon-btn" id="theme-toggle" title="Toggle light / dark" aria-label="Toggle light or dark theme">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>
+      </svg>
+    </button>
+  </header>
+
+  <main class="shell">
+    <section class="card controls" aria-label="Run controls">
+      <div class="field">
+        <label for="profile">Batch</label>
+        <select id="profile"></select>
+      </div>
+      <label class="check" for="no-llm" title="Run tiers 1 and 2 only. Byte-identical across runs.">
+        <input type="checkbox" id="no-llm">
+        <span>Deterministic only (<code>--no-llm</code>)</span>
+      </label>
+      <div class="field">
+        <label for="reviewer">Reviewer</label>
+        <input type="text" id="reviewer" placeholder="your name" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" id="run-btn">Run reconciliation</button>
+      <span id="run-status" class="chip" hidden></span>
+    </section>
+
+    <div id="stage">
+      <div class="card empty">
+        <h2>No run yet</h2>
+        <p>Pick a batch and run it. Four source files — gateway transactions, settlement
+           report, bank statement, ERP ledger — go in; matched postings and a typed
+           exception queue come out.</p>
+      </div>
+    </div>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip" aria-hidden="true"></div>
+  <div class="sr-only" id="live" role="status" aria-live="polite"></div>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>

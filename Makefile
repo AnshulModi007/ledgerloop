@@ -1,4 +1,4 @@
-.PHONY: install generate test eval sensitivity scale generalization demo ui lint
+.PHONY: install generate test eval sensitivity scale generalization demo ui api lint
 
 PYTHON ?= python
 
@@ -7,6 +7,9 @@ install:
 
 install-ui:
 	$(PYTHON) -m pip install -e ".[dev,ui]"
+
+install-api:
+	$(PYTHON) -m pip install -e ".[dev,api]"
 
 generate:
 	$(PYTHON) -m ledgerloop.generate.generator --profile all
@@ -47,3 +50,7 @@ demo:
 
 ui:
 	$(PYTHON) -m streamlit run src/ledgerloop/ui/app.py
+
+# FastAPI backend + the console it serves, on one port. Needs `make install-api`.
+api:
+	$(PYTHON) -m ledgerloop.api

@@ -23,8 +23,28 @@ make demo
 
 `make demo` generates the dev dataset, runs the full pipeline with the LLM tier forced off
 (`--no-llm`), approves what it resolved, and re-runs the identical command to show **zero new
-postings** — the reconciliation loop closed, deterministically, with no credentials. `make ui`
-(needs `pip install -e ".[dev,ui]"`) puts the same pipeline behind a Streamlit dashboard.
+postings** — the reconciliation loop closed, deterministically, with no credentials.
+
+### The console
+
+```
+pip install -e ".[dev,api]"
+python -m ledgerloop.api          # or: make api
+```
+
+Opens on http://127.0.0.1:8000 — a FastAPI backend serving a review console: the
+disposition of every bank line, the exception queue with each escalation's own reasoning,
+the proposed journal entries, the reconciliation statement and its four controls, and the
+append-only audit trail. Interactive API docs at `/docs`.
+
+The **Journal entries** tab has the one button worth watching: *Approve postings, then
+re-run*. It approves, re-runs the identical batch, and reports **zero new postings** —
+the loop closing rather than double-posting.
+
+`make ui` (needs `".[dev,ui]"`) still serves the earlier Streamlit dashboard against the
+same pipeline. Three surfaces — CLI, Streamlit, HTTP — and none of them owns any matching
+logic; all three call `pipeline.run()`, so they cannot drift into reporting different
+numbers for the same run.
 
 ### Turning the LLM tier on
 

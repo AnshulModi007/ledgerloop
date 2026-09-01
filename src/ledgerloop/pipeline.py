@@ -55,6 +55,11 @@ class ReconcileRun:
     # The whole-run reconciliation statement and its controls -- see ledger/tieout.py.
     # Per-batch balance cannot see a cross-batch problem; this can.
     tie_out: TieOut
+    # Credit amount per bank line. Carried on the result because every surface needs to
+    # show what a line was worth beside what happened to it -- an exception states a
+    # reason, not a balance -- and re-reading the statement to recover it would let a
+    # view report an amount the run never saw.
+    credit_paise_by_bank_line: dict[str, int]
     llm_calls_made: int
     providers_used: list[str]
     llm_available: bool
@@ -120,9 +125,10 @@ def run(
 
     duplicate_relief = journal.find_duplicate_receivable_relief(all_postings)
     review_decisions = DecisionLog(decision_log_path(runs_root, profile)).current()
+    credit_paise_by_bank_line = {b.bank_line_id: b.credit_amount_paise for b in normalised.bank_lines}
     tie_out = tieout_mod.build(
         all_postings,
-        {b.bank_line_id: b.credit_amount_paise for b in normalised.bank_lines},
+        credit_paise_by_bank_line,
         {r.bank_line_id for r in all_resolutions},
     )
 
@@ -145,6 +151,7 @@ def run(
         duplicate_receivable_relief=duplicate_relief,
         review_decisions=review_decisions,
         tie_out=tie_out,
+        credit_paise_by_bank_line=credit_paise_by_bank_line,
         llm_calls_made=tier3_result.llm_calls_made,
         providers_used=tier3_result.providers_used,
         llm_available=tier3_result.llm_available,
