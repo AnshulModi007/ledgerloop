@@ -220,11 +220,42 @@ def get_exceptions(run_id: str) -> dict[str, Any]:
     def item(qi: queue_mod.QueueItem) -> dict[str, Any]:
         exception = qi.exception
         paise = credits.get(exception.bank_line_id)
+
+        # `candidates_considered` is a list of opaque handles (BANK00115-C0) by interface
+        # contract. On its own it tells a reviewer a candidate existed but nothing about
+        # what it contained, which is precisely what they need to decide. The detail is
+        # already computed and carried in evidence; it just never reached the wire.
+        withheld = {
+            tuple(sorted(p)) for p in exception.evidence.get("suppressed_pairings", [])
+        }
+        candidates = [
+            {
+                "candidate_id": detail.get("candidate_id"),
+                "score": detail.get("score"),
+                "rule": detail.get("rule"),
+                "txn_count": detail.get("txn_count"),
+                "matched_txn_ids": detail.get("matched_txn_ids", []),
+                "amount_diff": (
+                    money(detail["amount_diff_paise"])
+                    if isinstance(detail.get("amount_diff_paise"), int)
+                    else None
+                ),
+                # Withheld because this reviewer already rejected this exact pairing. Shown,
+                # not hidden -- the queue must not forget a pairing was considered -- but
+                # marked, so "considered" is never mistaken for "still on the table".
+                "rejected_by_reviewer": tuple(sorted(detail.get("matched_txn_ids", []))) in withheld,
+            }
+            for detail in exception.evidence.get("candidate_detail", [])
+        ]
+
         return {
             "bank_line_id": exception.bank_line_id,
             "reason_code": exception.reason_code,
             "explanation": exception.explanation,
             "candidates_considered": exception.candidates_considered,
+            "candidates": candidates,
+            "value_date": exception.evidence.get("value_date"),
+            "extracted_utr": exception.evidence.get("extracted_utr"),
             "status": qi.status,
             "reviewer_note": qi.reviewer_note,
             "requires_review": queue_mod.requires_review(qi),

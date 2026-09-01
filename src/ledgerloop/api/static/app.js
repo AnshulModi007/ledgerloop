@@ -26,6 +26,8 @@ const state = {
   exceptions: null,
   tab: "queue",
   polling: null,
+  reasonFilter: null,   // null = all reason codes
+  expanded: new Set(),  // bank_line_ids whose evidence is open
 };
 
 // -- api ------------------------------------------------------------------------------
@@ -330,8 +332,14 @@ function tabStrip(s) {
       label, count != null ? el("span", { className: "count" }, ` ${count}`) : null);
     button.setAttribute("aria-selected", String(state.tab === key));
     button.addEventListener("click", () => {
+      if (state.tab === key) return;
       state.tab = key;
-      render();
+      // Only the tab strip and the panel change. Re-rendering the whole page here reset
+      // the reader's scroll position and rebuilt the chart on every tab click.
+      for (const other of strip.children) {
+        other.setAttribute("aria-selected", String(other === button));
+      }
+      renderPanel();
     });
     strip.append(button);
   }
@@ -352,16 +360,23 @@ function renderPanel() {
 
 async function renderQueue(panel) {
   state.exceptions ??= await api(`/runs/${state.runId}/exceptions`);
-  const { needs_review: needs, no_action: none } = state.exceptions;
+  const { needs_review: allNeeds, no_action: allNone, reason_codes: codes } = state.exceptions;
 
-  const children = [];
+  const match = (item) => !state.reasonFilter || item.reason_code === state.reasonFilter;
+  const needs = allNeeds.filter(match);
+  const none = allNone.filter(match);
+
+  const children = [filterBar(codes, allNeeds, allNone)];
+
   children.push(el("div", { className: "section-head" },
     el("h2", {}, `Needs a decision (${needs.length})`),
     el("p", {}, "each carries its own reasoning, computed by the pipeline"),
   ));
   children.push(needs.length
     ? needs.map(excCard)
-    : el("div", { className: "card empty" }, el("p", {}, "Nothing here needs a human. Every line was disposed of.")));
+    : el("div", { className: "card empty" }, el("p", {},
+        state.reasonFilter ? "No open items with that reason code."
+                           : "Nothing here needs a human. Every line was disposed of.")));
 
   if (none.length) {
     children.push(el("div", { className: "section-head" },
@@ -371,6 +386,31 @@ async function renderQueue(panel) {
     children.push(none.map(excCard));
   }
   panel.replaceChildren(...children.flat());
+}
+
+/* Filters sit in one row above the list, and every chip carries its own count so the
+   reader can see the shape of the queue before touching anything. */
+function filterBar(codes, needs, none) {
+  const all = [...needs, ...none];
+  const bar = el("div", { className: "filterbar" });
+
+  const chip = (label, value, count) => {
+    const active = state.reasonFilter === value;
+    const button = el("button", { className: `filter${active ? " on" : ""}`, type: "button" },
+      label, el("span", { className: "filter-count" }, String(count)));
+    button.setAttribute("aria-pressed", String(active));
+    button.addEventListener("click", () => {
+      state.reasonFilter = active ? null : value;
+      renderPanel();
+    });
+    return button;
+  };
+
+  bar.append(chip("All", null, all.length));
+  for (const code of codes) {
+    bar.append(chip(code, code, all.filter((i) => i.reason_code === code).length));
+  }
+  return bar;
 }
 
 function excCard(item) {
@@ -390,6 +430,8 @@ function excCard(item) {
     card.append(el("p", { className: "hint" }, `Note: ${item.reviewer_note}`));
   }
 
+  if (item.candidates?.length) card.append(evidenceBlock(item));
+
   if (item.requires_review) {
     const note = el("input", { type: "text", placeholder: "note (optional)", value: item.reviewer_note || "" });
     const actions = el("div", { className: "exc-actions" }, note);
@@ -401,6 +443,56 @@ function excCard(item) {
     card.append(actions);
   }
   return card;
+}
+
+/* The explanation says "groups 4 transactions"; this says WHICH four.
+ *
+ * A reviewer cannot judge a proposed match from a count and an opaque handle like
+ * BANK00115-C0 -- they need the transaction ids, the rule that produced the grouping and
+ * any residual difference. Collapsed by default so the queue still reads as a queue, and
+ * the open/closed state is kept per bank line across re-renders so recording a decision
+ * doesn't snap everything shut. */
+function evidenceBlock(item) {
+  const open = state.expanded.has(item.bank_line_id);
+  const wrap = el("div", { className: "evidence" });
+
+  const toggle = el("button", { className: "evidence-toggle", type: "button" },
+    open ? "Hide" : "Show", ` the ${item.candidates.length} candidate`,
+    item.candidates.length === 1 ? "" : "s", " considered");
+  toggle.setAttribute("aria-expanded", String(open));
+  toggle.addEventListener("click", () => {
+    if (open) state.expanded.delete(item.bank_line_id);
+    else state.expanded.add(item.bank_line_id);
+    renderPanel();
+  });
+  wrap.append(toggle);
+
+  if (!open) return wrap;
+
+  if (item.value_date || item.extracted_utr) {
+    wrap.append(el("p", { className: "hint", style: "margin:8px 0 0" },
+      [item.value_date ? `Value date ${item.value_date}` : null,
+       item.extracted_utr ? `UTR ${item.extracted_utr}` : "no UTR extracted"]
+        .filter(Boolean).join(" · ")));
+  }
+
+  for (const c of item.candidates) {
+    const head = el("div", { className: "cand-head" },
+      el("span", { className: "mono" }, c.candidate_id || "candidate"),
+      c.rule ? el("span", { className: "code" }, c.rule) : null,
+      c.score != null ? el("span", { className: "hint", style: "margin:0" }, `score ${Number(c.score).toFixed(2)}`) : null,
+      c.amount_diff && c.amount_diff.paise
+        ? el("span", { className: "hint", style: "margin:0" }, `Δ ${c.amount_diff.inr}`)
+        : null,
+      c.rejected_by_reviewer
+        ? el("span", { className: "status-pill status-rejected" }, "you rejected this — not re-proposed")
+        : null,
+    );
+    const body = el("div", { className: "cand-txns mono" },
+      (c.matched_txn_ids || []).join("  ") || "—");
+    wrap.append(el("div", { className: `cand${c.rejected_by_reviewer ? " cand-rejected" : ""}` }, head, body));
+  }
+  return wrap;
 }
 
 async function decide(bankLineId, action, note, card) {

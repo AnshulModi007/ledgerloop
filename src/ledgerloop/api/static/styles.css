@@ -401,3 +401,68 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* -- queue filters ------------------------------------------------------------------ */
+
+.filterbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--ink-secondary);
+  transition: border-color 0.12s, color 0.12s;
+}
+.filter:hover { border-color: var(--accent); }
+.filter.on { border-color: var(--accent); color: var(--ink); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.filter-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+.filter.on .filter-count { color: var(--accent); }
+
+/* -- candidate evidence -------------------------------------------------------------- */
+
+.evidence { margin-top: 10px; }
+
+.evidence-toggle {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.evidence-toggle:hover { filter: brightness(1.15); }
+
+.cand {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--plane);
+}
+/* A withheld pairing is shown but visibly set aside -- never deleted, never live. */
+.cand-rejected { opacity: 0.72; border-style: dashed; }
+
+.cand-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 7px; }
+
+.cand-txns {
+  color: var(--ink-secondary);
+  font-size: 12px;
+  line-height: 1.7;
+  word-break: break-word;
+  max-height: 8.5em;
+  overflow-y: auto;
+}

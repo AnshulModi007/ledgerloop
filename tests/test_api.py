@@ -236,3 +236,62 @@ def test_audit_tail_is_newest_first_and_bounded(api_client, completed_run):
     body = api_client.get(f"/api/runs/{completed_run}/audit?limit=5").json()
     assert len(body["entries"]) <= 5
     assert body["total"] >= len(body["entries"])
+
+
+# -- candidate evidence over the wire -------------------------------------------------
+
+
+def test_exceptions_expose_the_transactions_behind_each_candidate(api_client, completed_run):
+    """`candidates_considered` is a list of opaque handles by interface contract. A
+    reviewer cannot judge a proposed match from BANK00115-C0 and a count -- the ids, the
+    rule and any residual difference are what the decision actually rests on."""
+    ex = api_client.get(f"/api/runs/{completed_run}/exceptions").json()
+    withcands = [i for i in ex["needs_review"] if i["candidates"]]
+    if not withcands:
+        pytest.skip("no candidate-bearing exception in this generation")
+
+    candidate = withcands[0]["candidates"][0]
+    assert candidate["matched_txn_ids"], "a candidate with no transactions explains nothing"
+    assert candidate["txn_count"] == len(candidate["matched_txn_ids"])
+    assert candidate["rule"]
+    assert candidate["rejected_by_reviewer"] is False
+
+
+def test_a_rejected_pairing_comes_back_marked_not_deleted(api_client):
+    """The queue must not forget a pairing was considered -- but it must not present a
+    withheld one as though it were still on the table either."""
+    run_id = api_client.post("/api/runs", json={"profile": "dev", "no_llm": True}).json()["run_id"]
+    for _ in range(600):
+        if api_client.get(f"/api/runs/{run_id}").json()["status"] != "running":
+            break
+    ex = api_client.get(f"/api/runs/{run_id}/exceptions").json()
+    target = next((i for i in ex["needs_review"] if i["candidates"]), None)
+    if target is None:
+        pytest.skip("no candidate-bearing exception in this generation")
+
+    pairing = sorted(target["candidates"][0]["matched_txn_ids"])
+    api_client.post(
+        f"/api/runs/{run_id}/decisions",
+        json={"bank_line_id": target["bank_line_id"], "action": "rejected", "actor": "tester"},
+    )
+
+    rerun = api_client.post("/api/runs", json={"profile": "dev", "no_llm": True}).json()["run_id"]
+    for _ in range(600):
+        if api_client.get(f"/api/runs/{rerun}").json()["status"] != "running":
+            break
+    after = api_client.get(f"/api/runs/{rerun}/exceptions").json()
+    line = next(
+        i for i in after["needs_review"] + after["no_action"]
+        if i["bank_line_id"] == target["bank_line_id"]
+    )
+
+    same = [c for c in line["candidates"] if sorted(c["matched_txn_ids"]) == pairing]
+    assert same, "the pairing was dropped from the record entirely"
+    assert same[0]["rejected_by_reviewer"] is True, "a withheld pairing was shown as live"
+    assert line["reason_code"] == "REVIEWER_REJECTED"
+
+
+def test_the_run_summary_reports_what_feedback_changed(api_client):
+    """A run that quietly proposes less than the last one is worse than one that says so."""
+    summaries = api_client.get("/api/runs").json()
+    assert all("candidates_suppressed_by_review" in s for s in summaries if s["status"] == "complete")
