@@ -33,6 +33,11 @@ const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const STAGGER = 55; // ms between entrance steps; mirrors --stagger in styles.css
 
+/* Bumped by hand whenever this file changes materially. Printed at startup so "is the
+   browser running the code I just wrote?" is answerable in one glance instead of by
+   inference from behaviour. */
+const BUILD = "motion-1";
+
 const state = {
   runId: null,
   summary: null,
@@ -901,6 +906,14 @@ async function renderAudit(panel) {
 }
 
 // -- go ------------------------------------------------------------------------------------------
+
+/* A one-line diagnostic, on purpose. "The UI looks unchanged" has two very different
+   causes -- the browser is running an older file, or the OS has asked for reduced motion
+   and every animation is correctly switched off -- and from the outside they are
+   identical. Guessing between them costs more than printing the answer. */
+console.log(
+  `[LedgerLoop] console ${BUILD} | reduced-motion: ${reduced() ? "ON (animation suppressed by OS setting)" : "off"}`,
+);
 
 initTheme();
 $("#run-btn").addEventListener("click", startRun);
