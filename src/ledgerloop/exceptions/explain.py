@@ -201,7 +201,26 @@ def build_explanation(
         return _out_of_scope(bank_line)
     if reason_code == "TIER3_INVALID_SELECTION":
         return _tier3_invalid(bank_line, case)
+    if reason_code == "REVIEWER_REJECTED":
+        return _reviewer_rejected(bank_line, case)
     return _no_candidate(bank_line, tier2_cfg)
+
+
+def _reviewer_rejected(bank_line: NormalisedBankLine, case: UnresolvedCase) -> str:
+    """A line whose every remaining option a human already turned down.
+
+    Says so plainly rather than reporting a score, because the machine has no doubt here
+    and quoting one would misdescribe why the line is in the queue. The reviewer's own
+    attribution is appended by taxonomy.classify from the decision record."""
+    count = len(case.candidates)
+    one = count == 1
+    return (
+        f"{_opening(bank_line)}. "
+        f"{'The only candidate' if one else f'All {count} candidates'} for this line "
+        f"{'is' if one else 'are'} a pairing a reviewer has already rejected, so "
+        f"{'it was' if one else 'they were'} not proposed again and no model was asked to "
+        "reconsider. The credit is still unexplained and needs a match nobody has found yet."
+    )
 
 
 def candidate_details(case: UnresolvedCase) -> list[dict]:

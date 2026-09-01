@@ -731,3 +731,52 @@ take is that any component with a legitimate silent-no-op mode needs to say whic
 loudly enough that a wrong belief cannot survive one run. The provider banner already did that
 job here — `llm provider: none` was printing the truth the whole time. Nobody had a reason to
 read it, because nothing suggested there was anything to check.
+
+---
+
+## 2026-09-01 — the feedback metric scored its own success as a 100% failure
+
+**Symptom:** Built the review feedback loop — a pairing a reviewer rejects is removed from
+tier3's candidate menu on the next run — and wrote `eval/feedback_loop.py` to measure it
+rather than assert it. First run of the gate:
+
+```
+candidates suppressed:      4
+lines with nothing left:    4
+REPEAT-PROPOSAL RATE: 100.0%  (4 of 4 rejected pairings proposed again)
+FAIL
+```
+
+Both halves of that output are true simultaneously, which is what made it interesting. The
+feature worked: four pairings were suppressed, four lines had nothing left to adjudicate,
+and the unit tests — including one where a model that always selects at confidence 1.0
+still cannot resurrect a rejected pairing — all passed.
+
+**Diagnosis:** The metric counted every pairing an exception *lists* as a pairing the run
+*proposed*. Those are not the same thing, and the difference is deliberate design. A
+suppressed line keeps its full candidate list, because an exception that quietly forgot a
+pairing had ever been considered would be a silent drop — the exact thing the typed
+taxonomy exists to prevent. The explanation on that line says, in words, that the pairing
+was not proposed again. The metric was reading retained history as a repeat offence.
+
+**The part worth recording is what I nearly did about it.** The quickest fix was to narrow
+the metric to count only resolutions, which would have turned the gate green immediately.
+That is scoring your own homework: it would also have stopped detecting the real failure
+mode, a rejected pairing coming back as a live candidate on an escalation, which is a
+genuine repeat proposal and must fail.
+
+**Fix:** Make the distinction *data* rather than a judgement the metric makes. The
+adjudicator now writes `suppressed_pairings` onto the case at the moment it withholds one,
+for partial suppression as well as full. The metric excludes exactly those and counts
+everything else — so it reads a fact recorded by the code that took the action, instead of
+inferring intent from a shape. Repeat-proposal rate: 0.0% with the LLM off, 0.0% against
+live llama3.1, with 2 LLM calls saved. It is now a CI gate. The by-product is that any
+surface downstream can tell "considered" from "proposed", which the exception could not
+previously express at all.
+
+**What I'd do differently:** I wrote the metric from the outside, reasoning about what a
+repeat proposal *looked like* in the output, when the code that suppresses a candidate knew
+the answer exactly and was not asked. The general shape: when a measurement has to
+reconstruct an intent the system already had, record the intent. And the narrower lesson,
+which is the one I actually needed today — a failing gate on a feature you just built and
+believe in is the moment to be most suspicious of your instinct to adjust the gate.

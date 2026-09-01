@@ -20,6 +20,7 @@ from typing import Literal
 from pydantic import BaseModel, ValidationError
 
 from ledgerloop import confidence
+from ledgerloop.adjudicate import feedback as feedback_mod
 from ledgerloop.adjudicate import prompts
 from ledgerloop.adjudicate.provider import LLMProvider, NullProvider, complete_with_fallback
 from ledgerloop.ingest.normalise import NormalisedBankLine, NormalisedDataset
@@ -54,6 +55,11 @@ class Tier3Result:
     llm_calls_made: int
     providers_used: list[str] = field(default_factory=list)
     llm_available: bool = False
+    # Candidates dropped because a reviewer already rejected that exact pairing, and the
+    # lines left with nothing to adjudicate as a result. Reported so a run can say what
+    # feedback changed rather than silently proposing less.
+    candidates_suppressed: int = 0
+    lines_fully_suppressed: list[str] = field(default_factory=list)
 
 
 def _parse_json_array(text: str) -> list | None:
@@ -143,6 +149,7 @@ def adjudicate_cases(
     cases: dict[str, tuple[NormalisedBankLine, list[Candidate]]],
     chain: list[LLMProvider],
     cfg: dict,
+    review_context: str | None = None,
 ) -> tuple[dict[str, Resolution], dict[str, str], int, list[str], dict[str, str]]:
     """Batches `cases` (bank_line_id -> (bank_line, candidates)) into tier3.batch_size
     chunks, retrying only the cases that didn't get a usable answer, up to
@@ -173,7 +180,9 @@ def adjudicate_cases(
         llm_unavailable = False
         for start in range(0, len(ids), batch_size):
             batch_ids = ids[start : start + batch_size]
-            prompt = prompts.build_adjudication_prompt([remaining[bid] for bid in batch_ids])
+            prompt = prompts.build_adjudication_prompt(
+                [remaining[bid] for bid in batch_ids], review_context=review_context
+            )
             text, provider_name, attempts_made = complete_with_fallback(chain, prompt)
             llm_calls += attempts_made
 
@@ -307,8 +316,10 @@ def run(
     tier2_result: tier2_algorithmic.PipelineResult,
     config: dict,
     chain: list[LLMProvider],
+    feedback: feedback_mod.ReviewFeedback | None = None,
 ) -> Tier3Result:
     cfg = config["tier3"]
+    feedback = feedback or feedback_mod.EMPTY
     tier2_cfg = config["tier2"]
 
     batches = tier1_exact.build_batches(normalised.settlement_lines)
@@ -363,11 +374,60 @@ def run(
     # Step 2: candidate adjudication for everything still unresolved with candidates
     # to choose from. Cases with an empty candidate list have nothing to adjudicate --
     # calling the LLM with zero options would be pointless, so they're left as-is.
-    to_adjudicate = {
-        bid: (bank_line_by_id[bid], case.candidates) for bid, case in still_unresolved.items() if case.candidates
-    }
+    #
+    # Standing rejections are applied FIRST, so a pairing a reviewer already turned down
+    # is not merely scored lower but removed from the menu entirely. The model cannot
+    # choose what it is never shown, which is the same containment argument the fixed
+    # candidate list rests on -- here pointed at the human's decision instead of tier2's.
+    candidates_suppressed = 0
+    fully_suppressed: list[str] = []
+    to_adjudicate: dict[str, tuple[NormalisedBankLine, list[Candidate]]] = {}
+    for bid, case in still_unresolved.items():
+        if not case.candidates:
+            continue
+        kept, dropped = feedback.filter_candidates(bid, case.candidates)
+        candidates_suppressed += dropped
+        # Which pairings were withheld, recorded on the case rather than inferred later.
+        # The candidate list itself is deliberately left intact -- an exception must still
+        # show what was considered, or the queue would quietly forget the pairing existed
+        # -- so "considered" and "proposed" have to be distinguishable in the data. Without
+        # this they are not, and anything reading the exception downstream would have to
+        # guess which of the two it was looking at.
+        suppressed_pairings = [
+            sorted(c.matched_txn_ids)
+            for c in case.candidates
+            if feedback.is_rejected(bid, c.matched_txn_ids)
+        ]
+        if dropped and not kept:
+            # Every option a reviewer already rejected: there is nothing left to ask
+            # about. Escalate without spending an LLM call re-proposing a settled matter.
+            fully_suppressed.append(bid)
+            still_unresolved[bid] = UnresolvedCase(
+                bank_line_id=bid,
+                reason_hint="REVIEWER_REJECTED",
+                candidates=case.candidates,
+                evidence={
+                    **case.evidence,
+                    "suppressed_by_review": True,
+                    "suppressed_pairings": suppressed_pairings,
+                },
+            )
+            continue
+        if kept:
+            if dropped:
+                still_unresolved[bid] = UnresolvedCase(
+                    bank_line_id=bid,
+                    reason_hint=case.reason_hint,
+                    candidates=case.candidates,
+                    evidence={**case.evidence, "suppressed_pairings": suppressed_pairings},
+                )
+            to_adjudicate[bid] = (bank_line_by_id[bid], kept)
+
     if to_adjudicate:
-        new_resolutions, reason_hints, calls, providers, reasoning = adjudicate_cases(to_adjudicate, chain, cfg)
+        review_context = feedback.prompt_context(to_adjudicate.keys())
+        new_resolutions, reason_hints, calls, providers, reasoning = adjudicate_cases(
+            to_adjudicate, chain, cfg, review_context=review_context
+        )
         llm_calls += calls
         providers_used.extend(providers)
 
@@ -393,6 +453,8 @@ def run(
     llm_available = any(not isinstance(p, NullProvider) for p in chain)
 
     return Tier3Result(
+        candidates_suppressed=candidates_suppressed,
+        lines_fully_suppressed=sorted(fully_suppressed),
         resolutions=resolutions,
         unresolved=sorted(still_unresolved.values(), key=lambda c: c.bank_line_id),
         llm_calls_made=llm_calls,

@@ -248,7 +248,10 @@ function summarySection(s) {
       kpi("Escalated value", escalatedValue, "sitting in the review queue"),
       kpi("LLM calls", String(s.llm_calls_made),
         s.providers_used?.length ? s.providers_used.join(", ") : "none — deterministic only"),
-      kpi("Deterministic", String(deterministic), "settled before any model ran"),
+      s.candidates_suppressed_by_review
+        ? kpi("Review feedback", String(s.candidates_suppressed_by_review),
+            `pairing${s.candidates_suppressed_by_review === 1 ? "" : "s"} a reviewer rejected, not re-proposed`)
+        : kpi("Deterministic", String(deterministic), "settled before any model ran"),
     ),
   );
 }

@@ -29,6 +29,11 @@ class ReasonCode(StrEnum):
     TIER3_INVALID_SELECTION = "TIER3_INVALID_SELECTION"
     OUT_OF_SCOPE = "OUT_OF_SCOPE"
     SUSPECTED_DUPLICATE = "SUSPECTED_DUPLICATE"
+    # Every candidate for this line is a pairing a reviewer already rejected. Distinct
+    # from LOW_CONFIDENCE on purpose: the machine has no doubt here, a human settled it,
+    # and telling a reviewer "scored 0.55" about a matter they closed last week would
+    # misreport why the line is in front of them.
+    REVIEWER_REJECTED = "REVIEWER_REJECTED"
 
 
 # Reason hints that already carry enough meaning on their own -- these had actual
@@ -38,6 +43,7 @@ _DIRECT_PASSTHROUGH: dict[str, ReasonCode] = {
     "TIER3_INVALID_SELECTION": ReasonCode.TIER3_INVALID_SELECTION,
     "AMBIGUOUS_CANDIDATES": ReasonCode.AMBIGUOUS_CANDIDATES,
     "LOW_CONFIDENCE": ReasonCode.LOW_CONFIDENCE,
+    "REVIEWER_REJECTED": ReasonCode.REVIEWER_REJECTED,
 }
 
 # Reason hints that mean "tier2 came up with nothing usable" via two different

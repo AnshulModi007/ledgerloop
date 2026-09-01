@@ -168,6 +168,8 @@ def _summary(record: RunRecord) -> dict[str, Any]:
         "postings_total": len(result.all_postings),
         "postings_new": len(result.new_postings),
         "last_approved_new_count": record.last_approved_new_count,
+        "candidates_suppressed_by_review": result.candidates_suppressed_by_review,
+        "lines_suppressed_by_review": result.lines_suppressed_by_review,
         "tie_out_clean": result.tie_out.clean,
         "duplicate_receivable_relief": result.duplicate_receivable_relief,
     }

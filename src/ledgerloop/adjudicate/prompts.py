@@ -68,8 +68,22 @@ def _format_bank_line(bank_line: NormalisedBankLine, candidates: list[Candidate]
     return "\n".join(lines)
 
 
-def build_adjudication_prompt(items: list[tuple[NormalisedBankLine, list[Candidate]]]) -> str:
-    sections = [ADJUDICATION_ROLE, "", NARRATION_STANDING_RULE, "", "Bank credits to review:", ""]
+def build_adjudication_prompt(
+    items: list[tuple[NormalisedBankLine, list[Candidate]]],
+    review_context: str | None = None,
+) -> str:
+    """`review_context` carries what a human reviewer previously decided on *other* lines.
+
+    It sits above the candidates as evidence about the reviewer's standards, never as an
+    instruction, and it cannot widen what the model may choose: the candidate list is
+    still the only menu, and pairings this reviewer already rejected for the line in hand
+    were removed before the prompt was built (see adjudicate/feedback.py). So the context
+    can shift a borderline judgement or prompt an abstain, and can never conjure an option.
+    """
+    sections = [ADJUDICATION_ROLE, "", NARRATION_STANDING_RULE, ""]
+    if review_context:
+        sections += [review_context, ""]
+    sections += ["Bank credits to review:", ""]
     sections.extend(_format_bank_line(bank_line, candidates) + "\n" for bank_line, candidates in items)
     sections.append(ADJUDICATION_INSTRUCTIONS)
     return "\n".join(sections)

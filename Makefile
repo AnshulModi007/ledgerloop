@@ -1,4 +1,4 @@
-.PHONY: install generate test eval sensitivity scale generalization demo ui api lint
+.PHONY: install generate test eval sensitivity scale generalization feedback demo ui api lint
 
 PYTHON ?= python
 
@@ -38,6 +38,12 @@ generalization:
 # generated CSV under data/scale_* (gitignored).
 scale:
 	$(PYTHON) -m ledgerloop.eval.scale
+
+# Does a reviewer's rejection survive the next run? Runs twice with rejections
+# recorded in between, on a temp runs root. Fails if any rejected pairing is
+# re-proposed. Seconds.
+feedback:
+	$(PYTHON) -m ledgerloop.eval.feedback_loop --profile dev --no-llm
 
 demo:
 	$(PYTHON) -m ledgerloop.generate.generator --profile dev

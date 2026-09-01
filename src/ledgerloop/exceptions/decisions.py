@@ -30,7 +30,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 DecisionAction = Literal["approved", "rejected", "reassigned"]
 
@@ -44,6 +44,14 @@ class ReviewDecision(BaseModel):
     note: str | None
     reason_code: str  # the exception's code at decision time, so the log reads standalone
     decided_at_utc: str
+    # What the verdict was ABOUT. The log recorded that someone rejected BANK00115 but
+    # never what they rejected, which makes "rejected" unreadable a month later and
+    # unusable as a signal -- a candidate_id like BANK00115-C0 is positional and can
+    # denote a different grouping on a later run, so the transaction set is what
+    # actually identifies the pairing. Both are optional: decisions written before this
+    # existed stay valid and simply carry no pairing.
+    candidate_id: str | None = None
+    candidate_txn_ids: list[str] = Field(default_factory=list)
 
 
 def default_actor() -> str:
@@ -53,7 +61,13 @@ def default_actor() -> str:
 
 def _same_decision(a: ReviewDecision, b: ReviewDecision) -> bool:
     """Timestamps deliberately excluded: two identical clicks a minute apart are the same
-    decision, and treating them as distinct is exactly the duplicate history this prevents."""
+    decision, and treating them as distinct is exactly the duplicate history this prevents.
+
+    The pairing is excluded too, and that one is a judgement call: if the same reviewer
+    reaches the same verdict on the same line but tier2 now proposes a different grouping,
+    that is a fresh fact about a changed candidate, not a repeated click. Including it
+    would make an unchanged UI re-record on every run whenever candidate ordering shifted,
+    which is the duplicate history this exists to prevent."""
     return (a.bank_line_id, a.action, a.actor, a.note) == (b.bank_line_id, b.action, b.actor, b.note)
 
 
@@ -89,6 +103,8 @@ class DecisionLog:
         reason_code: str,
         actor: str | None = None,
         note: str | None = None,
+        candidate_id: str | None = None,
+        candidate_txn_ids: list[str] | None = None,
     ) -> tuple[ReviewDecision, bool]:
         """Appends a decision. Returns (decision, was_new); was_new is False when an
         identical decision already stands, in which case nothing is written."""
@@ -99,6 +115,8 @@ class DecisionLog:
             note=note,
             reason_code=reason_code,
             decided_at_utc=datetime.now(UTC).isoformat(),
+            candidate_id=candidate_id,
+            candidate_txn_ids=list(candidate_txn_ids or []),
         )
         standing = self.current().get(bank_line_id)
         if standing is not None and _same_decision(standing, decision):

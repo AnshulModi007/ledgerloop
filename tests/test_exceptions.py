@@ -30,8 +30,43 @@ REQUIRED_MINIMUM_CODES = {
 }
 
 
-def test_reason_code_enum_matches_the_required_minimum_set():
-    assert {code.value for code in taxonomy.ReasonCode} == REQUIRED_MINIMUM_CODES
+def test_reason_code_enum_covers_the_required_minimum_set():
+    """IMPLEMENTATION.md section 4 calls this a *minimum* set, so the assertion is
+    containment, not equality: a new reason code is allowed, dropping a required one is
+    not. It was written as equality, which made adding REVIEWER_REJECTED look like a
+    regression -- the test was stricter than the contract it was pinning."""
+    codes = {code.value for code in taxonomy.ReasonCode}
+    assert REQUIRED_MINIMUM_CODES <= codes, f"missing required: {REQUIRED_MINIMUM_CODES - codes}"
+
+
+def test_every_reason_code_produces_a_reviewer_readable_explanation(config):
+    """The guard that actually matters for a new code: no reason code may reach a
+    reviewer as a bare label with no sentence behind it."""
+    from datetime import date
+
+    from ledgerloop.exceptions import explain
+    from ledgerloop.ingest.normalise import NormalisedBankLine
+    from ledgerloop.schemas import Candidate, UnresolvedCase
+
+    bank_line = NormalisedBankLine(
+        bank_line_id="BANK00001",
+        value_date=date(2026, 3, 1),
+        credit_amount_paise=123456,
+        narration="NEFT/UTR12345678901234/RAZORPAY",
+        extracted_utr="UTR12345678901234",
+    )
+    case = UnresolvedCase(
+        bank_line_id="BANK00001",
+        reason_hint="LOW_CONFIDENCE",
+        candidates=[
+            Candidate(candidate_id="BANK00001-C0", matched_txn_ids=["TXN1"], score=0.55, evidence={"rule": "x"})
+        ],
+        evidence={},
+    )
+    for code in taxonomy.ReasonCode:
+        text = explain.build_explanation(bank_line, case, code.value, config["tier2"])
+        assert text and text.strip(), code.value
+        assert code.value not in text, f"{code.value} explanation is just the bare code"
 
 
 @pytest.fixture(scope="module")

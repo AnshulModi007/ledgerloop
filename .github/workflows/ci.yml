@@ -40,6 +40,12 @@ jobs:
       - name: Generalization suite (no novel shape may be matched wrongly)
         run: python -m ledgerloop.eval.generalization
 
+      # A human's rejection must survive the next run, including one where the model
+      # would otherwise be confident enough to resolve the line. Writes only to a temp
+      # runs root.
+      - name: Review feedback loop (no rejected pairing may be re-proposed)
+        run: python -m ledgerloop.eval.feedback_loop --profile dev --no-llm
+
       - name: Determinism check (run twice, diff the reports)
         run: |
           python -m ledgerloop.eval.metrics --profile dev --no-llm --runs-root runs/det_a

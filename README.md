@@ -277,6 +277,42 @@ residual; hosted `openai/gpt-oss-20b` resolved 90.9% (10/11) of the held-out res
 sets and small denominators, so this is an order-of-magnitude observation, not a benchmark — but
 the residual rate is where model quality shows up, and the all-records share is where it hides.
 
+### The loop closes on the human half too: a rejection sticks
+
+Every reviewer decision was durable and auditable, and then changed nothing. The next run
+rebuilt its candidates from the data and proposed the same pairing to the same reviewer
+again. That is a problem specifically because **Tier 3 confidence is not stable run to
+run**: on byte-identical input, local `llama3.1` returned 0.55, 0.55, then 1.0. A line
+escalated on Monday could resolve on Tuesday with nothing changed — silently overturning
+the person who looked at it.
+
+Now a rejected pairing is removed from the candidate menu before the model ever sees it.
+Measured by `make feedback`, which runs the pipeline, rejects every escalation that
+carried a pairing, re-runs on identical inputs, and counts how many came back:
+
+| | `--no-llm` | live `llama3.1` |
+|---|---|---|
+| Pairings a reviewer rejected | 4 | 3 |
+| **Re-proposed on the next run** | **0** | **0** |
+| Repeat-proposal rate | **0.0%** | **0.0%** |
+| LLM calls saved | 0 | 2 |
+
+**Rejections only, and that asymmetry is the safety argument.** A rejection can only ever
+*remove* a candidate, so feedback cannot manufacture a match the deterministic tiers did
+not already propose and cannot raise the false-match rate — strictly fewer pairings are
+reachable after feedback than before. A test states that property directly.
+
+An approval is recorded and shown to the model as context but deliberately does **not**
+auto-resolve the line. `Resolution.resolved_by` is a stable three-value contract with no
+notion of human authorship, and `actor` is self-reported with no authentication — auth is
+a stated non-goal — so "approved by" is a claim, not a credential, and promoting a claim
+into an automatic posting is the kind of unearned trust the rest of this system refuses.
+
+A pairing is identified by its **transaction set**, not its `candidate_id`: `BANK00115-C0`
+is positional and can name a different grouping on a later run. Reversing a decision
+un-suppresses the pairing, because the standing decision governs and the log keeps every
+earlier one. CI gates on the repeat-proposal rate being zero.
+
 ### Correct disposition: declining to match is also a right answer
 
 20 of those 21 escalations are `OUT_OF_SCOPE` — bank credits that were never gateway

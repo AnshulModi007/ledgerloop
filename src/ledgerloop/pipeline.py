@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ledgerloop.adjudicate import adjudicator
+from ledgerloop.adjudicate import feedback as feedback_mod
 from ledgerloop.adjudicate.provider import LLMProvider, resolve_chain
 from ledgerloop.audit.log import AuditLog
 from ledgerloop.config import load_config
@@ -63,6 +64,10 @@ class ReconcileRun:
     llm_calls_made: int
     providers_used: list[str]
     llm_available: bool
+    # What standing review decisions changed about this run: candidate pairings removed
+    # because a reviewer rejected them, and the lines left with nothing to adjudicate.
+    candidates_suppressed_by_review: int
+    lines_suppressed_by_review: list[str]
     total_records: int
     config: dict
 
@@ -96,7 +101,17 @@ def run(
 
     tier2_result = tier2_algorithmic.run(normalised, config)
     active_chain = chain if chain is not None else resolve_chain(no_llm=no_llm)
-    tier3_result = adjudicator.run(normalised, tier2_result, config, active_chain)
+    # Standing human decisions are loaded before tier3, not after: a pairing a reviewer
+    # already rejected is removed from the candidate menu rather than re-proposed and
+    # re-escalated. See adjudicate/feedback.py.
+    review_decisions = DecisionLog(decision_log_path(runs_root, profile)).current()
+    tier3_result = adjudicator.run(
+        normalised,
+        tier2_result,
+        config,
+        active_chain,
+        feedback=feedback_mod.ReviewFeedback.from_decisions(review_decisions),
+    )
     all_resolutions = tier2_result.resolutions + tier3_result.resolutions
 
     batches = tier1_exact.build_batches(normalised.settlement_lines)
@@ -124,7 +139,9 @@ def run(
     all_postings = [p for batch in journal_batches for p in batch.postings]
 
     duplicate_relief = journal.find_duplicate_receivable_relief(all_postings)
-    review_decisions = DecisionLog(decision_log_path(runs_root, profile)).current()
+    # review_decisions was loaded before tier3 (it feeds candidate suppression) and is
+    # reused here rather than re-read, so the decisions that shaped this run are exactly
+    # the ones reported with it.
     credit_paise_by_bank_line = {b.bank_line_id: b.credit_amount_paise for b in normalised.bank_lines}
     tie_out = tieout_mod.build(
         all_postings,
@@ -155,6 +172,8 @@ def run(
         llm_calls_made=tier3_result.llm_calls_made,
         providers_used=tier3_result.providers_used,
         llm_available=tier3_result.llm_available,
+        candidates_suppressed_by_review=tier3_result.candidates_suppressed,
+        lines_suppressed_by_review=tier3_result.lines_fully_suppressed,
         total_records=len(normalised.bank_lines),
         config=config,
     )
@@ -178,12 +197,20 @@ def decide(
     dashboard and any future CLI can never diverge on what a decision means or where it
     is written."""
     log = DecisionLog(decision_log_path(runs_root, profile))
+    # The pairing the reviewer was actually looking at. `candidate_detail` is sorted by
+    # score, and the explanation a reviewer reads describes that same strongest candidate,
+    # so this records the thing on screen rather than an arbitrary one. Absent for
+    # exceptions with no candidates (OUT_OF_SCOPE and friends), where there is no pairing
+    # to have an opinion about.
+    best = next(iter(exception.evidence.get("candidate_detail", [])), None)
     decision, was_new = log.record(
         bank_line_id=exception.bank_line_id,
         action=action,
         reason_code=exception.reason_code,
         actor=actor,
         note=note,
+        candidate_id=(best or {}).get("candidate_id"),
+        candidate_txn_ids=(best or {}).get("matched_txn_ids", []),
     )
     if was_new:
         AuditLog(runs_root / f"{profile}_audit.jsonl").append_decision(decision, config=config)
