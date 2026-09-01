@@ -679,3 +679,55 @@ and would report success while doing so. The lesson is narrower than "test again
 providers", which is not always possible on free tiers: it is that a mocked provider tests your
 own understanding of the wire format, never the wire format. Where the two disagree, the mock
 always wins the test and always loses in production.
+
+---
+
+## 2026-09-01 — `.env.example` shipped from day one and nothing ever read it
+
+**Symptom:** Asked a plain question while setting up the local model — where does the Groq key
+go? — and went looking for the answer rather than assuming it. `.env.example` is in the repo
+root, the README said "see `.env.example`", and `.gitignore` excludes `.env`. Every signal says
+this is the supported path. `grep -rn "dotenv" src/` returns nothing. `python-dotenv` is not in
+`pyproject.toml`. Every provider calls `os.environ.get` directly.
+
+So copying `.env.example` to `.env` and filling in a key does nothing at all.
+
+**Diagnosis:** Not the missing loader itself — that is a five-minute fix — but that it fails
+*silently and successfully*. There is no error. The chain falls through to NullProvider, tier3
+abstains on everything, the exception queue absorbs it, the tie-out is clean, and the run exits
+0 reporting `llm provider: none -- deterministic only`. Every one of those behaviours is
+correct and deliberate; together they mean a user who has configured a key exactly as documented
+gets a working run that quietly ignores it. The zero-key path being a first-class supported mode
+is what makes this invisible: there is no broken state for the failure to show up in.
+
+**Fix:** `env.py` — a hand-rolled parser for the subset of `.env` that is actually documented
+(KEY=value, `#` comments, quotes, `export ` prefix), loaded in `resolve_chain()`, at the one
+place provider keys are read. No new dependency; the argument for stdlib-only HTTP in
+`provider.py` applies unchanged. Precedence is real environment variable, then `.env`, then
+nothing — so an operator's shell always beats a file on disk and CI, which sets no `.env`, is
+untouched. A key with an empty value is skipped rather than exported as `""`, because
+`.env.example` ships with all four keys present and blank and that must not read as "four
+providers configured".
+
+**The part that was not obvious.** Adding the loader introduced a bug that did not exist before,
+in the workflow I had just written up: "blank the key to test the local model". Under
+PowerShell, `$env:GROQ_API_KEY = ""` **deletes** the variable rather than setting it empty — I
+checked, and the child process sees no `GROQ_API_KEY` at all. Git Bash passes a genuine empty
+string. So on PowerShell the loader would helpfully supply the key back from `.env` and route
+to the cloud, while the operator believed they were exercising the local path. It would have
+looked like it worked: the run succeeds, tier3 resolves, only the provider banner disagrees.
+
+Two shells disagreeing about what absence means is not a thing to document around, so the fix
+does not rely on absence: `LEDGERLOOP_PROVIDER` pins the chain to one provider by name. It fails
+closed — a pinned provider that isn't reachable yields NullProvider rather than falling through
+to whichever cloud key happens to be lying around, because "use the local model" degrading into
+"used the cloud instead" is precisely the confusion the pin exists to prevent.
+
+**What I'd do differently:** this is the second finding in one day with the same shape as the
+Ollama one — a path that reports success while doing nothing — and both were found by a user
+asking an ordinary setup question, not by a test. Tests assert that configured things work.
+Neither of these was configured; both were *believed* to be configured. The general lesson I
+take is that any component with a legitimate silent-no-op mode needs to say which mode it is in
+loudly enough that a wrong belief cannot survive one run. The provider banner already did that
+job here — `llm provider: none` was printing the truth the whole time. Nobody had a reason to
+read it, because nothing suggested there was anything to check.

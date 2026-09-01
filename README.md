@@ -23,11 +23,29 @@ make demo
 
 `make demo` generates the dev dataset, runs the full pipeline with the LLM tier forced off
 (`--no-llm`), approves what it resolved, and re-runs the identical command to show **zero new
-postings** — the reconciliation loop closed, deterministically, with no credentials. Set
-`GEMINI_API_KEY`, `GROQ_API_KEY`, or `OPENROUTER_API_KEY` (see `.env.example`), or run a local
-Ollama server, and drop `--no-llm` to let Tier 3 adjudicate the remainder instead of escalating
-it. `make ui` (needs `pip install -e ".[dev,ui]"`) puts the same pipeline behind a Streamlit
-dashboard.
+postings** — the reconciliation loop closed, deterministically, with no credentials. `make ui`
+(needs `pip install -e ".[dev,ui]"`) puts the same pipeline behind a Streamlit dashboard.
+
+### Turning the LLM tier on
+
+Drop `--no-llm` and give the chain something to reach. Either export a key
+(`GEMINI_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY`) or `cp .env.example .env` and fill one
+in — a real environment variable always beats the file, so your shell can override it without
+editing anything. Or install [Ollama](https://ollama.com) and `ollama pull llama3.1`, and the
+chain falls through to it with no key at all.
+
+To force one specific provider while other keys stay set — reading the local model on camera,
+say — pin it by name:
+
+```powershell
+$env:LEDGERLOOP_PROVIDER = "ollama"   # gemini | groq | openrouter | ollama | none
+```
+
+A pinned provider that isn't reachable abstains rather than falling through to a different one,
+so "use the local model" can never quietly become "used the cloud instead". Unsetting a key is
+*not* a portable substitute: PowerShell deletes a variable outright when you assign `""` to it,
+while POSIX shells pass a real empty string, so the two disagree about what an absent key means.
+Whatever wins, the run banner names it: `llm provider: ollama`.
 
 Two setup notes from real friction hit during this build (full account in FAILURES.md):
 requires **Python ≥3.11** (the exception taxonomy uses `enum.StrEnum`) — on Windows, use the

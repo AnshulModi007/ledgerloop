@@ -6,6 +6,11 @@
   4. Local Ollama reachable on localhost:11434 -> local model
   5. None available          -> NullProvider, which abstains on every call
 
+Keys come from the environment, or from a `.env` file at the repo root which never
+overwrites a variable the shell already set (see env.py). LEDGERLOOP_PROVIDER pins the
+chain to one provider by name, which is the portable way to force the local model --
+unsetting a key is not, because shells disagree about what unsetting means.
+
 NullProvider is what makes `make demo` work with zero API keys: the pipeline
 completes, everything tier3 would have adjudicated flows to the exception queue
 instead, and the report says so honestly. This is a documented operating mode, not
@@ -24,6 +29,8 @@ import os
 import urllib.error
 import urllib.request
 from abc import ABC, abstractmethod
+
+from ledgerloop import env
 
 REQUEST_TIMEOUT_SECONDS = 20
 OLLAMA_PROBE_TIMEOUT_SECONDS = 0.5
@@ -228,15 +235,32 @@ class NullProvider(LLMProvider):
 
 def resolve_chain(*, no_llm: bool = False) -> list[LLMProvider]:
     """First-available-wins resolution order. NullProvider always terminates the
-    chain, so callers can loop through it unconditionally without a special case."""
+    chain, so callers can loop through it unconditionally without a special case.
+
+    `.env` is loaded here, at the one place provider keys are read, so no caller has
+    to remember to do it. It never overwrites a variable the shell already set.
+
+    LEDGERLOOP_PROVIDER pins the chain to a single provider by name (gemini, groq,
+    openrouter, ollama, none). An unavailable or unrecognised pin yields a chain of
+    just NullProvider rather than silently falling back to a different provider --
+    "use the local model" failing closed into "used the cloud instead" is exactly the
+    confusion the pin exists to prevent. The run banner still reports what served."""
     if no_llm:
         return [NullProvider()]
+
+    env.load_env_file()
+
     candidates: list[LLMProvider] = [
         GeminiProvider(),
         GroqProvider(),
         OpenRouterProvider(),
         OllamaProvider(),
     ]
+
+    pin = env.provider_pin()
+    if pin is not None:
+        candidates = [p for p in candidates if p.name == pin]
+
     available = [p for p in candidates if p.is_available()]
     return [*available, NullProvider()]
 
