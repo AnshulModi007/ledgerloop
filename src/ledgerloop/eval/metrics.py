@@ -123,6 +123,20 @@ class Metrics:
     correctly_rejected_count: int
     correct_disposition_count: int
     correct_disposition_rate: float
+    # -- the residual: what the deterministic tiers could NOT resolve, and what tier3
+    # then did with it. tier_shares above divides tier3's work by every record in the
+    # batch, including the 58.6% a regex join settles -- which measures the LLM against
+    # a denominator it never sees. Tier 3 only ever receives what tiers 1 and 2 hand
+    # off, so this is the denominator it is actually accountable for. Reported
+    # alongside tier_shares, never instead of it.
+    residual_count: int
+    residual_matchable_count: int  # of the residual, those that genuinely had an answer
+    residual_resolved_by_llm: int
+    residual_false_matched: int
+    residual_missed: int
+    residual_correctly_rejected: int
+    residual_resolution_rate: float  # llm-resolved / matchable residual
+    residual_correct_disposition_rate: float  # (resolved + correctly refused) / residual
     # -- the review queue as a human sees it, split by whether the item needs a decision.
     # Derived from reason codes alone (no ground truth), so these two are the same
     # numbers the dashboard shows on a run against data with no answer key at all.
@@ -196,6 +210,16 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
     expects_match_total = 0
     correctly_rejected = 0
 
+    # The residual is every line tiers 1 and 2 did not resolve -- exactly the set tier3
+    # is handed. A line the deterministic tiers matched (rightly or wrongly) never
+    # reaches tier3 and so is not part of its denominator.
+    residual_count = 0
+    residual_matchable = 0
+    residual_llm_resolved = 0
+    residual_false = 0
+    residual_missed = 0
+    residual_rejected = 0
+
     # Per defect class, keyed by the tags the answer key already carries. Accumulated in
     # the same pass as the totals so a class row can never disagree with the headline.
     defect_tallies: dict[str, _DefectTally] = {}
@@ -227,6 +251,19 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
             missed += 1
         else:
             correctly_rejected += 1
+
+        if resolution is None or resolution.resolved_by == "tier3":
+            residual_count += 1
+            if expects_match:
+                residual_matchable += 1
+            if outcome == "correctly_matched":
+                residual_llm_resolved += 1
+            elif outcome == "false_matched":
+                residual_false += 1
+            elif outcome == "missed":
+                residual_missed += 1
+            else:
+                residual_rejected += 1
 
         for defect_class in answer.defect_classes:
             tally = defect_tallies.setdefault(defect_class, _DefectTally())
@@ -276,6 +313,16 @@ def compute_metrics(run: HarnessRun, answer_key: dict[str, AnswerKeyEntry]) -> M
         correctly_rejected_count=correctly_rejected,
         correct_disposition_count=true_positive + correctly_rejected,
         correct_disposition_rate=(true_positive + correctly_rejected) / total if total else 0.0,
+        residual_count=residual_count,
+        residual_matchable_count=residual_matchable,
+        residual_resolved_by_llm=residual_llm_resolved,
+        residual_false_matched=residual_false,
+        residual_missed=residual_missed,
+        residual_correctly_rejected=residual_rejected,
+        residual_resolution_rate=(residual_llm_resolved / residual_matchable if residual_matchable else 0.0),
+        residual_correct_disposition_rate=(
+            (residual_llm_resolved + residual_rejected) / residual_count if residual_count else 0.0
+        ),
         exceptions_needing_review=len(needing_review),
         exceptions_no_action=len(no_action),
         per_defect={name: tally.finish() for name, tally in sorted(defect_tallies.items())},
@@ -333,6 +380,24 @@ def format_report(m: Metrics) -> str:
     ]
     for tier in ("tier1", "tier2", "tier3"):
         lines.append(f"  {tier}: {m.tier_counts[tier]} ({m.tier_shares[tier]:.1%} of all records)")
+    lines += [
+        "",
+        "the residual (what tiers 1+2 could not resolve -- the only lines tier3 ever sees):",
+        f"  handed to tier3:            {m.residual_count}",
+        f"  of those, had a real match: {m.residual_matchable_count}",
+        f"  resolved by the LLM:        {m.residual_resolved_by_llm}",
+        f"  matched wrongly:            {m.residual_false_matched}",
+        f"  missed:                     {m.residual_missed}",
+        f"  correctly left unmatched:   {m.residual_correctly_rejected}",
+        (
+            f"  LLM resolution of the matchable residual: {m.residual_resolution_rate:.1%}  "
+            f"({m.residual_resolved_by_llm}/{m.residual_matchable_count})"
+        ),
+        (
+            f"  correct disposition of the residual:      {m.residual_correct_disposition_rate:.1%}  "
+            f"({m.residual_resolved_by_llm + m.residual_correctly_rejected}/{m.residual_count})"
+        ),
+    ]
     lines += ["", "exceptions by reason code:"]
     if m.exception_counts_by_reason:
         lines.extend(f"  {reason}: {count}" for reason, count in m.exception_counts_by_reason.items())

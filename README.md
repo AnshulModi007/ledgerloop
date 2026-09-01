@@ -213,6 +213,50 @@ made afterward:
 | LLM calls made | 2 (7.1 per 1,000 records) |
 | Illustrative cost at published paid rates | ₹0.08 total, ₹0.29 per 1,000 records — actual cost: ₹0 (free tier) |
 
+### What the LLM is actually accountable for
+
+**Tier 3 resolves 3.6% of all records, and 91% of the cases that were still open when it was
+called.** Both are true; the second is the one that measures the model.
+
+Tier 3 never sees a line that Tiers 1 and 2 already settled. Dividing its work by all 280
+records measures it against a denominator that includes the 58.6% a regex join disposes of
+before the model is even loaded. The denominator it is accountable for is **the residual** —
+what deterministic matching handed off:
+
+| The residual (held-out set) | |
+|---|---|
+| Handed to Tier 3 by Tiers 1–2 | **31** |
+| — of those, genuinely had a match to make | 11 |
+| Resolved by the LLM | **10** |
+| Matched wrongly | **0** |
+| Missed | 1 |
+| Correctly left unmatched (no match existed) | 20 |
+| **LLM resolution of the matchable residual** | **90.9%** (10/11) |
+| **Correct disposition of the whole residual** | **96.8%** (30/31) |
+
+> Deterministic matching hands off 31 lines it cannot resolve. The LLM disposes of 30 of them
+> correctly — finding the answer for 10 of the 11 that had one, and declining the 20 that
+> didn't — while matching **zero** of them wrongly.
+
+Computed by `eval/metrics.py`, printed under `the residual` in every report, and reported
+alongside the all-records tier shares rather than instead of them. The figures above are
+derived from the same single held-out run as the table above; that set has not been re-run.
+
+Two guards against this becoming a flattering number. With `--no-llm` the rate is **0.0%
+(0/4)** on the dev set, not undefined and not skipped — a run with no model resolves none of
+its residual and says so. And a wrong Tier 3 pick lands in `residual_false_matched`, so
+resolving more of the residual by guessing moves the number the wrong way.
+
+The tempting way to raise Tier 3's headline share is to weaken Tiers 1 and 2 so more work
+falls through to the model. That would make the product worse, and the [ablation
+table](#ablation-table-held-out-set) publishes exactly the numbers that would expose it. The
+share is low because the deterministic tiers are good, which is the design working.
+
+**Model choice moves this metric a lot.** Local `llama3.1` (8B) resolves 25% (1/4) of the dev
+residual; hosted `openai/gpt-oss-20b` resolved 90.9% (10/11) of the held-out residual. Different
+sets and small denominators, so this is an order-of-magnitude observation, not a benchmark — but
+the residual rate is where model quality shows up, and the all-records share is where it hides.
+
 ### Correct disposition: declining to match is also a right answer
 
 20 of those 21 escalations are `OUT_OF_SCOPE` — bank credits that were never gateway

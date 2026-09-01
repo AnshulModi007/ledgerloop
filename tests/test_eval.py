@@ -422,3 +422,111 @@ def test_ablation_rows_are_monotonically_non_decreasing(generated_dev_data_root)
     assert results["tier1"].resolved_count <= results["tier1+2"].resolved_count
     assert results["tier1+2"].resolved_count <= results["full"].resolved_count
     assert results["tier1+2"].resolved_count == results["full"].resolved_count  # --no-llm on both
+
+
+# -- the residual: the denominator tier3 is actually accountable for -------------------
+
+
+def test_residual_counts_only_what_the_deterministic_tiers_could_not_resolve():
+    """Six lines. Tiers 1-2 settle three. The other three are the residual -- the only
+    lines tier3 ever sees -- and the LLM resolves one, misses one, and correctly
+    declines one that had no match to make."""
+    answer_key = {
+        "B1": _answer("B1", ["TXN1"]),
+        "B2": _answer("B2", ["TXN2"]),
+        "B3": _answer("B3", ["TXN3"]),
+        "B4": _answer("B4", ["TXN4"]),  # residual, resolved by tier3
+        "B5": _answer("B5", ["TXN5"]),  # residual, missed
+        "B6": _answer("B6", []),  # residual, no match to make
+    }
+    resolutions = [
+        _resolution("B1", ["TXN1"], resolved_by="tier1"),
+        _resolution("B2", ["TXN2"], resolved_by="tier1"),
+        _resolution("B3", ["TXN3"], resolved_by="tier2"),
+        _resolution("B4", ["TXN4"], resolved_by="tier3"),
+    ]
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full", resolutions=resolutions, exceptions=[],
+        total_records=6, llm_calls_made=1, providers_used=["fake"], wall_seconds=1.0, config={},
+        credit_paise_by_bank_line={f"B{i}": 100 for i in range(1, 7)},
+    )
+    m = compute_metrics(run, answer_key)
+
+    # tier3's share of *everything* is small -- and that is the number that misleads.
+    assert m.tier_shares["tier3"] == pytest.approx(1 / 6)
+
+    assert m.residual_count == 3  # B4, B5, B6 -- not the three tiers 1-2 settled
+    assert m.residual_matchable_count == 2  # B4 and B5; B6 had no match to make
+    assert m.residual_resolved_by_llm == 1
+    assert m.residual_missed == 1
+    assert m.residual_correctly_rejected == 1
+    assert m.residual_false_matched == 0
+    assert m.residual_resolution_rate == pytest.approx(0.5)  # 1 of 2 matchable
+    assert m.residual_correct_disposition_rate == pytest.approx(2 / 3)  # resolved + refused
+
+
+def test_residual_parts_always_sum_to_the_residual():
+    """The four residual outcomes partition the residual exactly -- no line is double
+    counted and none falls through, whatever the mix."""
+    answer_key = {
+        "B1": _answer("B1", ["TXN1"]),
+        "B2": _answer("B2", ["TXN2"]),
+        "B3": _answer("B3", ["TXN3"]),
+        "B4": _answer("B4", []),
+        "B5": _answer("B5", []),
+    }
+    resolutions = [
+        _resolution("B1", ["TXN1"], resolved_by="tier1"),
+        _resolution("B2", ["TXN_WRONG"], resolved_by="tier3"),  # tier3 matched wrongly
+        _resolution("B4", ["TXN9"], resolved_by="tier3"),  # tier3 matched an out-of-scope line
+    ]
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full", resolutions=resolutions, exceptions=[],
+        total_records=5, llm_calls_made=2, providers_used=["fake"], wall_seconds=1.0, config={},
+        credit_paise_by_bank_line={f"B{i}": 100 for i in range(1, 6)},
+    )
+    m = compute_metrics(run, answer_key)
+
+    parts = (
+        m.residual_resolved_by_llm
+        + m.residual_false_matched
+        + m.residual_missed
+        + m.residual_correctly_rejected
+    )
+    assert parts == m.residual_count
+    assert m.residual_false_matched == 2  # B2 wrong txns, B4 should never have matched
+    assert m.residual_resolved_by_llm == 0
+    assert m.residual_resolution_rate == pytest.approx(0.0)
+
+
+def test_residual_rate_is_zero_when_the_llm_is_off():
+    """--no-llm must not flatter the residual rate: nothing is resolved, so the
+    numerator is zero rather than the metric being undefined or skipped."""
+    answer_key = {"B1": _answer("B1", ["TXN1"]), "B2": _answer("B2", ["TXN2"])}
+    resolutions = [_resolution("B1", ["TXN1"], resolved_by="tier1")]
+    run = HarnessRun(
+        profile="dev", tier_ceiling="tier2", resolutions=resolutions, exceptions=[],
+        total_records=2, llm_calls_made=0, providers_used=[], wall_seconds=1.0, config={},
+        credit_paise_by_bank_line={"B1": 100, "B2": 100},
+    )
+    m = compute_metrics(run, answer_key)
+    assert m.residual_count == 1
+    assert m.residual_matchable_count == 1
+    assert m.residual_resolved_by_llm == 0
+    assert m.residual_resolution_rate == pytest.approx(0.0)
+
+
+def test_residual_rate_is_zero_not_a_crash_when_nothing_is_matchable():
+    """A residual made entirely of lines with no match to make divides by zero unless
+    guarded -- and its correct disposition is 100%, not 0%."""
+    answer_key = {"B1": _answer("B1", ["TXN1"]), "B2": _answer("B2", [])}
+    resolutions = [_resolution("B1", ["TXN1"], resolved_by="tier1")]
+    run = HarnessRun(
+        profile="dev", tier_ceiling="full", resolutions=resolutions, exceptions=[],
+        total_records=2, llm_calls_made=0, providers_used=[], wall_seconds=1.0, config={},
+        credit_paise_by_bank_line={"B1": 100, "B2": 100},
+    )
+    m = compute_metrics(run, answer_key)
+    assert m.residual_matchable_count == 0
+    assert m.residual_resolution_rate == pytest.approx(0.0)
+    assert m.residual_correct_disposition_rate == pytest.approx(1.0)
