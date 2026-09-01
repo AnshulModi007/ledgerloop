@@ -427,6 +427,24 @@ def create_app() -> FastAPI:
     if STATIC_DIR.exists():
         app.mount("/assets", StaticFiles(directory=STATIC_DIR), name="assets")
 
+        @app.middleware("http")
+        async def revalidate_assets(request, call_next):
+            """Make the browser re-check the console's own assets on every load.
+
+            StaticFiles sends an ETag and Last-Modified but no Cache-Control, which
+            leaves Chrome free to heuristically cache and serve app.js from memory
+            without asking. The effect is that the server is serving new code and the
+            page keeps running the old -- indistinguishable, from the outside, from the
+            change not having been made. `no-cache` does not mean "don't store": the
+            file is still cached, the browser just has to revalidate, and the ETag turns
+            that into a 304 with no body. One round trip per asset per load, on
+            localhost, in exchange for never again debugging a stale console.
+            """
+            response = await call_next(request)
+            if request.url.path.startswith("/assets") or request.url.path == "/":
+                response.headers["Cache-Control"] = "no-cache, must-revalidate"
+            return response
+
         @app.get("/", include_in_schema=False)
         def index() -> FileResponse:
             return FileResponse(STATIC_DIR / "index.html")
