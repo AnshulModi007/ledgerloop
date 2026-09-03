@@ -37,71 +37,111 @@ and sign off the postings.
   dashboard would break "clone and run". Do not introduce React, Tailwind, a CDN font, or
   an icon library.
 - Exactly three files, served by FastAPI on one port:
-  - `index.html` (~60 lines) — static shell only; everything else is rendered by JS
-  - `styles.css` (~470 lines) — all styling, CSS custom properties for theming
-  - `app.js` (~720 lines) — all rendering, via a tiny `el(tag, props, ...children)` helper
+  - `index.html` (~64 lines) — static shell only; everything else is rendered by JS
+  - `styles.css` (~900 lines) — all styling, CSS custom properties for theming
+  - `app.js` (~1000 lines) — all rendering, via a tiny `el(tag, props, ...children)` helper
 - Light and dark themes. Palette roles are defined once as custom properties on `:root`,
   redefined under **both** `@media (prefers-color-scheme: dark)` and `:root[data-theme="dark"]`
   so an explicit toggle wins in both directions. Theme choice persists in `localStorage`
   inside try/catch.
 - Icons are inline SVG built in JS. No emoji in the interface.
 
-## 3. Current screen anatomy
+## 3. The governing visual stance: a working paper, not a dashboard
+
+Read this before proposing anything. The console was originally built as a stack of
+identical rounded, shadowed cards with an uppercase tracked label above every region —
+the default admin-dashboard kit. It has since been deliberately reshaped around the
+vernacular of the thing it actually is: an accountant's working paper.
+
+That means three rules, and a change that breaks one of them needs to argue for itself:
+
+1. **Structure is carried by rules and alignment, not by boxes.** Hairlines separate
+   regions; there is no drop shadow anywhere except the tooltip and the card a reviewer
+   is hovering.
+2. **A box means "act on me".** Exactly one thing on the page is boxed — an exception
+   card in *Needs a decision*. Because nothing else is, being boxed carries meaning.
+3. **No uppercase tracked labels.** Case is not a hierarchy device here. Labels are
+   sentence case, small and quiet, sitting next to what they name; a rule does the
+   separating.
+
+And one consequence that is the whole reason to set figures in a column at all:
+**comparable figures share a right edge.** The queue's credit amounts sit on a fixed
+168px track so they align down the entire list; the reconciliation statement's amounts
+share a matching 168px edge.
+
+## 4. Current screen anatomy
 
 ### Masthead (sticky)
 `LedgerLoop` + tagline · provider chip (`● LLM: ollama (pinned)` with a green dot when a
-model is reachable, gray when not) · theme toggle icon button.
+model is reachable, gray when not) · theme toggle icon button. One row at every width —
+under 720px the tagline is dropped rather than letting the row wrap.
 
-### Control bar (card)
-Batch `<select>` · "Deterministic only (`--no-llm`)" checkbox · Reviewer text input ·
-**Run reconciliation** primary button · inline spinner chip while running.
+### Control bar
+A ruled strip, not a tile: Batch `<select>` · "Deterministic only (`--no-llm`)" checkbox ·
+Reviewer text input · **Run reconciliation** primary button · inline spinner chip while
+running, closed by a hairline beneath. Baseline alignment is what groups it.
 
 Runs are async: `POST /api/runs` returns 202 + id, the client polls every 600 ms.
 
-### Summary row (2-column grid, stacks under 860px)
-- **Hero figure** — auto-match rate at 52px, e.g. `91.5%`, with `260 of 284 bank lines, no
-  human touched them` beneath. Exactly one hero per view.
-- **KPI tiles** (auto-fit, min 158px): Needs a decision · Escalated value · LLM calls ·
-  Deterministic (or "Review feedback" when a reviewer's rejections suppressed candidates).
+### The ledger block
+**One** region, read top to bottom, replacing what used to be six separate tiles (a hero
+card, four stat cards and a chart card) that competed for the same first glance and
+restated each other's numbers:
 
-### Disposition bar
-A single horizontal stacked bar, 26px tall, showing all 284 lines split tier1 / tier2 /
-tier3 / escalated. 2px surface-coloured gaps between segments, 4px rounded outer ends.
-Hover gives a tooltip with count, share and a one-line note. Below it a legend where every
-segment is also **direct-labelled with its count** — identity never rests on colour alone.
+- **The claim** — the auto-match rate at 44px against its label on one baseline, e.g.
+  `93.0% auto-matched`, with the context ranged right: `264 of 284 bank lines settled
+  without a human. The remaining 20 are typed, explained and queued below.` Exactly one
+  figure of this size per view.
+- **The bar it rests on**, directly beneath with no heading between them: a single 22px
+  stacked bar over all 284 lines, split tier1 / tier2 / tier3 / escalated, 2px gaps,
+  rounded outer ends. Hover gives a tooltip with count, share and a one-line note. Every
+  segment is **direct-labelled with its count** in the legend — identity never rests on
+  colour alone.
+- **The breakdown** — four ruled columns under a hairline, separated by column rules
+  rather than being four floating cards: Needs a decision · Escalated value · LLM calls ·
+  Deterministic (or "Review feedback" when a reviewer's rejections suppressed candidates).
 
 ### Tab strip → panel
 `Exception queue` · `Journal entries` · `Tie-out` · `Audit trail`. Switching tabs re-renders
 only the strip and the panel, never the whole page.
 
 **Exception queue.** A row of reason-code filter chips, each carrying its own count
-(`All 24` / `LOW_CONFIDENCE 4` / `OUT_OF_SCOPE 20`). Then two sections:
+(`All 24` / `LOW_CONFIDENCE 4` / `OUT_OF_SCOPE 20`). Then two sections, in two *different
+forms*, because they are two different kinds of thing:
 
-- *Needs a decision (4)* — cards with: bank line id, reason-code chip, status pill, credit
-  amount right-aligned; the pipeline's own plain-English explanation; a collapsible
-  "Show the N candidates considered" disclosure revealing each candidate's id, rule, score,
-  amount delta and the actual transaction ids; then a note field and Approve / Reject /
-  Reassign buttons.
-- *No action required (20)* — same card, no buttons. These are bank credits that were never
-  gateway settlements; declining to match them is the correct answer, already taken. They
-  stay listed so nothing is silently dropped, but they are separated from the real work —
-  showing them beside genuine disputes would overstate the workload 6×.
+- *Needs a decision (4)* — **boxed cards**, the one boxed object on the page. A two-column
+  grid: prose left, the credit amount right on the fixed figure track. Bank line id,
+  reason-code chip and status pill on the first line; the pipeline's own plain-English
+  explanation; then the model's narrative **ruled off below it** under an "Adjudicator
+  note." label; a collapsible "Show the N candidates considered" disclosure revealing each
+  candidate's id, rule, score, amount delta and the actual transaction ids; then a note
+  field and Approve / Reject / Reassign buttons.
+- *No action required (20)* — a **ledger table**, not cards: bank line · reason · value
+  date · why no action (clipped to its column, full text on the row's title) · credit.
+  These are bank credits that were never gateway settlements; declining to match them is
+  the correct answer, already taken. Twenty of them wearing the same box as a genuine
+  dispute made the screen show 24 identical objects when only 4 were work — overstating
+  the review burden 6× in exactly the way the needs/no-action split exists to prevent.
+  Every line is still individually listed; nothing is silently dropped.
 
 A candidate the reviewer previously rejected is rendered dashed and dimmed with a
 "you rejected this — not re-proposed" pill. Shown, never deleted.
 
-**Journal entries.** A pass/fail banner (`Every batch balances`), a "Close the loop" card
-with the **Approve postings, then re-run** button — which approves, re-runs, and reports
-*zero new postings* — then a table of the first 300 of 260-odd batches.
+**Journal entries.** A pass/fail banner — a ruled line with a coloured left edge, not a
+tinted tile — then a "Close the loop" ruled strip carrying the **Approve postings, then
+re-run** button, which approves, re-runs, and reports *zero new postings*. Then a table of
+the first 300 of 260-odd batches.
 
-**Tie-out.** Clean/finding banner; a reconciliation statement with dot-leader rows
-(Bank statement / Reconciled / Unreconciled); four control cards (cash ties out, books
+**Tie-out.** The most literally document-shaped tab, and set as one: clean/finding banner;
+a reconciliation statement with dot-leader rows (Bank statement / Reconciled /
+Unreconciled), amounts on the shared right edge and the total ruled off above rather than
+boxed; four controls as ruled columns matching the ledger block's (cash ties out, books
 balance, no receivable cleared twice, fee drift absorbed); a movement-by-account table.
 
 **Audit trail.** Newest-first table of the append-only log: timestamp, bank line, decision,
 rule/reason, confidence, actor.
 
-## 4. Design decisions already made — please keep these
+## 5. Design decisions already made — please keep these
 
 These are load-bearing, not preferences:
 
@@ -118,13 +158,21 @@ These are load-bearing, not preferences:
    "Rs.4,78,56,920.92"}` and only the string is rendered. The pipeline keeps integer paise
    precisely so nothing rounds unobserved; JS arithmetic would throw that away at the last
    step. Never divide by 100, never `toFixed` a currency value.
-4. **Tabular figures only in columns** (tables, axis ticks). The hero and stat-tile values
-   use default proportional figures.
-5. **The needs-review / no-action split stays.** It is the honest way to report review
-   burden.
+4. **Every figure on the sheet is tabular.** Not a per-component decision: a working
+   paper where amounts do not align in a column is not a working paper. The claim
+   figure, the four counts, the queue amounts and every table cell all use
+   `font-variant-numeric: tabular-nums`.
+5. **The needs-review / no-action split stays**, and the two sides take *different
+   forms* — boxed cards for decisions, a ledger table for dispositions already correctly
+   taken. It is the honest way to report review burden, and the form carries the honesty
+   as much as the count does.
 6. **A withheld candidate is marked, not hidden.**
+7. **The model's narrative is ruled off from the machine-computed account**, never just
+   italicised inside it. Everything above that rule is derived by the deterministic
+   tiers; everything below is the adjudicator, and it can never alter a figure. This is
+   the single distinction the whole product rests on, so it gets real weight.
 
-## 5. Palette reference
+## 6. Palette reference
 
 | Role | Light | Dark |
 |---|---|---|
@@ -142,7 +190,7 @@ These are load-bearing, not preferences:
 Type: `system-ui, -apple-system, "Segoe UI", sans-serif` throughout, 14px base. Radius 10px
 cards / 6px controls. No display or serif face anywhere.
 
-## 6. Real data to design against
+## 7. Real data to design against
 
 ```json
 {
@@ -174,7 +222,7 @@ that separation legible.
 Edge cases the layout must survive: 0 exceptions; 1 exception; an escalated value of
 `Rs.0.00`; a run with `providers_used: []`; a 20,000-posting journal; a control that fails.
 
-## 7. What I want from you
+## 8. What I want from you
 
 <!-- Replace this section with your actual ask. Examples: -->
 

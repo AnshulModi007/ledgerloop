@@ -1,25 +1,43 @@
 /* LedgerLoop console.
  *
- * Palette roles are declared once here and referenced by role everywhere else, so the
- * light/dark swap happens in one place. Dark values are declared under BOTH the media
- * query (OS setting) and the [data-theme] scope (explicit toggle), because the toggle
- * has to win in both directions.
+ * THE STANCE: this is a working paper, not a dashboard.
+ *
+ * The screen is accounting work -- a reviewer deciding four escalations and signing off
+ * two hundred and sixty automatic postings -- and accounting's own visual language is
+ * the ruled working paper: hairlines, figures sharing a right edge, a total set off by
+ * a rule above it, dot leaders. Not boxes with shadows. So structure here is carried by
+ * RULES AND ALIGNMENT, and a box is reserved for the one thing being decided: an
+ * exception card. Everything else sits directly on the paper.
+ *
+ * Three consequences worth stating, because each is a thing a dashboard would do and
+ * this deliberately does not:
+ *
+ *   1. No uppercase tracked labels. Case is not a hierarchy device on a ledger; a rule
+ *      is. Labels are sentence case, quiet, and sit next to what they name.
+ *   2. One surface tone. --plane is the paper. --surface lifts only what is genuinely
+ *      raised off it (an exception card, the tooltip, a sticky header).
+ *   3. Comparable figures share a right edge. The exception queue's amounts sit in a
+ *      fixed 168px column so they align down the whole queue, which is the entire point
+ *      of setting figures in a column at all.
+ *
+ * PALETTE. Roles are declared once and referenced by role everywhere, so the light/dark
+ * swap happens in one place. Dark values are declared under BOTH the media query (OS
+ * setting) and the [data-theme] scope (explicit toggle), because the toggle has to win
+ * in both directions.
  *
  * The tier ramp is ordinal, not categorical: tier1/2/3 are ordered stages of the same
- * process -- how deep a line had to go before it resolved -- so they take one hue,
- * light to dark, rather than three identities. Escalated is not a fourth stage, so it
- * takes neutral gray instead of a fourth blue. Validated with the dataviz palette
- * script in both modes (monotone lightness, >=0.06 adjacent dL, light end clears 2:1
- * against its own surface, single hue).
+ * process -- how deep a line had to go before it resolved -- so they take one hue, light
+ * to dark, rather than three identities. Escalated is not a fourth stage, so it takes
+ * neutral gray instead of a fourth blue. Validated with the dataviz palette script in
+ * both modes (monotone lightness, >=0.06 adjacent dL, light end clears 2:1 against its
+ * own surface, single hue). The same hexes serve both themes so a tier keeps its colour
+ * when the theme flips -- colour follows the entity, never its rank.
  *
- * The same hexes serve both themes so a tier keeps its colour when the theme flips --
- * colour follows the entity, never its rank.
- *
- * MOTION. Every animation here is transform or opacity, with two deliberate exceptions
- * documented at their definitions (the disclosure's grid-template-rows, and the card
- * flash which is opacity on an overlay rather than a background transition). Nothing
- * animates on a table row: a 20,000-posting journal must not pay per-row animation cost.
- * The whole system collapses under prefers-reduced-motion at the bottom of this file.
+ * MOTION. Every animation is transform or opacity, with two documented exceptions (the
+ * disclosure's grid-template-rows, and the card flash which is opacity on an overlay
+ * rather than a background transition). Nothing animates on a table row: a 20,000-line
+ * journal must not pay per-row animation cost. The whole system collapses under
+ * prefers-reduced-motion at the bottom of this file.
  */
 
 :root {
@@ -49,10 +67,30 @@
   --accent: #2a78d6;
   --accent-ink: #ffffff;
 
-  --shadow: 0 1px 2px rgba(11, 11, 11, 0.06), 0 4px 16px rgba(11, 11, 11, 0.05);
+  /* Shadow survives in exactly two places: the card a reviewer is working, and the
+     tooltip. A shadow under every region is what made six unrelated boxes read as one
+     undifferentiated kit. */
   --shadow-lift: 0 2px 4px rgba(11, 11, 11, 0.07), 0 10px 28px rgba(11, 11, 11, 0.09);
-  --radius: 10px;
-  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-sm: 5px;
+
+  /* TYPE SCALE. Roughly 1.25 from a 14px base, with one figure size well clear of the
+     rest so the headline number is unmistakably the headline. Numbers do the work on
+     this screen, so the scale is built around figures, not headings. */
+  --t-micro: 11px;
+  --t-small: 12.5px;
+  --t-base: 14px;
+  --t-mid: 17.5px;
+  --t-lg: 22px;
+  --t-figure: 44px;
+
+  /* SPACING. A four-step rhythm; the block gap is what separates ruled regions, since
+     there are no card margins left to do it. */
+  --sp-1: 6px;
+  --sp-2: 12px;
+  --sp-3: 20px;
+  --sp-4: 32px;
+  --sp-5: 48px;
 
   /* Motion tokens. One ease everywhere: entrances decelerate, so the eye lands on the
      final position rather than tracking the movement. */
@@ -79,7 +117,6 @@
     --escalated: #52514e;
     --good-text: #0ca30c;
     --accent: #3987e5;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
     --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.5), 0 12px 30px rgba(0, 0, 0, 0.45);
   }
 }
@@ -98,25 +135,37 @@
   --escalated: #52514e;
   --good-text: #0ca30c;
   --accent: #3987e5;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
   --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.5), 0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
 * { box-sizing: border-box; }
 
+/* An author `display` beats the user agent's [hidden] rule, so anything given a display
+   here -- .chip is the one that bit us -- stays on screen after JS sets hidden = true.
+   That is why the run spinner never cleared when a run finished. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: var(--plane);
   color: var(--ink);
-  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: var(--t-base)/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
-h2 { font-size: 15px; }
-h3 { font-size: 13px; color: var(--ink-secondary); }
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.012em; }
+h2 { font-size: var(--t-mid); }
+h3 { font-size: var(--t-base); color: var(--ink); }
 
 button, input, select, textarea { font: inherit; color: inherit; }
+
+/* Every figure on this screen is tabular. Not a per-component decision -- a document
+   where amounts do not align in a column is not a working paper. */
+.figure, .num, .stat-value, .exc-amount, .stmt-row .amt, .legend-item b,
+.filter-count, .exc-id, .col-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
 
 /* == MOTION PRIMITIVES ============================================================= */
 
@@ -124,7 +173,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
    staggered element is invisible rather than flashing at full opacity first.
    Interactivity is never gated on this: a CSS animation does not block pointer events,
    and nothing here sets pointer-events: none, so the Run button is clickable from the
-   first frame even though the summary row is still arriving. */
+   first frame even though the summary is still arriving. */
 @keyframes rise {
   from { opacity: 0; transform: translate3d(0, var(--rise), 0); }
   to   { opacity: 1; transform: none; }
@@ -145,51 +194,66 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* == shell ========================================================================= */
 
+/* The masthead is a rule, not a bar. It carries a surface tone only because it is
+   sticky and content scrolls beneath it. */
 .masthead {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 24px;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: 14px 28px;
   background: var(--surface);
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule-strong);
   position: sticky;
   top: 0;
   z-index: 20;
 }
 
-.wordmark { display: flex; align-items: baseline; gap: 9px; margin-right: auto; }
-.wordmark strong { font-size: 16px; font-weight: 650; letter-spacing: -0.02em; }
-.wordmark span { font-size: 12px; color: var(--ink-muted); }
+.wordmark { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+.wordmark strong { font-size: var(--t-mid); font-weight: 620; letter-spacing: -0.02em; }
+.wordmark span { font-size: var(--t-small); color: var(--ink-muted); }
 
-.shell { max-width: 1220px; margin: 0 auto; padding: 24px; }
+.shell { max-width: 1180px; margin: 0 auto; padding: var(--sp-4) 28px var(--sp-5); }
 
+/* .card is now paper with an edge, not a floating tile: hairline, no shadow. The
+   exception card overrides this -- it is the thing being worked, so it gets to lift. */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
 /* == controls ====================================================================== */
 
+/* The control bar is a ruled strip across the top of the paper, not a tile sitting on
+   it. Baseline-aligned so the labels, the field text and the button all sit on one
+   line -- the alignment IS the grouping, which is why no box is needed. */
 .controls {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 14px;
-  padding: 16px 18px;
-  margin-bottom: 20px;
+  gap: var(--sp-3);
+  padding: 0 0 var(--sp-3);
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--rule-strong);
 }
 
-.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-.field label { font-size: 11px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+/* Sentence case, quiet, sitting directly above its control. The uppercase tracked
+   label this replaces appeared above every field, every stat and every table column,
+   which meant it distinguished nothing from anything. */
+.field label {
+  font-size: var(--t-small);
+  font-weight: 500;
+  color: var(--ink-muted);
+}
 
 .field select, .field input[type="text"] {
   background: var(--surface-raised);
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   padding: 7px 10px;
-  min-width: 170px;
+  min-width: 180px;
   transition: border-color var(--dur-fast) var(--ease);
 }
 .field select:hover, .field input[type="text"]:hover { border-color: var(--ink-muted); }
@@ -216,13 +280,13 @@ button:focus-visible,
   border: 1px solid var(--rule-strong);
   background: var(--surface-raised);
   border-radius: var(--radius-sm);
-  padding: 8px 14px;
+  padding: 8px 15px;
   cursor: pointer;
   font-weight: 550;
   transform: translateZ(0);
   transition:
     border-color var(--dur-fast) var(--ease),
-    box-shadow var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
     transform var(--dur-fast) var(--ease);
 }
 .btn:hover:not(:disabled) { border-color: var(--accent); transform: translate3d(0, -1px, 0); }
@@ -230,8 +294,8 @@ button:focus-visible,
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.btn-primary:hover:not(:disabled) { filter: brightness(1.08); box-shadow: var(--shadow-lift); }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+.btn-sm { padding: 5px 11px; font-size: var(--t-small); }
 
 .icon-btn {
   border: 1px solid var(--rule-strong);
@@ -240,12 +304,11 @@ button:focus-visible,
   width: 32px; height: 32px;
   cursor: pointer;
   display: grid; place-items: center;
+  align-self: center;
   transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
 .icon-btn:hover { border-color: var(--accent); }
 .icon-btn:active { transform: scale(0.94); }
-.icon-btn svg { transition: transform var(--dur) var(--ease); }
-.icon-btn:hover svg { transform: rotate(35deg); }
 
 /* == provider chip ================================================================== */
 
@@ -253,10 +316,10 @@ button:focus-visible,
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: 999px;
-  border: 1px solid var(--rule-strong);
-  font-size: 12px;
+  border: 1px solid var(--rule);
+  font-size: var(--t-small);
   color: var(--ink-secondary);
   white-space: nowrap;
 }
@@ -272,37 +335,46 @@ button:focus-visible,
 }
 .dot.busy { animation: pulse 1.1s var(--ease) infinite; }
 
-/* == hero + KPI ===================================================================== */
+/* == the ledger block =============================================================== */
+/* ONE region, read top to bottom: the claim, the evidence the claim rests on, and the
+   breakdown. Previously this was six separate tiles -- a hero card, four stat cards and
+   a chart card -- which competed for the same first glance and restated each other's
+   numbers. A reviewer reads one thing here: how much did not need them. */
 
-.summary { display: grid; grid-template-columns: minmax(210px, 0.85fr) 2fr; gap: 20px; margin-bottom: 20px; }
-@media (max-width: 860px) { .summary { grid-template-columns: 1fr; } }
+.ledger { margin-bottom: var(--sp-4); }
 
-.hero { padding: 20px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-.hero .label { font-size: 11px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-.hero .value { font-size: 52px; font-weight: 620; letter-spacing: -0.03em; line-height: 1.05; }
-.hero .sub { font-size: 13px; color: var(--ink-secondary); }
-
-.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 12px; }
-.kpi {
-  padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 3px;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+/* The claim. The figure is set against its context on one baseline, with the context
+   ranged right, so the two ends of the sentence bracket the width of the paper. */
+.ledger-claim {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--sp-3);
 }
-.kpi:hover, .hero:hover { transform: translate3d(0, -2px, 0); box-shadow: var(--shadow-lift); }
-.hero { transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
-.kpi .label { font-size: 11px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-.kpi .value { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
-.kpi .sub { font-size: 12px; color: var(--ink-secondary); }
 
-/* == disposition bar ================================================================ */
+.claim-figure { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+.claim-figure .value {
+  font-size: var(--t-figure);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.claim-figure .label { font-size: var(--t-mid); color: var(--ink-secondary); font-weight: 500; }
 
-.viz { padding: 18px; margin-bottom: 20px; }
-.viz-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
-.viz-note { font-size: 12px; color: var(--ink-secondary); margin: 0 0 14px; max-width: 76ch; }
+.claim-context {
+  margin: 0;
+  max-width: 44ch;
+  text-align: right;
+  color: var(--ink-secondary);
+  font-size: var(--t-small);
+}
 
-/* 2px surface gap between touching segments, per mark spec: the gap is the surface
-   colour showing through, not a border. */
-.stack { display: flex; gap: 2px; height: 26px; margin-bottom: 12px; }
+/* The bar sits directly under the claim it produced, with no gap and no heading between
+   them, because it is the same statement drawn out. */
+.stack { display: flex; gap: 2px; height: 22px; }
 
 /* The segment holds its FINAL width from the first frame (flex-grow), and a child fill
    scales in. Animating the segment's own width would relayout the whole flex row on
@@ -315,8 +387,8 @@ button:focus-visible,
   overflow: hidden;
   cursor: default;
 }
-.seg:first-child { border-radius: 4px 2px 2px 4px; }
-.seg:last-child { border-radius: 2px 4px 4px 2px; }
+.seg:first-child { border-radius: 3px 2px 2px 3px; }
+.seg:last-child { border-radius: 2px 3px 3px 2px; }
 
 .seg-fill {
   position: absolute;
@@ -335,10 +407,40 @@ button:focus-visible,
 .seg-tier3 .seg-fill { background: var(--tier3); }
 .seg-escalated .seg-fill { background: var(--escalated); }
 
-.legend { display: flex; flex-wrap: wrap; gap: 16px; }
-.legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-secondary); }
-.swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
-.legend-item b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* Every segment is direct-labelled with its own count as well as coloured; identity
+   never rests on colour alone. */
+.legend { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); padding-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: var(--t-small); color: var(--ink-secondary); }
+.swatch { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+.legend-item b { color: var(--ink); font-weight: 600; }
+
+.ledger-note {
+  margin: 10px 0 0;
+  font-size: var(--t-small);
+  color: var(--ink-muted);
+  max-width: 74ch;
+}
+
+/* The counts, as ruled columns of the same block rather than four floating tiles. The
+   rule between them is the only separator they need, and it is what a ledger uses. */
+.ledger-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0;
+  margin-top: var(--sp-3);
+  border-top: 1px solid var(--rule-strong);
+}
+.col {
+  padding: 14px var(--sp-3) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.col + .col { padding-left: var(--sp-3); border-left: 1px solid var(--rule); }
+.col-label { font-size: var(--t-small); color: var(--ink-muted); }
+.col-value { font-size: var(--t-lg); font-weight: 600; letter-spacing: -0.02em; }
+.col-sub { font-size: var(--t-small); color: var(--ink-secondary); }
 
 .tooltip {
   position: fixed;
@@ -349,7 +451,7 @@ button:focus-visible,
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-lift);
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: var(--t-small);
   max-width: 260px;
   opacity: 0;
   transform: translate3d(0, 4px, 0);
@@ -364,24 +466,25 @@ button:focus-visible,
 .tabs {
   position: relative;
   display: flex;
-  gap: 2px;
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: 18px;
+  gap: var(--sp-3);
+  border-bottom: 1px solid var(--rule-strong);
+  margin-bottom: var(--sp-3);
   overflow-x: auto;
 }
 .tab {
   border: 0;
   background: none;
-  padding: 10px 14px;
+  padding: 0 0 10px;
   cursor: pointer;
-  color: var(--ink-secondary);
-  font-weight: 550;
+  color: var(--ink-muted);
+  font-weight: 500;
   white-space: nowrap;
   transition: color var(--dur-fast) var(--ease);
 }
 .tab:hover { color: var(--ink); }
-.tab[aria-selected="true"] { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); font-weight: 600; }
 .tab .count { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.tab[aria-selected="true"] .count { color: var(--accent); }
 
 /* One underline for the whole strip, moved with a transform. Per-tab bottom borders
    cannot slide -- they can only appear and disappear, which loses the relationship
@@ -406,17 +509,44 @@ button:focus-visible,
 
 /* == exception queue ================================================================ */
 
-.section-head { display: flex; align-items: baseline; gap: 10px; margin: 22px 0 10px; }
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: var(--sp-4) 0 var(--sp-2);
+  padding-bottom: var(--sp-1);
+  border-bottom: 1px solid var(--rule);
+}
 .section-head:first-child { margin-top: 0; }
-.section-head p { margin: 0; font-size: 12px; color: var(--ink-secondary); }
+.section-head p { margin: 0; font-size: var(--t-small); color: var(--ink-secondary); }
 
+/* THE one box on the page. An exception is the unit a reviewer acts on, so it is the
+   one thing that gets to be an object with an edge and a surface of its own -- and
+   because nothing else on the paper is boxed, being boxed now MEANS something.
+
+   Two columns: prose left, figure right on a fixed 168px track. Fixed, not auto, so
+   every amount in the queue lands on the same right edge and a reviewer can scan the
+   column of money without reading a word. That is the whole reason to set figures in
+   a column. */
 .exc {
   position: relative;
-  padding: 15px 17px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 168px;
+  column-gap: var(--sp-4);
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--sp-3) 22px;
   margin-bottom: 10px;
   transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.exc:hover { box-shadow: var(--shadow-lift); }
+.exc:hover { box-shadow: var(--shadow-lift); border-color: var(--rule-strong); }
+
+@media (max-width: 720px) {
+  .exc { grid-template-columns: minmax(0, 1fr); }
+  .exc-amount { text-align: left; grid-row: auto; }
+}
 
 /* The acknowledgement flash. An opacity fade on an overlay pseudo-element, not a
    background-color transition on the card: opacity composites, and this way the card's
@@ -442,25 +572,44 @@ button:focus-visible,
 .exc.flash-rejected   { --flash: color-mix(in srgb, var(--critical) 22%, transparent); }
 .exc.flash-reassigned { --flash: color-mix(in srgb, var(--warning) 26%, transparent); }
 
-.exc-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-.exc-id { font-weight: 620; font-variant-numeric: tabular-nums; }
-.exc-amount { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; }
+.exc-head { grid-column: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.exc-id { font-weight: 620; font-size: var(--t-mid); letter-spacing: -0.01em; }
 
-.code {
-  font-size: 11px;
+/* The figure column. Ranged right, set at the same size as the id it belongs to, so the
+   two ends of the card's first line carry the two things a reviewer triages on: which
+   line, and how much. */
+.exc-amount {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+  font-size: var(--t-mid);
   font-weight: 600;
-  letter-spacing: 0.03em;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--rule-strong);
-  color: var(--ink-secondary);
-  font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+  letter-spacing: -0.01em;
 }
 
-.exc-explain { margin: 0 0 12px; color: var(--ink-secondary); line-height: 1.55; max-width: 88ch; }
+.exc-prose { grid-column: 1; }
+.exc-wide { grid-column: 1 / -1; }
+
+.exc-explain { margin: 10px 0 0; color: var(--ink-secondary); max-width: 76ch; }
+
+/* The model's narrative, ruled off from the machine-computed account above it.
+   Everything before this rule is derived by the deterministic tiers; everything after
+   is the adjudicator talking, and it can never alter a figure. That separation was
+   previously carried by italics alone, which is not enough weight for the one
+   distinction the whole product rests on. */
+.exc-note {
+  margin: 10px 0 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--rule-strong);
+  color: var(--ink-muted);
+  font-size: var(--t-small);
+  max-width: 74ch;
+}
+.exc-note b { font-weight: 600; color: var(--ink-secondary); }
+
 .exc-explain em { color: var(--ink-muted); font-style: normal; }
 
-.exc-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.exc-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .exc-actions input[type="text"] {
   flex: 1;
   min-width: 180px;
@@ -472,10 +621,21 @@ button:focus-visible,
 }
 .exc-actions input[type="text"]:hover { border-color: var(--ink-muted); }
 
+.code {
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid var(--rule);
+  color: var(--ink-secondary);
+  font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+}
+
 .status-pill {
-  font-size: 11px;
+  font-size: var(--t-micro);
   font-weight: 620;
-  padding: 3px 9px;
+  padding: 2px 9px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -488,19 +648,19 @@ button:focus-visible,
 
 /* == queue filters ================================================================== */
 
-.filterbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.filterbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-3); }
 
 .filter {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 5px 11px;
+  padding: 4px 11px;
   border-radius: 999px;
-  border: 1px solid var(--rule-strong);
-  background: var(--surface);
+  border: 1px solid var(--rule);
+  background: transparent;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 550;
+  font-size: var(--t-small);
+  font-weight: 500;
   color: var(--ink-secondary);
   transition:
     border-color var(--dur-fast) var(--ease),
@@ -511,35 +671,33 @@ button:focus-visible,
 .filter:hover { border-color: var(--accent); transform: translate3d(0, -1px, 0); }
 .filter:active { transform: scale(0.96); }
 .filter.on { border-color: var(--accent); color: var(--ink); background: color-mix(in srgb, var(--accent) 10%, transparent); }
-.filter-count { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-weight: 600; }
+.filter-count { color: var(--ink-muted); font-weight: 600; }
 .filter.on .filter-count { color: var(--accent); }
 
 /* == candidate evidence ============================================================= */
 
-.evidence { margin-top: 10px; }
+.evidence { grid-column: 1 / -1; margin-top: 12px; }
 
 .evidence-toggle {
   border: 0;
   background: none;
   padding: 0;
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--t-small);
   font-weight: 600;
   color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 3px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-.evidence-toggle:hover { filter: brightness(1.15); }
+.evidence-toggle:hover { text-decoration: underline; text-underline-offset: 3px; }
 .evidence-toggle .caret { transition: transform var(--dur) var(--ease); }
 .evidence-toggle[aria-expanded="true"] .caret { transform: rotate(90deg); }
 
 /* The one place a layout property is animated, and it is the sanctioned technique: a
    grid track from 0fr to 1fr. It measures nothing, so it cannot guess a max-height wrong
-   when a candidate list wraps to a different number of lines. It is confined to one card
-   at a time and never touches a table. */
+   when a candidate list wraps. It is confined to one card at a time and never touches a
+   table. */
 .evidence-body {
   display: grid;
   grid-template-rows: 0fr;
@@ -549,21 +707,22 @@ button:focus-visible,
 .evidence-body > .evidence-inner { overflow: hidden; min-height: 0; }
 .evidence.open .evidence-body { grid-template-rows: 1fr; opacity: 1; }
 
+/* A candidate is a sub-entry of the card, so it is indented under a rule rather than
+   given a border of its own -- nesting a box inside a box is the thing the rest of this
+   sheet exists to avoid. */
 .cand {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
-  background: var(--plane);
+  margin-top: 12px;
+  padding-left: 14px;
+  border-left: 2px solid var(--grid);
 }
 /* A withheld pairing is shown but visibly set aside -- never deleted, never animated
    out of existence, never hidden. */
-.cand-rejected { opacity: 0.72; border-style: dashed; }
+.cand-rejected { opacity: 0.7; border-left-style: dashed; }
 
-.cand-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 7px; }
+.cand-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 5px; }
 .cand-txns {
   color: var(--ink-secondary);
-  font-size: 12px;
+  font-size: var(--t-small);
   line-height: 1.7;
   word-break: break-word;
   max-height: 8.5em;
@@ -571,66 +730,115 @@ button:focus-visible,
 }
 
 /* == tables ========================================================================= */
-/* Deliberately inert. No row transitions, no per-row entrance, no hover transform: at
+/* Ledger rules, not a boxed grid. A table on a working paper is horizontal hairlines and
+   a stronger rule under the head; the surrounding container box was doing nothing except
+   repeating the card kit one more time.
+
+   Deliberately inert: no row transitions, no per-row entrance, no hover transform. At
    20,000 postings any of those is a per-row cost paid on every paint. The background
    change on hover is a single paint with no transition attached. */
 
-.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); }
-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
-th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); font-weight: 600; background: var(--surface); position: sticky; top: 0; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: var(--t-small); }
+th, td { padding: 9px 16px 9px 0; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th:last-child, td:last-child { padding-right: 0; }
+
+/* Column heads are distinguished by a rule and by weight, not by being shouted. */
+th {
+  font-size: var(--t-small);
+  color: var(--ink-muted);
+  font-weight: 500;
+  background: var(--plane);
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--rule-strong);
+}
 tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
-.num { text-align: right; font-variant-numeric: tabular-nums; }
-.mono { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: 12px; }
+.num { text-align: right; }
+.mono { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: var(--t-small); }
+
+/* A whole explanation clipped to its column, with the full text on the row's title. The
+   register keeps every line's own reasoning without letting boilerplate prose set the
+   height of twenty rows. */
+.td-note { max-width: 52ch; overflow: hidden; text-overflow: ellipsis; color: var(--ink-muted); }
 
 /* == tie-out ======================================================================== */
 
-.statement { padding: 20px 22px; margin-bottom: 18px; }
+/* The reconciliation statement is the most literally document-shaped thing here, so it
+   is set as one: dot leaders, and the total ruled off above rather than boxed. */
+.statement { padding: 0 0 var(--sp-3); margin-bottom: var(--sp-3); }
 .stmt-row { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; }
 .stmt-row + .stmt-row { border-top: 1px solid var(--grid); }
 .stmt-row .lede { color: var(--ink-secondary); }
 .stmt-row .dots { flex: 1; border-bottom: 1px dotted var(--grid); transform: translateY(-3px); }
-.stmt-row .amt { font-variant-numeric: tabular-nums; font-weight: 600; }
+.stmt-row .amt { font-weight: 600; min-width: 168px; text-align: right; }
+.stmt-row.total { border-top: 1px solid var(--rule-strong); }
 .stmt-row.total .amt, .stmt-row.total .lede { font-weight: 650; color: var(--ink); }
 
-.controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-bottom: 18px; }
-.control-card {
-  padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 5px;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+/* Controls read as a ruled row of the same statement, matching the ledger block's
+   columns -- same device, same meaning, two places. */
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0;
+  margin-bottom: var(--sp-3);
+  border-top: 1px solid var(--rule-strong);
 }
-.control-card:hover { transform: translate3d(0, -2px, 0); box-shadow: var(--shadow-lift); }
-.control-card .name { font-size: 12px; font-weight: 600; color: var(--ink-secondary); }
-.control-card .detail { font-size: 12px; color: var(--ink-muted); }
+.control-card {
+  padding: 14px var(--sp-3) 14px 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.control-card + .control-card { padding-left: var(--sp-3); border-left: 1px solid var(--rule); }
+.control-card .name { font-size: var(--t-small); color: var(--ink-muted); }
+.control-card .detail { font-size: var(--t-small); color: var(--ink-secondary); }
 
 /* Status never rides on colour alone: every verdict carries an icon and a word. */
-.verdict { display: inline-flex; align-items: center; gap: 7px; font-weight: 620; }
+.verdict { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
 .verdict svg { flex: none; }
 .verdict.pass { color: var(--good-text); }
 .verdict.fail { color: var(--critical); }
 .verdict.warn { color: var(--ink); }
 
+/* == close the loop ================================================================= */
+/* The one action on the journal tab worth watching, so it gets a ruled strip of its own
+   rather than being another tile in a stack of tiles. */
+.closeout {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--rule);
+}
+
 /* == misc =========================================================================== */
 
+/* A banner is a statement of fact about the run, so it is a ruled line with a coloured
+   edge, not a tinted tile. */
 .banner {
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--rule-strong);
-  margin-bottom: 16px;
+  padding: 10px 0 10px 16px;
+  border-left: 3px solid var(--rule-strong);
+  margin-bottom: var(--sp-3);
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.banner.good { border-color: color-mix(in srgb, var(--good) 45%, var(--rule-strong)); background: color-mix(in srgb, var(--good) 8%, transparent); }
-.banner.bad { border-color: color-mix(in srgb, var(--critical) 45%, var(--rule-strong)); background: color-mix(in srgb, var(--critical) 8%, transparent); }
+.banner.good { border-left-color: var(--good); }
+.banner.bad { border-left-color: var(--critical); }
 
-.empty { padding: 44px 20px; text-align: center; color: var(--ink-muted); }
-.empty h2 { color: var(--ink); margin-bottom: 6px; }
-.empty p { max-width: 52ch; margin: 0 auto; }
+/* An empty screen is an invitation to act, so it says what to do and what comes back.
+   Inside a panel it is a short answer to a question the reviewer just asked ("what needs
+   me?" — "nothing"), so it sits close to its heading; only the pre-run screen, which is
+   the whole page, gets the full standoff. */
+.empty { padding: var(--sp-2) 0 var(--sp-3); color: var(--ink-muted); max-width: 56ch; }
+#stage > .empty { padding: var(--sp-5) 0; }
+.empty h2 { color: var(--ink); margin-bottom: 8px; font-size: var(--t-lg); letter-spacing: -0.02em; }
+.empty p { margin: 0; }
 
 .spinner {
-  width: 15px; height: 15px;
+  width: 14px; height: 14px;
   border: 2px solid var(--rule-strong);
   border-top-color: var(--accent);
   border-radius: 50%;
@@ -639,10 +847,27 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.hint { font-size: 12px; color: var(--ink-muted); margin: 10px 0 0; }
+.hint { font-size: var(--t-small); color: var(--ink-muted); margin: 10px 0 0; }
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* == narrow ========================================================================= */
+
+@media (max-width: 720px) {
+  /* The masthead stays one row. Wrapping it put the theme toggle on a line of its own,
+     which reads as a second toolbar. The tagline is the part that can go: the wordmark
+     and the provider status are both doing work, and it is not. */
+  .masthead { padding: 12px 18px; gap: var(--sp-2); flex-wrap: nowrap; }
+  .wordmark span { display: none; }
+  .shell { padding: var(--sp-3) 18px var(--sp-4); }
+  .claim-context { text-align: left; }
+  .ledger-claim { gap: var(--sp-2); }
+  .col + .col, .control-card + .control-card { padding-left: 0; border-left: 0; }
+  .col, .control-card { border-top: 1px solid var(--rule); }
+  .ledger-cols, .controls-grid { border-top: 0; }
+  .stmt-row .amt { min-width: 0; }
 }
 
 /* == REDUCED MOTION ================================================================= */
@@ -663,9 +888,8 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent
   .reveal { opacity: 1; transform: none; }
   .seg-fill { animation: none; transform: scaleX(1); }
   .exc.flash::after { animation: none; opacity: 0; }
-  .kpi:hover, .hero:hover, .control-card:hover, .filter:hover, .btn:hover:not(:disabled) { transform: none; }
+  .filter:hover, .btn:hover:not(:disabled) { transform: none; }
   .btn:active:not(:disabled), .filter:active, .icon-btn:active { transform: none; }
-  .icon-btn:hover svg { transform: none; }
   .dot.busy { animation: none; opacity: 0.6; }
   .spinner { animation-duration: 1.4s !important; }
   .tooltip { transform: none; }

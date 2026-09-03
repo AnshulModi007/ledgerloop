@@ -36,7 +36,7 @@ const STAGGER = 55; // ms between entrance steps; mirrors --stagger in styles.cs
 /* Bumped by hand whenever this file changes materially. Printed at startup so "is the
    browser running the code I just wrote?" is answerable in one glance instead of by
    inference from behaviour. */
-const BUILD = "motion-1";
+const BUILD = "ledger-1";
 
 const state = {
   runId: null,
@@ -300,7 +300,7 @@ function pollUntilDone() {
 function announce(message) { $("#live").textContent = message; }
 
 function renderError(message) {
-  const card = el("div", { className: "card empty" },
+  const card = el("div", { className: "empty" },
     el("h2", {}, "That run didn't complete"),
     el("p", {}, message),
   );
@@ -314,74 +314,86 @@ function render() {
   const s = state.summary;
   if (!s || s.status !== "complete") return;
 
-  const summary = summarySection(s);
-  const viz = dispositionSection(s);
+  const ledger = ledgerSection(s);
   const tabs = tabStrip(s);
   const panel = el("div", { id: "panel" });
 
   // Continues the stagger the masthead (0ms) and control bar (60ms) started in the HTML.
   // The panel is not staggered -- it runs its own panel-enter once its data arrives,
   // which is later anyway.
-  stagger([summary, viz, tabs], 120);
+  stagger([ledger, tabs], 120);
 
-  $("#stage").replaceChildren(summary, viz, tabs, panel);
+  $("#stage").replaceChildren(ledger, tabs, panel);
   positionUnderline(tabs);
   renderPanel();
 }
 
 function pct(value) { return `${(value * 100).toFixed(1)}%`; }
 
-function summarySection(s) {
+/* ONE region for the whole summary, read top to bottom: the claim, the evidence the
+ * claim rests on, and the breakdown underneath it.
+ *
+ * This was six separate tiles -- a hero card, four stat cards and a chart card -- which
+ * competed for the same first glance and restated each other's numbers: the hero said
+ * 91.5%, the bar drew the same 91.5%, and a stat tile counted the same lines a third
+ * time. A reviewer opens this screen to read one thing: how much of the batch did not
+ * need them. So it is stated once, drawn once beneath itself, and then broken down.
+ *
+ * The bar is part-to-whole over one batch, so: a single stacked bar. The tiers take an
+ * ordinal ramp (one hue, light to dark) because they are ordered stages of one process,
+ * not four identities -- and escalated takes neutral gray because it is not a fourth
+ * stage. Every segment is direct-labelled with its count in the legend as well as
+ * coloured; identity never rests on colour alone.
+ *
+ * Each segment holds its final width from the first frame and an inner fill scales in
+ * from 0. Growing the segment's own width would relayout the flex row on every frame;
+ * scaleX composites and produces the same picture. */
+function ledgerSection(s) {
   const tiers = s.tier_counts || {};
   const deterministic = (tiers.tier1 || 0) + (tiers.tier2 || 0);
   const escalatedValue = state.exceptions?.escalated_value?.inr ?? "—";
 
   // The one animated figure in the app: a ratio, formatted here. A re-run counts from
   // the previous rate rather than from zero, so what moves is the delta.
-  const heroValue = el("div", { className: "value" }, pct(state.heroShown ?? 0));
+  const claimValue = el("span", { className: "value" }, pct(state.heroShown ?? 0));
   const from = state.heroShown ?? 0;
   state.heroShown = s.auto_match_rate;
-  requestAnimationFrame(() => countUp(heroValue, from, s.auto_match_rate));
+  requestAnimationFrame(() => countUp(claimValue, from, s.auto_match_rate));
 
-  return el("section", { className: "summary" },
-    el("div", { className: "card hero" },
-      el("div", { className: "label" }, "Auto-matched"),
-      heroValue,
-      el("div", { className: "sub" },
-        `${s.resolved_count} of ${s.total_records} bank lines, no human touched them`),
-    ),
-    el("div", { className: "kpis" },
-      kpi("Needs a decision", String(s.exceptions_needing_review),
+  const queued = s.exception_count || 0;
+  const claim = el("div", { className: "ledger-claim" },
+    el("div", { className: "claim-figure" }, claimValue, el("span", { className: "label" }, "auto-matched")),
+    el("p", { className: "claim-context" },
+      `${s.resolved_count} of ${s.total_records} bank lines settled without a human. `
+      + `The remaining ${queued} ${queued === 1 ? "is" : "are"} typed, explained and queued below.`),
+  );
+
+  return el("section", { className: "ledger" },
+    claim,
+    ...dispositionParts(s),
+    el("div", { className: "ledger-cols" },
+      col("Needs a decision", String(s.exceptions_needing_review),
         `${s.exceptions_no_action} more need no action`),
-      kpi("Escalated value", escalatedValue, "sitting in the review queue"),
-      kpi("LLM calls", String(s.llm_calls_made),
+      col("Escalated value", escalatedValue, "sitting in the review queue"),
+      col("LLM calls", String(s.llm_calls_made),
         s.providers_used?.length ? s.providers_used.join(", ") : "none — deterministic only"),
       s.candidates_suppressed_by_review
-        ? kpi("Review feedback", String(s.candidates_suppressed_by_review),
+        ? col("Review feedback", String(s.candidates_suppressed_by_review),
             `pairing${s.candidates_suppressed_by_review === 1 ? "" : "s"} a reviewer rejected, not re-proposed`)
-        : kpi("Deterministic", String(deterministic), "settled before any model ran"),
+        : col("Deterministic", String(deterministic), "settled before any model ran"),
     ),
   );
 }
 
-function kpi(label, value, sub) {
-  return el("div", { className: "card kpi" },
-    el("div", { className: "label" }, label),
-    el("div", { className: "value" }, value),  // money arrives preformatted; written once
-    el("div", { className: "sub" }, sub),
+function col(label, value, sub) {
+  return el("div", { className: "col" },
+    el("span", { className: "col-label" }, label),
+    el("span", { className: "col-value" }, value),  // money arrives preformatted; written once
+    el("span", { className: "col-sub" }, sub),
   );
 }
 
-/* The disposition bar is part-to-whole over one batch, so: a single stacked bar.
- * The tiers take an ordinal ramp (one hue, light to dark) because they are ordered
- * stages of one process, not four identities -- and escalated takes neutral gray
- * because it is not a fourth stage. Four segments, so every one is direct-labelled in
- * the legend as well as coloured; identity never rests on colour alone.
- *
- * Each segment holds its final width from the first frame and an inner fill scales in
- * from 0. Growing the segment's own width would relayout the flex row on every frame;
- * scaleX composites and produces the same picture. */
-function dispositionSection(s) {
+function dispositionParts(s) {
   const t = s.tier_counts || {};
   const segments = [
     { key: "tier1", label: "Tier 1 — exact join", n: t.tier1 || 0, note: "UTR and amount matched outright" },
@@ -414,15 +426,12 @@ function dispositionSection(s) {
   }
 
   const residual = segments[2].n + segments[3].n;
-  return el("section", { className: "card viz" },
-    el("div", { className: "viz-head" },
-      el("h2", {}, "How every bank line was disposed of"),
-      el("span", { className: "chip" }, `${total} lines`),
-    ),
-    el("p", { className: "viz-note" },
-      "Cheapest and most certain first. Each tier only ever sees what the one before it "
-      + `could not settle — the LLM was handed ${residual} line${residual === 1 ? "" : "s"}, `
-      + "never the whole batch, and can only choose from candidates tier 2 already computed."),
+
+  // Returned as loose parts rather than a card, so they stack directly under the claim
+  // they draw out. There is deliberately no heading between the figure and the bar: a
+  // label above a bar that is already legended is the kind of chrome that made this
+  // screen read as six unrelated panels.
+  return [
     stack,
     el("div", { className: "legend" },
       ...segments.map((seg) => el("div", { className: "legend-item" },
@@ -432,7 +441,11 @@ function dispositionSection(s) {
         seg.label, " ", el("b", {}, String(seg.n)),
       )),
     ),
-  );
+    el("p", { className: "ledger-note" },
+      "Cheapest and most certain first. Each tier only ever sees what the one before it "
+      + `could not settle — the LLM was handed ${residual} line${residual === 1 ? "" : "s"}, `
+      + "never the whole batch, and can only choose from candidates tier 2 already computed."),
+  ];
 }
 
 function tabStrip(s) {
@@ -447,6 +460,7 @@ function tabStrip(s) {
     const button = el("button", { className: "tab", role: "tab", type: "button" },
       label, count != null ? el("span", { className: "count" }, ` ${count}`) : null);
     button.setAttribute("aria-selected", String(state.tab === key));
+    button.dataset.tab = key; // stable handle for driving the console from a script
     button.addEventListener("click", () => {
       if (state.tab === key) return;
       state.tab = key;
@@ -502,7 +516,7 @@ function renderPanel() {
       panel.classList.add("panel-enter");
     })
     .catch((error) => {
-      panel.replaceChildren(el("div", { className: "card empty" }, el("p", {}, error.message)));
+      panel.replaceChildren(el("div", { className: "empty" }, el("p", {}, error.message)));
     });
 }
 
@@ -524,7 +538,7 @@ async function renderQueue(panel) {
   ));
   children.push(needs.length
     ? needs.map(excCard)
-    : el("div", { className: "card empty" }, el("p", {},
+    : el("div", { className: "empty" }, el("p", {},
         state.reasonFilter ? "No open items with that reason code."
                            : "Nothing here needs a human. Every line was disposed of.")));
 
@@ -533,10 +547,46 @@ async function renderQueue(panel) {
       el("h2", {}, `No action required (${none.length})`),
       el("p", {}, "bank credits that were never gateway settlements — declining to match them is the right answer, already taken"),
     ));
-    children.push(none.map(excCard));
+    children.push(noActionTable(none));
   }
   panel.replaceChildren(...children.flat());
   flashDecidedCard(panel);
+}
+
+/* Twenty lines that need no decision are not twenty decisions.
+ *
+ * These were rendered as the same boxed card as a genuine dispute, which meant the
+ * screen showed 24 identical objects when only 4 of them were work -- overstating the
+ * review burden six-fold in exactly the way the needs/no-action split exists to prevent.
+ * A box on this sheet means "act on me", so a disposition already correctly taken gets a
+ * ledger row instead: still listed, still individually visible, nothing silently
+ * dropped, but read as a register rather than a queue.
+ *
+ * The explanation stays on the row rather than being summarised away -- clipped to the
+ * column with the full text on the row's title, so it is one hover away and never
+ * rewritten. */
+function noActionTable(items) {
+  const rows = items.map((item) => {
+    const row = el("tr", {},
+      el("td", { className: "mono" }, item.bank_line_id),
+      el("td", {}, el("span", { className: "code" }, item.reason_code)),
+      el("td", {}, item.value_date || "—"),
+      el("td", { className: "td-note" }, item.explanation || "—"),
+      el("td", { className: "num" }, item.credit ? item.credit.inr : "—"),
+    );
+    row.dataset.line = item.bank_line_id;
+    if (item.explanation) row.title = item.explanation;
+    return row;
+  });
+
+  return el("div", { className: "table-wrap" },
+    el("table", {},
+      el("thead", {}, el("tr", {},
+        el("th", {}, "Bank line"), el("th", {}, "Reason"), el("th", {}, "Value date"),
+        el("th", {}, "Why no action"), el("th", { className: "num" }, "Credit"))),
+      el("tbody", {}, ...rows),
+    ),
+  );
 }
 
 /** Acknowledge the card that was just decided, once it is back in the DOM. A decided
@@ -578,30 +628,50 @@ function filterBar(codes, needs, none) {
   return bar;
 }
 
+/* The card is a two-column grid: prose left, the credit amount right on a FIXED track.
+ * Fixed rather than auto, so every amount in the queue lands on the same right edge and
+ * a reviewer can run their eye down the column of money without reading a word. That is
+ * the only reason to set figures in a column at all, and an amount floating at the end
+ * of a flex row -- which is what this was -- does not do it. */
 function excCard(item) {
-  const card = el("div", { className: "card exc" });
+  const card = el("div", { className: "exc" });
   card.dataset.line = item.bank_line_id;
 
   card.append(el("div", { className: "exc-head" },
     el("span", { className: "exc-id" }, item.bank_line_id),
     el("span", { className: "code" }, item.reason_code),
     el("span", { className: `status-pill status-${item.status}` }, item.status),
-    // Preformatted rupee string, written verbatim. Never counted up, never split.
-    item.credit ? el("span", { className: "exc-amount" }, item.credit.inr) : null,
   ));
 
-  card.append(el("p", { className: "exc-explain" },
-    item.explanation || el("em", {}, "No explanation recorded for this line.")));
+  // Preformatted rupee string, written verbatim. Never counted up, never split. Rendered
+  // even when there is no credit, so the figure column keeps its place on every card and
+  // the right edge stays true down the queue.
+  card.append(el("div", { className: "exc-amount" }, item.credit ? item.credit.inr : ""));
 
-  if (item.reviewer_note) {
-    card.append(el("p", { className: "hint" }, `Note: ${item.reviewer_note}`));
+  const prose = el("div", { className: "exc-prose" });
+  const [computed, adjudicated] = splitAdjudicatorNote(item.explanation);
+  prose.append(el("p", { className: "exc-explain" },
+    computed || el("em", {}, "No explanation recorded for this line.")));
+
+  // The model's narrative, ruled off from the machine-computed account above it.
+  // Everything before that rule is derived by the deterministic tiers; everything after
+  // is the adjudicator talking, and it can never alter a figure. The separation was
+  // previously carried by italics inside one paragraph, which is not enough weight for
+  // the single distinction this whole product rests on.
+  if (adjudicated) {
+    prose.append(el("p", { className: "exc-note" },
+      el("b", {}, "Adjudicator note. "), adjudicated));
   }
+  if (item.reviewer_note) {
+    prose.append(el("p", { className: "hint" }, `Your note: ${item.reviewer_note}`));
+  }
+  card.append(prose);
 
   if (item.candidates?.length) card.append(evidenceBlock(item));
 
   if (item.requires_review) {
     const note = el("input", { type: "text", placeholder: "note (optional)", value: item.reviewer_note || "" });
-    const actions = el("div", { className: "exc-actions" }, note);
+    const actions = el("div", { className: "exc-actions exc-wide" }, note);
     for (const action of ["approved", "rejected", "reassigned"]) {
       const button = el("button", { className: "btn btn-sm", type: "button" }, action.replace(/ed$/, ""));
       button.addEventListener("click", () => decide(item.bank_line_id, action, note.value, card));
@@ -610,6 +680,17 @@ function excCard(item) {
     card.append(actions);
   }
   return card;
+}
+
+/* taxonomy.py appends the model's reasoning to the deterministic explanation behind this
+ * exact label. Splitting on it is presentation only: if the label is ever absent or
+ * renamed the whole string still renders as the computed account, which is the safe way
+ * to be wrong -- machine-derived text never ends up presented as the model's. */
+function splitAdjudicatorNote(explanation) {
+  if (!explanation) return ["", ""];
+  const at = explanation.indexOf("Adjudicator note: ");
+  if (at === -1) return [explanation, ""];
+  return [explanation.slice(0, at).trim(), explanation.slice(at + "Adjudicator note: ".length).trim()];
 }
 
 /* The explanation says "groups 4 transactions"; this says WHICH four.
@@ -715,7 +796,7 @@ async function renderJournal(panel) {
   const outcome = el("span", { className: "hint", style: "margin:0" });
   approveBtn.addEventListener("click", () => approveAndRerun(approveBtn, outcome));
 
-  children.push(el("div", { className: "card controls", style: "margin-bottom:18px" },
+  children.push(el("div", { className: "closeout" },
     el("div", { style: "flex:1;min-width:240px" },
       el("h3", {}, "Close the loop"),
       el("p", { className: "hint", style: "margin-top:4px" },
@@ -806,7 +887,7 @@ async function renderTieOut(panel) {
     el("span", { className: "amt" }, amount),  // preformatted, verbatim
   );
 
-  const statement = el("section", { className: "card statement" },
+  const statement = el("section", { className: "statement" },
     el("h2", { style: "margin-bottom:10px" }, "Reconciliation statement"),
     stmtRow("Bank statement", t.statement.total.inr, `${t.statement.line_count} credits`, true),
     stmtRow("Reconciled", t.statement.reconciled.inr, `${t.statement.reconciled_line_count} lines`),
@@ -823,7 +904,7 @@ async function renderTieOut(panel) {
       duplicates === 0
         ? "No transaction had its receivable relieved by more than one bank line."
         : `${duplicates} transactions were cleared by two different bank lines.`),
-    el("div", { className: "card control-card" },
+    el("div", { className: "control-card" },
       el("span", { className: "name" }, "Fee drift absorbed"),
       el("span", { className: "verdict warn" }, c.rounding_adjustment_gross.inr),
       el("span", { className: "detail" },
@@ -866,7 +947,7 @@ async function renderTieOut(panel) {
 }
 
 function controlCard(name, ok, detail) {
-  return el("div", { className: "card control-card" },
+  return el("div", { className: "control-card" },
     el("span", { className: "name" }, name),
     verdict(ok, "Pass", "Finding"),
     el("span", { className: "detail" }, detail),
@@ -878,7 +959,7 @@ function controlCard(name, ok, detail) {
 async function renderAudit(panel) {
   const data = await api(`/runs/${state.runId}/audit?limit=200`);
   if (!data.entries.length) {
-    panel.replaceChildren(el("div", { className: "card empty" }, el("p", {}, "No audit entries yet.")));
+    panel.replaceChildren(el("div", { className: "empty" }, el("p", {}, "No audit entries yet.")));
     return;
   }
   const rows = data.entries.map((e) => el("tr", {},
